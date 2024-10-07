@@ -25,7 +25,10 @@ class ProductController extends Controller
 
         $product = Product::create($validatedData);
 
-        return response()->json($product, 201);
+        return response()->json([
+            'success' => true,
+            'data' => $product
+        ], 201);
     }
 
     // Get a single product by id
