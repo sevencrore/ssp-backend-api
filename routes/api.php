@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
   
 use App\Http\Controllers\API\RegisterController;
 use App\Http\Controllers\API\BusinessController;
+use App\Http\Controllers\ProductController;
    
 Route::controller(RegisterController::class)->group(function(){
     Route::post('register', 'register');
@@ -48,6 +49,13 @@ Route::delete('business/delete-multiple', [BusinessController::class, 'deleteMul
 Route::post('business/restore-multiple', [BusinessController::class, 'restoreMultiple']);
 Route::delete('business/force-delete-multiple', [BusinessController::class, 'forceDeleteMultiple']);
 Route::post('business/trashed-multiple', [BusinessController::class, 'trashedMultiple']);
+
+
+Route::get('/products', [ProductController::class, 'index']);
+Route::post('/products', [ProductController::class, 'store']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
+Route::put('/products/{id}', [ProductController::class, 'update']);
+Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
 
 });
