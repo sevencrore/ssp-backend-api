@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
   
 use App\Http\Controllers\API\RegisterController;
 use App\Http\Controllers\API\BusinessController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\API\ProductController;
    
 Route::controller(RegisterController::class)->group(function(){
     Route::post('register', 'register');
@@ -52,6 +52,7 @@ Route::post('business/trashed-multiple', [BusinessController::class, 'trashedMul
 
 
 Route::get('products', [ProductController::class, 'index']);
+Route::get('products-get-all-paginated', [ProductController::class, 'getAllPaginated']);
 Route::post('products', [ProductController::class, 'store']);
 Route::get('products/{id}', [ProductController::class, 'show']);
 Route::put('products/{id}', [ProductController::class, 'update']);
