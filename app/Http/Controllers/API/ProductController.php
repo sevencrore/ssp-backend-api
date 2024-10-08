@@ -17,9 +17,25 @@ class ProductController extends BaseController
         return Product::all();
     }
 
-    public function getAllPaginated(): JsonResponse
+    public function getAllPaginated(Request $request): JsonResponse
     {
-        $items = Product::paginate(5)->appends(['sort' => 'title']);
+        
+        // $items = Product::paginate($request->per_page)->appends(['sort' => $request->title]);
+
+        // Get the per_page value from the request or set a default value
+        $perPage = $request->input('per_page', 10); // Default to 10 if not provided
+
+        // Get the sort field from the request, defaulting to 'title'
+        $sortField = $request->input('sort', 'title');
+
+        // Get the current_page from the request, defaulting to 1
+        $currentPage = $request->input('current_page', 1);
+
+        // Paginate products with sorting
+        $items = Product::orderBy($sortField)
+        ->paginate($perPage, ['*'], 'page', $currentPage)
+        ->appends(['sort' => $sortField, 'current_page' => $currentPage]);
+
 
         $data = [
             'data' => ProductResource::collection($items->items()),
@@ -33,12 +49,12 @@ class ProductController extends BaseController
             ]
         ];
 
-        // return $this->sendResponse($data, 'Business retrieved successfully.');
         return response()->json([
             'success' => true,
             'data' => $data
         ], 201);
     }
+
 
     // Create a new product
     public function store(Request $request)
