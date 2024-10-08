@@ -61,7 +61,12 @@ class ProductController extends BaseController
     // Get a single product by id
     public function show($id)
     {
-        return Product::findOrFail($id);
+        $product = Product::findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'data' => $product
+        ], 201);
     }
 
     // Update a product
@@ -78,6 +83,59 @@ class ProductController extends BaseController
         $product->update($validatedData);
 
         return response()->json($product, 200);
+    }
+
+    public function deleteMultiple(Request $request)
+    {
+        $ids = $request->input('ids');
+
+        if (empty($ids) || !is_array($ids)) {
+            return $this->sendError('Invalid IDs provided.');
+            
+        }
+    
+        $count = Business::whereIn('id', $ids)->delete(); // Soft deletes the records
+
+        return $this->sendResponse(null, "{$count} Products deleted successfully.");
+    }
+
+    public function restoreMultiple(Request $request)
+    {
+        $ids = $request->input('ids');
+
+        if (empty($ids) || !is_array($ids)) {
+            return $this->sendError('Invalid IDs provided.');
+        }
+
+        $count = Business::withTrashed()->whereIn('id', $ids)->restore(); // Restores the soft-deleted records
+
+        return $this->sendResponse(null, "{$count} Products restored successfully.");
+    }
+
+    public function forceDeleteMultiple(Request $request)
+    {
+        $ids = $request->input('ids');
+
+        if (empty($ids) || !is_array($ids)) {
+            return $this->sendError('Invalid IDs provided.');
+        }
+
+        $count = Business::withTrashed()->whereIn('id', $ids)->forceDelete(); // Permanently deletes the records
+
+        return $this->sendResponse(null, "{$count} businesses permanently deleted.");
+    }
+
+    public function trashedMultiple(Request $request)
+    {
+        $ids = $request->input('ids');
+
+        if (empty($ids) || !is_array($ids)) {
+            return $this->sendError('Invalid IDs provided.');
+        }
+
+        $trashedBusinesses = Business::onlyTrashed()->whereIn('id', $ids)->get(); // Retrieves only specified soft-deleted records
+
+        return $this->sendResponse($trashedBusinesses, 'Trashed businesses retrieved successfully.');
     }
 
     // Delete a product
