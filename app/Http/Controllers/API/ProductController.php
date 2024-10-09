@@ -103,7 +103,8 @@ class ProductController extends BaseController
             'data' => $product
         ], 201);
     }
-
+    
+    // delete multiple product
     public function deleteMultiple(Request $request)
     {
         $ids = $request->input('ids');
@@ -118,6 +119,7 @@ class ProductController extends BaseController
         return $this->sendResponse(null, "{$count} Products deleted successfully.");
     }
 
+    // delete restore multiple product
     public function restoreMultiple(Request $request)
     {
         $ids = $request->input('ids');
@@ -131,6 +133,7 @@ class ProductController extends BaseController
         return $this->sendResponse(null, "{$count} Products restored successfully.");
     }
 
+    //  force delete multiple product
     public function forceDeleteMultiple(Request $request)
     {
         $ids = $request->input('ids');
@@ -144,6 +147,7 @@ class ProductController extends BaseController
         return $this->sendResponse(null, "{$count} Product permanently deleted.");
     }
 
+    // trashed delete multiple product
     public function trashedMultiple(Request $request)
     {
         $ids = $request->input('ids');
