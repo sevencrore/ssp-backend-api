@@ -74,7 +74,8 @@ class CategoryController extends BaseController
         $Category = Category::findOrFail($id);
         $Category->update($validatedData);
 
-        return response()->json($Category, 200);
+        // return response()->json($Category, 200);
+        return response()->json(['success' => true, 'data' => $Category], 201);
     }
 
     // Delete a Category

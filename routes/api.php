@@ -65,7 +65,7 @@ Route::get('category', [CategoryController::class, 'index'])->name('category.ind
 Route::post('category', [CategoryController::class, 'store'])->name('category.store');
 Route::get('category-get-all-paginated', [CategoryController::class, 'getAllPaginated']);
 Route::get('category/{category}', [CategoryController::class, 'show'])->name('category.show');
-Route::put('category/{category}', [CategoryController::class, 'update'])->name('category.update');
+Route::put('category/{id}', [CategoryController::class, 'update'])->name('category.update');
 Route::delete('category/{category}', [CategoryController::class, 'destroy'])->name('category.destroy');
 
 
