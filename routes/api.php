@@ -52,8 +52,6 @@ Route::delete('business/force-delete-multiple', [BusinessController::class, 'for
 Route::post('business/trashed-multiple', [BusinessController::class, 'trashedMultiple']);
 
 
-Route::post('login', [RegisterController::class, 'login'])->name('login');
-
 Route::get('products', [ProductController::class, 'index']);
 Route::get('products-get-all-paginated', [ProductController::class, 'getAllPaginated']);
 Route::post('products', [ProductController::class, 'store']);
@@ -62,12 +60,11 @@ Route::put('products/{id}', [ProductController::class, 'update']);
 Route::delete('products/{id}', [ProductController::class, 'destroy']);
 
 
-Route::get('category', [CategoryController::class, 'index'])->name('category.index'); // List all categories
-Route::post('category', [CategoryController::class, 'store'])->name('category.store'); // Create a new category
-Route::get('category/{category}', [CategoryController::class, 'show'])->name('category.show'); // Show a specific category
-Route::put('category/{category}', [CategoryController::class, 'update'])->name('category.update'); // Update a specific category
-Route::delete('category/{category}', [CategoryController::class, 'destroy'])->name('category.destroy'); // Delete a specific category
-
+Route::get('category', [CategoryController::class, 'index'])->name('category.index');
+Route::post('category', [CategoryController::class, 'store'])->name('category.store');
+Route::get('category/{category}', [CategoryController::class, 'show'])->name('category.show');
+Route::put('category/{category}', [CategoryController::class, 'update'])->name('category.update');
+Route::delete('category/{category}', [CategoryController::class, 'destroy'])->name('category.destroy');
 
 
 });
