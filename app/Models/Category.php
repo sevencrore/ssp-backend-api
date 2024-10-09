@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,10 +8,7 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'title',
-        'description',
-        'image_url',
-        'price',
-    ];
+    protected $table = 'category'; // Specify the table name if it's singular
+    
+    protected $fillable = ['title', 'description', 'image_url'];
 }

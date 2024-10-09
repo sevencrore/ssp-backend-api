@@ -11,15 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('category', function (Blueprint $table) {
+        Schema::create('category', function (Blueprint $table) { // Pluralized table name
             $table->id(); // Primary key
             $table->string('title'); // Add 'title'
-            $table->text('description')->nullable(); // Add 'description' (nullable)
-            $table->string('image_url')->nullable(); // Add 'image_url' (nullable)
-            $table->timestamps(); // Created_at and updated_at timestamps
+            $table->text('description')->nullable(); 
+            $table->string('image_url')->nullable(); 
+            $table->timestamps(); // created_at and updated_at timestamps
         });
     }
-    
+
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('category'); // Drop the 'category' table
