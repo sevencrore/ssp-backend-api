@@ -113,7 +113,7 @@ class ProductController extends BaseController
             
         }
     
-        $count = Business::whereIn('id', $ids)->delete(); // Soft deletes the records
+        $count = Product::whereIn('id', $ids)->delete(); // Soft deletes the records
 
         return $this->sendResponse(null, "{$count} Products deleted successfully.");
     }
@@ -126,7 +126,7 @@ class ProductController extends BaseController
             return $this->sendError('Invalid IDs provided.');
         }
 
-        $count = Business::withTrashed()->whereIn('id', $ids)->restore(); // Restores the soft-deleted records
+        $count = Product::withTrashed()->whereIn('id', $ids)->restore(); // Restores the soft-deleted records
 
         return $this->sendResponse(null, "{$count} Products restored successfully.");
     }
@@ -139,9 +139,9 @@ class ProductController extends BaseController
             return $this->sendError('Invalid IDs provided.');
         }
 
-        $count = Business::withTrashed()->whereIn('id', $ids)->forceDelete(); // Permanently deletes the records
+        $count = Product::withTrashed()->whereIn('id', $ids)->forceDelete(); // Permanently deletes the records
 
-        return $this->sendResponse(null, "{$count} businesses permanently deleted.");
+        return $this->sendResponse(null, "{$count} Product permanently deleted.");
     }
 
     public function trashedMultiple(Request $request)
@@ -152,9 +152,9 @@ class ProductController extends BaseController
             return $this->sendError('Invalid IDs provided.');
         }
 
-        $trashedBusinesses = Business::onlyTrashed()->whereIn('id', $ids)->get(); // Retrieves only specified soft-deleted records
+        $trashedProduct = Product::onlyTrashed()->whereIn('id', $ids)->get(); // Retrieves only specified soft-deleted records
 
-        return $this->sendResponse($trashedBusinesses, 'Trashed businesses retrieved successfully.');
+        return $this->sendResponse($trashedProduct, 'Trashed Product retrieved successfully.');
     }
 
     // Delete a product
@@ -163,6 +163,11 @@ class ProductController extends BaseController
         $product = Product::findOrFail($id);
         $product->delete();
 
-        return response()->json(null, 204);
+        // return response()->json(['success' => 'Product deleted successfully'], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Product deleted successfully'
+        ], 200);
+
     }
 }

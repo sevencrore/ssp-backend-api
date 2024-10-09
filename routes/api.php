@@ -60,6 +60,7 @@ Route::post('products', [ProductController::class, 'store']);
 Route::get('product/{id}', [ProductController::class, 'show']);
 Route::put('products/{id}', [ProductController::class, 'update']);
 Route::delete('products/{id}', [ProductController::class, 'destroy']);
+Route::delete('Product/force-delete-multiple', [ProductController::class, 'forceDeleteMultiple']);
 
 
 Route::get('category', [CategoryController::class, 'index'])->name('category.index'); // List all categories
