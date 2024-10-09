@@ -98,7 +98,10 @@ class ProductController extends BaseController
         $product = Product::findOrFail($id);
         $product->update($validatedData);
 
-        return response()->json($product, 200);
+        return response()->json([
+            'success' => true,
+            'data' => $product
+        ], 201);
     }
 
     public function deleteMultiple(Request $request)
