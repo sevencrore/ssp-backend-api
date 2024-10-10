@@ -11,6 +11,7 @@ use App\Http\Controllers\API\UnitController;
 use App\Http\Controllers\API\OrderController;
 
 
+use App\Http\Controllers\API\AddressController;
    
 Route::controller(RegisterController::class)->group(function(){
     Route::post('register', 'register');
@@ -100,6 +101,13 @@ Route::put('orders/{order}', [OrderController::class, 'update'])->name('orders.u
 Route::delete('orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
 
 
+
+Route::get('address', [AddressController::class, 'index'])->name('address.index');
+Route::post('address', [AddressController::class, 'store'])->name('address.store');
+Route::get('address-get-all-paginated', [AddressController::class, 'getAllPaginated']);
+Route::get('address/{address}', [AddressController::class, 'show'])->name('address.show');
+Route::put('address/{id}', [AddressController::class, 'update'])->name('address.update');
+Route::delete('address/{address}', [AddressController::class, 'destroy'])->name('address.destroy');
 
 });
 
