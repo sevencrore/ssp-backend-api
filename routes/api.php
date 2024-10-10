@@ -8,6 +8,9 @@ use App\Http\Controllers\API\BusinessController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\UnitController;
+use App\Http\Controllers\API\OrderController;
+
+
    
 Route::controller(RegisterController::class)->group(function(){
     Route::post('register', 'register');
@@ -77,6 +80,25 @@ Route::get('unit-get-all-paginated', [UnitController::class, 'getAllPaginated'])
 Route::get('unit/{unit}', [UnitController::class, 'show'])->name('unit.show');
 Route::put('unit/{id}', [UnitController::class, 'update'])->name('unit.update');
 Route::delete('unit/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
+
+
+
+
+// Route for creating a new order
+Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
+
+// Route for retrieving all orders
+Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+
+// Route for retrieving a specific order
+Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+
+// Route for updating a specific order
+Route::put('orders/{order}', [OrderController::class, 'update'])->name('orders.update');
+
+// Route for deleting a specific order
+Route::delete('orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+
 
 
 });
