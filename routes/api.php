@@ -1,5 +1,6 @@
 <?php
   
+use App\Http\Controllers\API\CityController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
   
@@ -77,6 +78,13 @@ Route::get('unit-get-all-paginated', [UnitController::class, 'getAllPaginated'])
 Route::get('unit/{unit}', [UnitController::class, 'show'])->name('unit.show');
 Route::put('unit/{id}', [UnitController::class, 'update'])->name('unit.update');
 Route::delete('unit/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
+
+Route::get('city', [CityControllerController::class, 'index'])->name('city.index');
+Route::post('city', [CityController::class, 'store'])->name('city.store');
+Route::get('city-get-all-paginated', [CityControllerController::class, 'getAllPaginated']);
+Route::get('city/{city}', [CityControllerController::class, 'show'])->name('city.show');
+Route::put('city/{id}', [CityControllerController::class, 'update'])->name('city.update');
+Route::delete('city/{city}', [CityControllerController::class, 'destroy'])->name('city.destroy');
 
 
 });
