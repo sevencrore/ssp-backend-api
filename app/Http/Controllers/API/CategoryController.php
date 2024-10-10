@@ -84,6 +84,9 @@ class CategoryController extends BaseController
         $Category = Category::findOrFail($id);
         $Category->delete();
 
-        return response()->json(null, 204);
+        return response()->json([
+            'success' => true,
+            'message' => 'Product deleted successfully'
+        ], 200);
     }
 }
