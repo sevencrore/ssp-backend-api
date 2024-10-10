@@ -1,33 +1,34 @@
 <?php
+
 namespace App\Http\Controllers\API;
 
-use App\Models\Category;
+use App\Models\Unit;
 use Illuminate\Http\Request;
-use App\Http\Resources\CategoryResource;
+use App\Http\Resources\UnitResource;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
 
-class CategoryController extends BaseController
+class UnitController extends BaseController
 {
-    // Get all Categorys
+    // Get all Units
     public function index()
     {
-        return Category::all();
+        return Unit::all();
     }
 
-    // Get paginated Categorys with sorting
+    // Get paginated Units with sorting
     public function getAllPaginated(Request $request): JsonResponse
     {
         $perPage = $request->input('per_page', 10);
         $sortField = $request->input('sort', 'title');
         $currentPage = $request->input('current_page', 1);
 
-        $items = Category::orderBy($sortField)
+        $items = Unit::orderBy($sortField)
             ->paginate($perPage, ['*'], 'page', $currentPage)
             ->appends(['sort' => $sortField, 'current_page' => $currentPage]);
 
         $data = [
-            'data' => CategoryResource::collection($items->items()),
+            'data' => UnitResource::collection($items->items()),
             'pagination' => [
                 'current_page' => $items->currentPage(),
                 'last_page' => $items->lastPage(),
@@ -38,56 +39,52 @@ class CategoryController extends BaseController
             ]
         ];
 
-        return response()->json(['success' => true, 'data' => $data], 201);
+        return response()->json(['success' => true, 'data' => $data], 200);
     }
 
-    // Create a new Category (without price)
+    // Create a new Unit
     public function store(Request $request)
     {
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'image_url' => 'required|string',
         ]);
 
-        $Category = Category::create($validatedData);
+        $unit = Unit::create($validatedData);
 
-        return response()->json(['success' => true, 'data' => $Category], 201);
+        return response()->json(['success' => true, 'data' => $unit], 201);
     }
 
-    // Get a single Category by id
+    // Get a single Unit by id
     public function show($id)
     {
-        $Category = Category::findOrFail($id);
-        return response()->json(['success' => true, 'data' => $Category], 201);
+        $unit = Unit::findOrFail($id);
+        return response()->json(['success' => true, 'data' => $unit], 200);
     }
 
-    // Update a Category
+    // Update a Unit
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
-            'image_url' => 'sometimes|required|string',
         ]);
 
-        $Category = Category::findOrFail($id);
-        $Category->update($validatedData);
+        $unit = Unit::findOrFail($id);
+        $unit->update($validatedData);
 
-        // return response()->json($Category, 200);
-        return response()->json(['success' => true, 
-        'data' => $Category], 201);
+        return response()->json(['success' => true, 'data' => $unit], 200);
     }
 
-    // Delete a Category
+    // Delete a Unit
     public function destroy($id)
     {
-        $Category = Category::findOrFail($id);
-        $Category->delete();
+        $unit = Unit::findOrFail($id);
+        $unit->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Product deleted successfully'
+            'message' => 'Unit deleted successfully'
         ], 200);
     }
 }

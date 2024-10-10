@@ -7,6 +7,7 @@ use App\Http\Controllers\API\RegisterController;
 use App\Http\Controllers\API\BusinessController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\UnitController;
    
 Route::controller(RegisterController::class)->group(function(){
     Route::post('register', 'register');
@@ -67,6 +68,15 @@ Route::get('category-get-all-paginated', [CategoryController::class, 'getAllPagi
 Route::get('category/{category}', [CategoryController::class, 'show'])->name('category.show');
 Route::put('category/{id}', [CategoryController::class, 'update'])->name('category.update');
 Route::delete('category/{category}', [CategoryController::class, 'destroy'])->name('category.destroy');
+
+
+
+Route::get('unit', [UnitController::class, 'index'])->name('unit.index');
+Route::post('unit', [UnitController::class, 'store'])->name('unit.store');
+Route::get('unit-get-all-paginated', [UnitController::class, 'getAllPaginated']);
+Route::get('unit/{unit}', [UnitController::class, 'show'])->name('unit.show');
+Route::put('unit/{id}', [UnitController::class, 'update'])->name('unit.update');
+Route::delete('unit/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
 
 
 });
