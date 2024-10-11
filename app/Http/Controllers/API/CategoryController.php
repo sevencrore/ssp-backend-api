@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\OrderItem;
+use App\Models\Category; // Change this to use the Category model
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
@@ -11,49 +11,45 @@ class CategoryController extends BaseController
 {
     public function index()
     {
-        $data = OrderItem::all();
+        $data = Category::all();
         return response()->json(['success' => true, 'data' => $data]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'order_id' => 'required|integer',
-            'product_id' => 'required|integer',
-            'user_id' => 'required|integer',
-            'quantity' => 'required|integer',
-            'price' => 'required|integer',
+            'title' => 'required|string',
+            'description' => 'nullable|string',
+            'image_url' => 'nullable|string',
         ]);
 
-        $orderItem = OrderItem::create($request->all());
-        return response()->json(['success' => true, 'data' => $orderItem], 201);
+        $category = Category::create($request->all());
+        return response()->json(['success' => true, 'data' => $category], 201);
     }
 
     public function show($id)
     {
-        $orderItem = OrderItem::findOrFail($id);
-        return response()->json(['success' => true, 'data' => $orderItem]);
+        $category = Category::findOrFail($id);
+        return response()->json(['success' => true, 'data' => $category]);
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'order_id' => 'sometimes|required|integer',
-            'product_id' => 'sometimes|required|integer',
-            'user_id' => 'sometimes|required|integer',
-            'quantity' => 'sometimes|required|integer',
-            'price' => 'sometimes|required|integer',
+            'title' => 'sometimes|required|string',
+            'description' => 'sometimes|nullable|string',
+            'image_url' => 'sometimes|nullable|string',
         ]);
 
-        $orderItem = OrderItem::findOrFail($id);
-        $orderItem->update($request->all());
-        return response()->json(['success' => true, 'data' => $orderItem]);
+        $category = Category::findOrFail($id);
+        $category->update($request->all());
+        return response()->json(['success' => true, 'data' => $category]);
     }
 
     public function destroy($id)
     {
-        $orderItem = OrderItem::findOrFail($id);
-        $orderItem->delete();
+        $category = Category::findOrFail($id);
+        $category->delete();
         return response()->json(['success' => true, 'data' => null], 204);
     }
 }
