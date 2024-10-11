@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cart', function (Blueprint $table) {
+        Schema::create('carts', function (Blueprint $table) {
             $table->increments('id'); // Auto-incrementing ID
             
             $table->unsignedInteger('user_id'); // User ID as unsigned integer
