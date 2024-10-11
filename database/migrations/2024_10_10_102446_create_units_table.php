@@ -6,9 +6,15 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+<<<<<<< HEAD
     // /**
     //  * Run the migrations.
     //  */
+=======
+    /**
+     * Run the migrations.
+     */
+>>>>>>> fa7bdec4c397ce4b1bd8a689c9e422be691e742b
     // public function up(): void
     // {
     //     Schema::create('unit', function (Blueprint $table) {

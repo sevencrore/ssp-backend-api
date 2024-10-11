@@ -9,6 +9,7 @@ use App\Http\Controllers\API\BusinessController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\UnitController;
+use App\Http\Controllers\API\AddressController;
    
 Route::controller(RegisterController::class)->group(function(){
     Route::post('register', 'register');
@@ -86,6 +87,13 @@ Route::get('city/{city}', [CityControllerController::class, 'show'])->name('city
 Route::put('city/{id}', [CityControllerController::class, 'update'])->name('city.update');
 Route::delete('city/{city}', [CityControllerController::class, 'destroy'])->name('city.destroy');
 
+
+Route::get('address', [AddressController::class, 'index'])->name('address.index');
+Route::post('address', [AddressController::class, 'store'])->name('address.store');
+Route::get('address-get-all-paginated', [AddressController::class, 'getAllPaginated']);
+Route::get('address/{address}', [AddressController::class, 'show'])->name('address.show');
+Route::put('address/{id}', [AddressController::class, 'update'])->name('address.update');
+Route::delete('address/{address}', [AddressController::class, 'destroy'])->name('address.destroy');
 
 });
 
