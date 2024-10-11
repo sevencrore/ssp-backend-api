@@ -13,11 +13,7 @@ use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\OrderItemController;
 use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\UserDetailsController;
-
-
-
-
-
+use App\Http\Controllers\API\ProductVariantController;
 
 
 use App\Http\Controllers\API\AddressController;
@@ -176,6 +172,17 @@ Route::put('user-details/{userDetail}', [UserDetailsController::class, 'update']
 
 // Route to delete a specific user detail
 Route::delete('user-details/{userDetail}', [UserDetailsController::class, 'destroy'])->name('user-details.destroy');
+
+
+
+Route::get('product-variant', [ProductVariantController::class, 'index'])->name('product_variant.index');
+Route::post('product-variant', [ProductVariantController::class, 'store'])->name('product_variant.store');
+Route::get('product-variant-get-all-paginated', [ProductVariantController::class, 'getAllPaginated']);
+Route::get('product-variant/{product_variant}', [ProductVariantController::class, 'show'])->name('product_variant.show');
+Route::put('product-variant/{id}', [ProductVariantController::class, 'update'])->name('product_variant.update');
+Route::delete('product-variant/{product_variant}', [ProductVariantController::class, 'destroy'])->name('product_variant.destroy');
+
+
 });
 
 

@@ -11,20 +11,23 @@ class CreateAddressTable extends Migration
      */
     public function up(): void
     {
-        Schema::create('address', function (Blueprint $table) {
-            $table->id(); // Primary key
-            $table->string('first_name'); // First name
-            $table->string('last_name'); // Last name
-            $table->integer('city_id'); // City ID
-            $table->text('address'); // Address
-            $table->string('pin_code'); // Pin code
-            $table->string('phone_number'); // Phone number
-            $table->unsignedBigInteger('user_id'); // User ID
-            $table->decimal('latitude', 11, 8)->default(0.00000000); // Latitude
-            $table->decimal('longitude', 11, 8)->default(0.00000000); // Longitude
-            $table->timestamps(); // Created and updated timestamps
-        });
+        if (!Schema::hasTable('address')) {
+            Schema::create('address', function (Blueprint $table) {
+                $table->id();
+                $table->string('first_name');
+                $table->string('last_name');
+                $table->integer('city_id');
+                $table->text('address');
+                $table->string('pin_code');
+                $table->string('phone_number');
+                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+                $table->decimal('latitude', 11, 8)->default(0);
+                $table->decimal('longitude', 11, 8)->default(0);
+                $table->timestamps();
+            });
+        }
     }
+    
 
     /**
      * Reverse the migrations.
