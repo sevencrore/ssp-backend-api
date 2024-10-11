@@ -9,6 +9,8 @@ use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\UnitController;
 use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\OrderItemController;
+
 
 
 use App\Http\Controllers\API\AddressController;
@@ -108,6 +110,24 @@ Route::get('address-get-all-paginated', [AddressController::class, 'getAllPagina
 Route::get('address/{address}', [AddressController::class, 'show'])->name('address.show');
 Route::put('address/{id}', [AddressController::class, 'update'])->name('address.update');
 Route::delete('address/{address}', [AddressController::class, 'destroy'])->name('address.destroy');
+
+
+
+// Route for creating a new order item
+Route::post('order-items', [OrderItemController::class, 'store'])->name('order-items.store');
+
+// Route for retrieving all order items
+Route::get('order-items', [OrderItemController::class, 'index'])->name('order-items.index');
+
+// Route for retrieving a specific order item
+Route::get('order-items/{orderItem}', [OrderItemController::class, 'show'])->name('order-items.show');
+
+// Route for updating a specific order item
+Route::put('order-items/{orderItem}', [OrderItemController::class, 'update'])->name('order-items.update');
+
+// Route for deleting a specific order item
+Route::delete('order-items/{orderItem}', [OrderItemController::class, 'destroy'])->name('order-items.destroy');
+
 
 });
 

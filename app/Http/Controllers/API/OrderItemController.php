@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
@@ -10,10 +11,11 @@ use Illuminate\Http\JsonResponse;
 class OrderItemController extends BaseController
 {
     public function index()
-    {
-        $data = OrderItem::all();
-        return response()->json(['success' => true, 'data' => $data]);
-    }
+{
+    $data = OrderItem::all(); // Corrected line with '='
+    return response()->json(['success' => true, 'data' => $data]);
+}
+
 
     public function store(Request $request)
     {
@@ -54,6 +56,11 @@ class OrderItemController extends BaseController
     {
         $orderItem = OrderItem::findOrFail($id);
         $orderItem->delete();
-        return response()->json(['success' => true, 'data' => null], 204);
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Order item deleted successfully',
+            'data' => null
+        ], 200);
     }
 }
