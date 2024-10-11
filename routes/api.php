@@ -9,6 +9,13 @@ use App\Http\Controllers\API\BusinessController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\UnitController;
+use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\OrderItemController;
+use App\Http\Controllers\API\CartController;
+
+
+
+
 use App\Http\Controllers\API\AddressController;
    
 Route::controller(RegisterController::class)->group(function(){
@@ -88,12 +95,75 @@ Route::put('city/{id}', [CityControllerController::class, 'update'])->name('city
 Route::delete('city/{city}', [CityControllerController::class, 'destroy'])->name('city.destroy');
 
 
+
+
+// Route for creating a new order
+Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
+
+// Route for retrieving all orders
+Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+
+// Route for retrieving a specific order
+Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+
+// Route for updating a specific order
+Route::put('orders/{order}', [OrderController::class, 'update'])->name('orders.update');
+
+// Route for deleting a specific order
+Route::delete('orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+
+
+
 Route::get('address', [AddressController::class, 'index'])->name('address.index');
 Route::post('address', [AddressController::class, 'store'])->name('address.store');
 Route::get('address-get-all-paginated', [AddressController::class, 'getAllPaginated']);
 Route::get('address/{address}', [AddressController::class, 'show'])->name('address.show');
 Route::put('address/{id}', [AddressController::class, 'update'])->name('address.update');
 Route::delete('address/{address}', [AddressController::class, 'destroy'])->name('address.destroy');
+
+
+
+// Route for creating a new order item
+Route::post('order-items', [OrderItemController::class, 'store'])->name('order-items.store');
+
+// Route for retrieving all order items
+Route::get('order-items', [OrderItemController::class, 'index'])->name('order-items.index');
+
+// Route for retrieving a specific order item
+Route::get('order-items/{orderItem}', [OrderItemController::class, 'show'])->name('order-items.show');
+
+// Route for updating a specific order item
+Route::put('order-items/{orderItem}', [OrderItemController::class, 'update'])->name('order-items.update');
+
+// Route for deleting a specific order item
+Route::delete('order-items/{orderItem}', [OrderItemController::class, 'destroy'])->name('order-items.destroy');
+
+
+
+// Route for creating a new cart item
+Route::post('cart', [CartController::class, 'store'])->name('cart.store');
+
+// Route for retrieving all cart items
+Route::get('cart', [CartController::class, 'index'])->name('cart.index');
+
+// Route for retrieving a specific cart item
+Route::get('cart/{cart}', [CartController::class, 'show'])->name('cart.show');
+
+// Route for updating a specific cart item
+Route::put('cart/{cart}', [CartController::class, 'update'])->name('cart.update');
+
+// Route for deleting a specific cart item
+Route::delete('cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
+
+
+
+
+
+
+
+
+
+
 
 });
 
