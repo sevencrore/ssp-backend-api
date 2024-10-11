@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
 
-class OrderItemController extends BaseController
+class CategoryController extends BaseController
 {
     public function index()
     {

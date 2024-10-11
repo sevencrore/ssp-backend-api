@@ -10,6 +10,8 @@ use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\UnitController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\OrderItemController;
+use App\Http\Controllers\API\CartController;
+
 
 
 
@@ -127,6 +129,32 @@ Route::put('order-items/{orderItem}', [OrderItemController::class, 'update'])->n
 
 // Route for deleting a specific order item
 Route::delete('order-items/{orderItem}', [OrderItemController::class, 'destroy'])->name('order-items.destroy');
+
+
+
+// Route for creating a new cart item
+Route::post('cart', [CartController::class, 'store'])->name('cart.store');
+
+// Route for retrieving all cart items
+Route::get('cart', [CartController::class, 'index'])->name('cart.index');
+
+// Route for retrieving a specific cart item
+Route::get('cart/{cart}', [CartController::class, 'show'])->name('cart.show');
+
+// Route for updating a specific cart item
+Route::put('cart/{cart}', [CartController::class, 'update'])->name('cart.update');
+
+// Route for deleting a specific cart item
+Route::delete('cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
+
+
+
+
+
+
+
+
+
 
 
 });
