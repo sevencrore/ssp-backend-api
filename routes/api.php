@@ -1,7 +1,7 @@
 <?php
   
-use App\Http\Controllers\API\CityController;
-use Illuminate\Http\Request;
+  use App\Http\Controllers\API\CityController;
+  use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
   
 use App\Http\Controllers\API\RegisterController;
@@ -12,6 +12,9 @@ use App\Http\Controllers\API\UnitController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\OrderItemController;
 use App\Http\Controllers\API\CartController;
+
+
+
 
 
 
@@ -87,12 +90,12 @@ Route::get('unit/{unit}', [UnitController::class, 'show'])->name('unit.show');
 Route::put('unit/{id}', [UnitController::class, 'update'])->name('unit.update');
 Route::delete('unit/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
 
-Route::get('city', [CityControllerController::class, 'index'])->name('city.index');
+Route::get('city', [CityController::class, 'index'])->name('city.index');
 Route::post('city', [CityController::class, 'store'])->name('city.store');
-Route::get('city-get-all-paginated', [CityControllerController::class, 'getAllPaginated']);
-Route::get('city/{city}', [CityControllerController::class, 'show'])->name('city.show');
-Route::put('city/{id}', [CityControllerController::class, 'update'])->name('city.update');
-Route::delete('city/{city}', [CityControllerController::class, 'destroy'])->name('city.destroy');
+Route::get('city-get-all-paginated', [CityController::class, 'getAllPaginated']);
+Route::get('city/{city}', [CityController::class, 'show'])->name('city.show');
+Route::put('city/{id}', action: [CityController::class, 'update'])->name('city.update');
+Route::delete('city/{city}', [CityController::class, 'destroy'])->name('city.destroy');
 
 
 
