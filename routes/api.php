@@ -12,6 +12,7 @@ use App\Http\Controllers\API\UnitController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\OrderItemController;
 use App\Http\Controllers\API\CartController;
+use App\Http\Controllers\API\UserDetailsController;
 
 
 
@@ -161,12 +162,27 @@ Route::delete('cart/{cart}', [CartController::class, 'destroy'])->name('cart.des
 
 
 
+// Route to get all user details
+Route::get('user-details', [UserDetailsController::class, 'index'])->name('user-details.index');
 
+// Route to store new user details
+Route::post('user-details', [UserDetailsController::class, 'store'])->name('user-details.store');
 
+// Route to get a specific user detail
+Route::get('user-details/{userDetail}', [UserDetailsController::class, 'show'])->name('user-details.show');
 
+// Route to update a specific user detail
+Route::put('user-details/{userDetail}', [UserDetailsController::class, 'update'])->name('user-details.update');
 
-
-
-
+// Route to delete a specific user detail
+Route::delete('user-details/{userDetail}', [UserDetailsController::class, 'destroy'])->name('user-details.destroy');
 });
+
+
+
+
+
+
+
+
 
