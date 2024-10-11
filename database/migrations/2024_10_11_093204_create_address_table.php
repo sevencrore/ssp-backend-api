@@ -20,6 +20,8 @@ class CreateAddressTable extends Migration
             $table->string('pin_code'); // Pin code
             $table->string('phone_number'); // Phone number
             $table->unsignedBigInteger('user_id'); // User ID
+            $table->decimal('latitude', 11, 8)->default(0.00000000); // Latitude
+            $table->decimal('longitude', 11, 8)->default(0.00000000); // Longitude
             $table->timestamps(); // Created and updated timestamps
         });
     }
