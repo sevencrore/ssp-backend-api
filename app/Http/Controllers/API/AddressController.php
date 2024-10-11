@@ -4,10 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Address;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
 
-class AddressController extends Controller
+class AddressController extends BaseController
 {
     // Get all addresses
     public function index(): JsonResponse
@@ -28,6 +28,8 @@ class AddressController extends Controller
             'pin_code' => 'required|string|max:10',
             'phone_number' => 'required|string|max:15',
             'user_id' => 'required|integer',
+            // 'latitude' => 'sometimes|required|decimal:11,8',
+            // 'longitude' => 'sometimes|required|decimal:11,8',
         ]);
 
         $address = Address::create($validatedData); // Create a new address
@@ -72,6 +74,8 @@ class AddressController extends Controller
             'pin_code' => 'sometimes|required|string|max:10',
             'phone_number' => 'sometimes|required|string|max:15',
             'user_id' => 'sometimes|required|integer',
+            'latitude' => 'sometimes|required|decimal:8,6',  // Update validation for latitude
+            'longitude' => 'sometimes|required|decimal:8,6', // Update validation for longitude
         ]);
 
         $address->update($validatedData); // Update the address

@@ -23,6 +23,8 @@ class AddressResource extends JsonResource
             'pin_code' => $this->pin_code,
             'phone_number' => $this->phone_number,
             'user_id' => $this->user_id,
+            'latitude' => $this->latitude,  // Add latitude
+            'longitude' => $this->longitude, // Add longitude
             'created_at' => $this->created_at->format('d/m/Y'),
             'updated_at' => $this->updated_at->format('d/m/Y'),
         ];

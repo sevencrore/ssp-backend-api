@@ -57,7 +57,7 @@ class ProductController extends BaseController
 
 
     // Create a new product
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',

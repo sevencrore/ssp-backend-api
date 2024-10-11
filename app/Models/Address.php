@@ -19,5 +19,7 @@ class Address extends Model
         'pin_code',
         'phone_number',
         'user_id',
+        'latitude',  // Add latitude
+        'longitude', // Add longitude
     ];
 }
