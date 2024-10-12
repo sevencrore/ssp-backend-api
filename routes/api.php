@@ -16,6 +16,7 @@ use App\Http\Controllers\API\UserDetailsController;
 use App\Http\Controllers\API\ProductVariantController;
 use App\Http\Controllers\API\UserReferralController;
 use App\Http\Controllers\API\EarningController;
+use App\Http\Controllers\API\UserBankController;
 
 
 
@@ -220,6 +221,13 @@ Route::put('earnings/{earning}', [EarningController::class, 'update'])->name('ea
 
 // Route for deleting a specific earning
 Route::delete('earnings/{earning}', [EarningController::class, 'destroy'])->name('earnings.destroy');
+
+
+Route::get('user-bank', [UserBankController::class, 'index']);
+Route::post('user-bank', [UserBankController::class, 'store']);
+Route::get('user-bank/{id}', [UserBankController::class, 'show']);
+Route::put('user-bank/{id}', [UserBankController::class, 'update']);
+Route::delete('user-bank/{id}', [UserBankController::class, 'destroy']);
 
 
 });
