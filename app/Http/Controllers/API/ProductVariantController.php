@@ -14,7 +14,7 @@ class ProductVariantController extends BaseController
     public function index(): JsonResponse
     {
         $productVariants = ProductVariant::all(); // Fetch all product variants
-        return $this->sendResponse($productVariants, 'Product variants retrieved successfully.');
+        return $this->sendResponse(ProductVariantResource::collection($productVariants), 'Product variants retrieved successfully.');
     }
 
     // Get all product variants with pagination
@@ -48,6 +48,7 @@ class ProductVariantController extends BaseController
     {
         $validatedData = $request->validate([
             'product_id' => 'required|string', // Ensures product_id exists in products table
+            'category_id' => 'required|string', // Ensure category_id is also validated
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'image_url' => 'required|string',
@@ -57,14 +58,14 @@ class ProductVariantController extends BaseController
 
         $productVariant = ProductVariant::create($validatedData);
 
-        return $this->sendResponse($productVariant, 'Product variant created successfully.', 201);
+        return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant created successfully.', 201);
     }
 
     // Get a specific product variant by ID
     public function show($id): JsonResponse
     {
         $productVariant = ProductVariant::findOrFail($id);
-        return $this->sendResponse($productVariant, 'Product variant retrieved successfully.', 200);
+        return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant retrieved successfully.', 200);
     }
 
     // Update a product variant
@@ -74,6 +75,7 @@ class ProductVariantController extends BaseController
 
         $validatedData = $request->validate([
             'product_id' => 'sometimes|required|string',
+            'category_id' => 'sometimes|required|string', // Ensure category_id is also validated
             'title' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
             'image_url' => 'sometimes|required|string',
@@ -83,7 +85,7 @@ class ProductVariantController extends BaseController
 
         $productVariant->update($validatedData);
 
-        return $this->sendResponse($productVariant, 'Product variant updated successfully.', 200);
+        return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant updated successfully.', 200);
     }
 
     // Delete a specific product variant
@@ -148,6 +150,6 @@ class ProductVariantController extends BaseController
 
         $trashedProductVariants = ProductVariant::onlyTrashed()->whereIn('id', $ids)->get(); // Retrieves only specified soft-deleted records
 
-        return $this->sendResponse($trashedProductVariants, 'Trashed product variants retrieved successfully.');
+        return $this->sendResponse(ProductVariantResource::collection($trashedProductVariants), 'Trashed product variants retrieved successfully.');
     }
 }

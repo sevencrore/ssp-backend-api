@@ -7,16 +7,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductVariantResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array
-     */
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
             'product_id' => $this->product_id,
+            'category_id' => $this->category_id, // Add this line
             'title' => $this->title,
             'description' => $this->description,
             'image_url' => $this->image_url,

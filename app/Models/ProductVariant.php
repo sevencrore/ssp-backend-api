@@ -10,11 +10,6 @@ class ProductVariant extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_id', // Foreign key referencing the Product model
-        'title',
-        'description',
-        'image_url',
-        'price',
-        'discount',
+        'product_id', 'category_id', 'title', 'description', 'image_url', 'price', 'discount',
     ];
 }
