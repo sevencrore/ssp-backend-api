@@ -21,8 +21,5 @@ class Earning extends Model
         'second_referral_purchase_total',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    // Removed user relation since user_id is no longer part of the schema
 }

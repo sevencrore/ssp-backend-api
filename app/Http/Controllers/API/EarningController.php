@@ -6,6 +6,7 @@ use App\Models\Earning;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
+use App\Http\Resources\EarningResource;
 
 class EarningController extends BaseController
 {
@@ -17,7 +18,7 @@ class EarningController extends BaseController
         return response()->json([
             'success' => true,
             'message' => 'Earnings retrieved successfully.',
-            'data' => $earnings
+            'data' => EarningResource::collection($earnings)
         ]);
     }
 
@@ -25,7 +26,6 @@ class EarningController extends BaseController
     public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
-            'sale_id' => 'nullable|exists:sales,id|integer',
             'referral_incentive' => 'required|integer',
             'sale_value_estimated' => 'required|integer',
             'sale_actual_value' => 'required|integer',
@@ -40,7 +40,7 @@ class EarningController extends BaseController
         return response()->json([
             'success' => true,
             'message' => 'Earning created successfully.',
-            'data' => $earning
+            'data' => new EarningResource($earning)
         ], 201);
     }
 
@@ -52,7 +52,7 @@ class EarningController extends BaseController
         return response()->json([
             'success' => true,
             'message' => 'Earnings retrieved successfully.',
-            'data' => $earnings
+            'data' => EarningResource::collection($earnings)
         ]);
     }
 
@@ -71,7 +71,7 @@ class EarningController extends BaseController
         return response()->json([
             'success' => true,
             'message' => 'Earning retrieved successfully.',
-            'data' => $earning
+            'data' => new EarningResource($earning)
         ]);
     }
 
@@ -88,7 +88,6 @@ class EarningController extends BaseController
         }
 
         $validatedData = $request->validate([
-            'sale_id' => 'nullable|exists:sales,id|integer',
             'referral_incentive' => 'required|integer',
             'sale_value_estimated' => 'required|integer',
             'sale_actual_value' => 'required|integer',
@@ -103,7 +102,7 @@ class EarningController extends BaseController
         return response()->json([
             'success' => true,
             'message' => 'Earning updated successfully.',
-            'data' => $earning
+            'data' => new EarningResource($earning)
         ]);
     }
 
