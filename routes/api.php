@@ -15,6 +15,7 @@ use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\UserDetailsController;
 use App\Http\Controllers\API\ProductVariantController;
 use App\Http\Controllers\API\UserReferralController;
+use App\Http\Controllers\API\EarningController;
 
 
 
@@ -200,6 +201,22 @@ Route::put('user-referrals/{userReferral}', [UserReferralController::class, 'upd
 // Route for deleting a specific user referral
 Route::delete('user-referrals/{userReferral}', [UserReferralController::class, 'destroy'])->name('user-referrals.destroy');
 
+
+
+// Route for creating a new earning
+Route::post('earnings', [EarningController::class, 'store'])->name('earnings.store');
+
+// Route for retrieving all earnings
+Route::get('earnings', [EarningController::class, 'index'])->name('earnings.index');
+
+// Route for retrieving a specific earning
+Route::get('earnings/{earning}', [EarningController::class, 'show'])->name('earnings.show');
+
+// Route for updating a specific earning
+Route::put('earnings/{earning}', [EarningController::class, 'update'])->name('earnings.update');
+
+// Route for deleting a specific earning
+Route::delete('earnings/{earning}', [EarningController::class, 'destroy'])->name('earnings.destroy');
 
 });
 
