@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('product_variants', function (Blueprint $table) {
-            $table->foreignId('category_id')->after('product_id')->constrained('category')->onDelete('cascade'); // Add the category_id column
-        });
+        // Schema::table('product_variants', function (Blueprint $table) {
+        //     $table->foreignId('category_id')->after('product_id')->constrained('category')->onDelete('cascade'); // Add the category_id column
+        // });
     }
 
     /**
@@ -21,9 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('product_variants', function (Blueprint $table) {
-            $table->dropForeign(['category_id']); // Remove the foreign key
-            $table->dropColumn('category_id'); // Remove the column if rolled back
-        });
+        // Schema::table('product_variants', function (Blueprint $table) {
+        //     $table->dropForeign(['category_id']); // Remove the foreign key
+        //     $table->dropColumn('category_id'); // Remove the column if rolled back
+        // });
     }
 };
