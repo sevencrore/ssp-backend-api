@@ -6,19 +6,24 @@ use App\Models\Earning;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
-use App\Http\Resources\EarningResource;
 
 class EarningController extends BaseController
 {
-    // Get all earnings
-    public function index(): JsonResponse
+    // Get all earnings with pagination
+    public function index(Request $request): JsonResponse
     {
-        $earnings = Earning::all(); // Fetch all earnings
+        $earnings = Earning::paginate($request->input('per_page', 10)); // Default to 10 items per page
 
         return response()->json([
             'success' => true,
             'message' => 'Earnings retrieved successfully.',
-            'data' => EarningResource::collection($earnings)
+            'data' => $earnings->items(), // Return the items in the pagination
+            'pagination' => [
+                'total' => $earnings->total(),
+                'current_page' => $earnings->currentPage(),
+                'last_page' => $earnings->lastPage(),
+                'per_page' => $earnings->perPage(),
+            ],
         ]);
     }
 
@@ -40,20 +45,8 @@ class EarningController extends BaseController
         return response()->json([
             'success' => true,
             'message' => 'Earning created successfully.',
-            'data' => new EarningResource($earning)
+            'data' => $earning
         ], 201);
-    }
-
-    // Get all earnings with pagination
-    public function getAllPaginated(Request $request): JsonResponse
-    {
-        $earnings = Earning::paginate($request->input('per_page', 10)); // Default to 10 items per page
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Earnings retrieved successfully.',
-            'data' => EarningResource::collection($earnings)
-        ]);
     }
 
     // Get a specific earning by ID
@@ -71,7 +64,7 @@ class EarningController extends BaseController
         return response()->json([
             'success' => true,
             'message' => 'Earning retrieved successfully.',
-            'data' => new EarningResource($earning)
+            'data' => $earning
         ]);
     }
 
@@ -102,7 +95,7 @@ class EarningController extends BaseController
         return response()->json([
             'success' => true,
             'message' => 'Earning updated successfully.',
-            'data' => new EarningResource($earning)
+            'data' => $earning
         ]);
     }
 
