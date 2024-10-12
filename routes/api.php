@@ -209,6 +209,9 @@ Route::post('earnings', [EarningController::class, 'store'])->name('earnings.sto
 // Route for retrieving all earnings
 Route::get('earnings', [EarningController::class, 'index'])->name('earnings.index');
 
+// Route for retrieving paginated earnings
+Route::get('earnings/paginated', [EarningController::class, 'getAllPaginated'])->name('earnings.paginated');
+
 // Route for retrieving a specific earning
 Route::get('earnings/{earning}', [EarningController::class, 'show'])->name('earnings.show');
 
@@ -217,6 +220,7 @@ Route::put('earnings/{earning}', [EarningController::class, 'update'])->name('ea
 
 // Route for deleting a specific earning
 Route::delete('earnings/{earning}', [EarningController::class, 'destroy'])->name('earnings.destroy');
+
 
 });
 
