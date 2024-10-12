@@ -14,6 +14,8 @@ use App\Http\Controllers\API\OrderItemController;
 use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\UserDetailsController;
 use App\Http\Controllers\API\ProductVariantController;
+use App\Http\Controllers\API\UserReferralController;
+
 
 
 use App\Http\Controllers\API\AddressController;
@@ -181,6 +183,22 @@ Route::get('product-variant-get-all-paginated', [ProductVariantController::class
 Route::get('product-variant/{product_variant}', [ProductVariantController::class, 'show'])->name('product_variant.show');
 Route::put('product-variant/{id}', [ProductVariantController::class, 'update'])->name('product_variant.update');
 Route::delete('product-variant/{product_variant}', [ProductVariantController::class, 'destroy'])->name('product_variant.destroy');
+
+
+// Route for creating a new user referral
+Route::post('user-referrals', [UserReferralController::class, 'store'])->name('user-referrals.store');
+
+// Route for retrieving all user referrals
+Route::get('user-referrals', [UserReferralController::class, 'index'])->name('user-referrals.index');
+
+// Route for retrieving a specific user referral
+Route::get('user-referrals/{userReferral}', [UserReferralController::class, 'show'])->name('user-referrals.show');
+
+// Route for updating a specific user referral
+Route::put('user-referrals/{userReferral}', [UserReferralController::class, 'update'])->name('user-referrals.update');
+
+// Route for deleting a specific user referral
+Route::delete('user-referrals/{userReferral}', [UserReferralController::class, 'destroy'])->name('user-referrals.destroy');
 
 
 });
