@@ -25,8 +25,6 @@ class EarningController extends BaseController
     public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
-            'user_id' => 'required|exists:users,id|integer',
-            'referral_id' => 'nullable|exists:users,id|integer',
             'sale_id' => 'nullable|exists:sales,id|integer',
             'referral_incentive' => 'required|integer',
             'sale_value_estimated' => 'required|integer',
@@ -90,8 +88,6 @@ class EarningController extends BaseController
         }
 
         $validatedData = $request->validate([
-            'user_id' => 'required|exists:users,id|integer',
-            'referral_id' => 'nullable|exists:users,id|integer',
             'sale_id' => 'nullable|exists:sales,id|integer',
             'referral_incentive' => 'required|integer',
             'sale_value_estimated' => 'required|integer',

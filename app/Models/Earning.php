@@ -12,9 +12,6 @@ class Earning extends Model
     protected $table = 'earnings'; // Specify the correct table name
 
     protected $fillable = [
-        'user_id',
-        'referral_id',
-        'sale_id',
         'referral_incentive',
         'sale_value_estimated',
         'sale_actual_value',
