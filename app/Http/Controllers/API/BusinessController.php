@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\Business;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Resources\BusinessResource;
+use App\Http\Resources\BusinessResource; // Ensure this is included
 use Illuminate\Http\JsonResponse;
 
 class BusinessController extends BaseController
@@ -137,7 +137,7 @@ class BusinessController extends BaseController
      *         name="id",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="integer")
+     *         @OA\Schema(type="integer")F
      *     ),
      *     @OA\RequestBody(
      *         required=true,
@@ -182,8 +182,7 @@ class BusinessController extends BaseController
 
         return $this->sendResponse(new BusinessResource($business), 'Business updated successfully.');
     }
-
-        /**
+     /**
      * @OA\Get(
      *     path="/api/business/{id}/edit",
      *     tags={"Business"},
@@ -217,15 +216,17 @@ class BusinessController extends BaseController
      * )
      */
     public function edit($id): JsonResponse
-    {
-        $business = Business::find($id);
+        {
+            $business = Business::find($id);
 
-        if (is_null($business)) {
-            return $this->sendError('Business not found.');
+            if (is_null($business)) {
+                return $this->sendError('Business not found.');
+            }
+
+            return $this->sendResponse(new BusinessResource($business), 'Business data retrieved successfully.');
         }
 
-        return $this->sendResponse(new BusinessResource($business), 'Business data retrieved successfully.');
-    }
+
 
 
         /**

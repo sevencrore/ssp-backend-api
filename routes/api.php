@@ -60,9 +60,9 @@ Route::put('business/{business}', [BusinessController::class, 'update'])->name('
 // Route::delete('business/{business}/force-delete', [BusinessController::class, 'forceDelete'])->name('business.forceDelete');
 // Route::get('business/trashed', [BusinessController::class, 'trashed'])->name('business.trashed');
 
-Route::delete('business/delete-multiple', [BusinessController::class, 'deleteMultiple']);
+Route::post('business/delete-multiple', [BusinessController::class, 'deleteMultiple']);
 Route::post('business/restore-multiple', [BusinessController::class, 'restoreMultiple']);
-Route::delete('business/force-delete-multiple', [BusinessController::class, 'forceDeleteMultiple']);
+Route::post('business/force-delete-multiple', [BusinessController::class, 'forceDeleteMultiple']);
 Route::post('business/trashed-multiple', [BusinessController::class, 'trashedMultiple']);
 
 
