@@ -816,6 +816,416 @@
                 ]
             }
         },
+        "/api/category": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get all categories",
+                "description": "Returns a list of all categories.",
+                "operationId": "e2dd3a12f317e8f78516bb75c97bc7fc",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Category Title"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Category Description"
+                                                    },
+                                                    "image_url": {
+                                                        "type": "string",
+                                                        "example": "http://example.com/image.jpg"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Create a new category",
+                "description": "Creates a new category.",
+                "operationId": "858a6af56ce7a4a759553881b6b3a2fc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "New Category"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Category Description"
+                                    },
+                                    "image_url": {
+                                        "type": "string",
+                                        "example": "http://example.com/image.jpg"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Category created successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "New Category"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Category Description"
+                                                },
+                                                "image_url": {
+                                                    "type": "string",
+                                                    "example": "http://example.com/image.jpg"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input."
+                    }
+                }
+            }
+        },
+        "/api/category-get-all-paginated": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get paginated categories",
+                "description": "Returns a paginated list of categories.",
+                "operationId": "01f068573e0c3fe1c8455b91bbef1c88",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Field to sort by.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "title"
+                        }
+                    },
+                    {
+                        "name": "current_page",
+                        "in": "query",
+                        "description": "Current page number.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "Category Title"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "Category Description"
+                                                            },
+                                                            "image_url": {
+                                                                "type": "string",
+                                                                "example": "http://example.com/image.jpg"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "pagination": {
+                                                    "properties": {
+                                                        "current_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "last_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "per_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "total": {
+                                                            "type": "integer"
+                                                        },
+                                                        "next_page_url": {
+                                                            "type": "string"
+                                                        },
+                                                        "prev_page_url": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/category/{id}": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get a specific category",
+                "description": "Returns details of a specific category.",
+                "operationId": "5135d626104e86ea9910eb51763b8d4d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Category Title"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Category Description"
+                                                },
+                                                "image_url": {
+                                                    "type": "string",
+                                                    "example": "http://example.com/image.jpg"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found."
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Update a category",
+                "description": "Updates an existing category.",
+                "operationId": "6aea2996a1d8d5708b6b26adca6b0f86",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Updated Category"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated Description"
+                                    },
+                                    "image_url": {
+                                        "type": "string",
+                                        "example": "http://example.com/updated_image.jpg"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Category updated successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Updated Category"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Updated Description"
+                                                },
+                                                "image_url": {
+                                                    "type": "string",
+                                                    "example": "http://example.com/updated_image.jpg"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Category not found."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Delete a category",
+                "description": "Deletes a specific category.",
+                "operationId": "19bebec474ebd26750dd56af34eac8fd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Category deleted successfully."
+                    },
+                    "404": {
+                        "description": "Category not found."
+                    }
+                }
+            }
+        },
         "/api/register": {
             "post": {
                 "tags": [
@@ -986,6 +1396,10 @@
         {
             "name": "Cart",
             "description": "Cart"
+        },
+        {
+            "name": "Categories",
+            "description": "Categories"
         },
         {
             "name": "Authentication",

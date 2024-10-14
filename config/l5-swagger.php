@@ -14,6 +14,7 @@ return [
                  */
                 'api' => 'api/documentation',
             ],
+            
             'paths' => [
                 /*
                  * Edit to include full URL in ui for assets
