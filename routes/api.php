@@ -96,7 +96,7 @@ Route::post('city', [CityController::class, 'store'])->name('city.store');
 Route::get('city-get-all-paginated', [CityController::class, 'getAllPaginated']);
 Route::get('city/{city}', [CityController::class, 'show'])->name('city.show');
 Route::put('city/{id}', action: [CityController::class, 'update'])->name('city.update');
-Route::delete('city/{city}', [CityController::class, 'destroy'])->name('city.destroy');
+Route::post('city/{city}', [CityController::class, 'destroy'])->name('city.destroy');
 
 
 
