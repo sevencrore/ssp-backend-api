@@ -265,7 +265,8 @@
                                             "example": true
                                         },
                                         "data": {
-                                            "$ref": "#/components/schemas/BusinessResource"
+                                            "type": "null",
+                                            "nullable": true
                                         },
                                         "message": {
                                             "type": "string",
@@ -515,28 +516,209 @@
                 ]
             }
         },
-        "/api/businesses/trashed": {
+        "/api/cart": {
+            "get": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Get all cart items",
+                "description": "Fetches all items in the cart.",
+                "operationId": "4d318ce69cfd6264db026debe928c066",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "product_id": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
-                    "Business"
+                    "Cart"
                 ],
-                "summary": "Retrieve trashed businesses",
-                "description": "Returns the list of trashed businesses",
-                "operationId": "861cd9d3e8b06eb472a3a3e3c5718c55",
+                "summary": "Create a new cart item",
+                "description": "Stores a new cart item with user_id and product_id.",
+                "operationId": "996c864a2f86fa49cd821351a0278772",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "ids"
+                                    "user_id",
+                                    "product_id"
                                 ],
                                 "properties": {
-                                    "ids": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer"
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Cart item created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
                                         }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/cart/{id}": {
+            "get": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Get a specific cart item",
+                "description": "Returns a single cart item by ID.",
+                "operationId": "c43d7cefedb6cc03b5c5de4fa2cc2d89",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the cart item",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cart item not found"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Update an existing cart item",
+                "description": "Updates a cart item with new data.",
+                "operationId": "ed1e0ee177e4752010f98d03851aae41",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the cart item to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 2
                                     }
                                 },
                                 "type": "object"
@@ -546,22 +728,92 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "List of trashed businesses",
+                        "description": "Cart item updated",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/BusinessResource"
-                                    }
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
                     },
-                    "400": {
-                        "description": "Invalid IDs provided"
+                    "404": {
+                        "description": "Cart item not found"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Delete a cart item",
+                "description": "Removes a cart item by ID.",
+                "operationId": "4a1de2f6acd1eac910587ab938658abf",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the cart item to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cart item deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Cart deleted successfully"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cart item not found"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/register": {
@@ -670,36 +922,6 @@
         }
     },
     "components": {
-        "schemas": {
-            "BusinessResource": {
-                "title": "BusinessResource",
-                "properties": {
-                    "id": {
-                        "description": "Business ID",
-                        "type": "integer"
-                    },
-                    "name": {
-                        "description": "Business Name",
-                        "type": "string"
-                    },
-                    "description": {
-                        "description": "Business Description",
-                        "type": "string"
-                    },
-                    "created_at": {
-                        "description": "Creation date",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "description": "Update date",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "type": "object"
-            }
-        },
         "responses": {
             "200": {
                 "description": "Successful response",
@@ -760,6 +982,10 @@
         {
             "name": "Business",
             "description": "Business"
+        },
+        {
+            "name": "Cart",
+            "description": "Cart"
         },
         {
             "name": "Authentication",

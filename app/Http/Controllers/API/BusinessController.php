@@ -137,7 +137,7 @@ class BusinessController extends BaseController
      *         name="id",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="integer")F
+     *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
@@ -174,14 +174,15 @@ class BusinessController extends BaseController
             'is_approved' => 'required'
         ]);
 
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
         }
 
         $business->update($input);
 
         return $this->sendResponse(new BusinessResource($business), 'Business updated successfully.');
     }
+
      /**
      * @OA\Get(
      *     path="/api/business/{id}/edit",
@@ -200,7 +201,7 @@ class BusinessController extends BaseController
      *         description="Business data retrieved successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/BusinessResource"),
+     *             @OA\Property(property="data", type="null", nullable=true),
      *             @OA\Property(property="message", type="string", example="Business data retrieved successfully.")
      *         )
      *     ),
@@ -350,30 +351,30 @@ class BusinessController extends BaseController
     }
 
     
-    /**
- * @OA\Post(
- *     path="/api/businesses/trashed",
- *     tags={"Business"},
- *     summary="Retrieve trashed businesses",
- *     description="Returns the list of trashed businesses",
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\JsonContent(
- *             required={"ids"},
- *             @OA\Property(property="ids", type="array", @OA\Items(type="integer"))
- *         )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="List of trashed businesses",
- *         @OA\JsonContent(
- *             type="array",
- *             @OA\Items(ref="#/components/schemas/BusinessResource")
- *         )
- *     ),
- *     @OA\Response(response=400, description="Invalid IDs provided"),
- * )
- */
+//     /**
+//  * @OA\Post(
+//  *     path="/api/businesses/trashed",
+//  *     tags={"Business"},
+//  *     summary="Retrieve trashed businesses",
+//  *     description="Returns the list of trashed businesses",
+//  *     @OA\RequestBody(
+//  *         required=true,
+//  *         @OA\JsonContent(
+//  *             required={"ids"},
+//  *             @OA\Property(property="ids", type="array", @OA\Items(type="integer"))
+//  *         )
+//  *     ),
+//  *     @OA\Response(
+//  *         response=200,
+//  *         description="List of trashed businesses",
+//  *         @OA\JsonContent(
+//  *             type="array",
+//  *             @OA\Items(ref="#/components/schemas/BusinessResource")
+//  *         )
+//  *     ),
+//  *     @OA\Response(response=400, description="Invalid IDs provided"),
+//  * )
+//  */
 
     public function trashedMultiple(Request $request)
     {
