@@ -64,6 +64,7 @@ class ProductController extends BaseController
             'description' => 'required|string',
             'image_url' => 'required|string',
             'price' => 'required|numeric',
+            'priority' => 'nullable|integer',
         ]);
 
         $product = Product::create($validatedData);
@@ -93,6 +94,7 @@ class ProductController extends BaseController
             'description' => 'sometimes|required|string',
             'image_url' => 'sometimes|required|string',
             'price' => 'sometimes|required|numeric',
+            'priority' => 'nullable|integer',
         ]);
 
         $product = Product::findOrFail($id);
