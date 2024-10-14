@@ -1226,6 +1226,366 @@
                 }
             }
         },
+        "/api/earnings": {
+            "get": {
+                "tags": [
+                    "Earnings"
+                ],
+                "summary": "Get all earnings",
+                "description": "Returns a paginated list of all earnings.",
+                "operationId": "4cf987c00e9c566a7ad33693700b3dd3",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earnings retrieved successfully."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/EarningResource"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Earnings"
+                ],
+                "summary": "Store a new earning",
+                "description": "Creates a new earning record.",
+                "operationId": "6d68817a5d266210fbb1e0051067fcef",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "referral_incentive": {
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "sale_value_estimated": {
+                                        "type": "integer",
+                                        "example": 500
+                                    },
+                                    "sale_actual_value": {
+                                        "type": "integer",
+                                        "example": 450
+                                    },
+                                    "wallet_amount": {
+                                        "type": "integer",
+                                        "example": 50
+                                    },
+                                    "self_purchase_total": {
+                                        "type": "integer",
+                                        "example": 200
+                                    },
+                                    "first_referral_purchase_total": {
+                                        "type": "integer",
+                                        "example": 150
+                                    },
+                                    "second_referral_purchase_total": {
+                                        "type": "integer",
+                                        "example": 100
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Earning created successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning created successfully."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/EarningResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/earnings/{id}": {
+            "get": {
+                "tags": [
+                    "Earnings"
+                ],
+                "summary": "Get a specific earning",
+                "description": "Retrieves a specific earning by ID.",
+                "operationId": "d08e27a953b2b52a5fb512ae99300bd4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Earning retrieved successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning retrieved successfully."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/EarningResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Earning not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Earnings"
+                ],
+                "summary": "Update a specific earning",
+                "description": "Updates a specific earning by ID.",
+                "operationId": "dc16422758ac2a58c7e21b49c3dea6c1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "referral_incentive": {
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "sale_value_estimated": {
+                                        "type": "integer",
+                                        "example": 500
+                                    },
+                                    "sale_actual_value": {
+                                        "type": "integer",
+                                        "example": 450
+                                    },
+                                    "wallet_amount": {
+                                        "type": "integer",
+                                        "example": 50
+                                    },
+                                    "self_purchase_total": {
+                                        "type": "integer",
+                                        "example": 200
+                                    },
+                                    "first_referral_purchase_total": {
+                                        "type": "integer",
+                                        "example": 150
+                                    },
+                                    "second_referral_purchase_total": {
+                                        "type": "integer",
+                                        "example": 100
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Earning updated successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning updated successfully."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/EarningResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Earning not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Earnings"
+                ],
+                "summary": "Delete a specific earning",
+                "description": "Deletes a specific earning by ID.",
+                "operationId": "23752712a7f2e62480169efadd99b796",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Earning deleted successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Earning not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/register": {
             "post": {
                 "tags": [
@@ -1332,6 +1692,59 @@
         }
     },
     "components": {
+        "schemas": {
+            "EarningResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "referral_incentive": {
+                        "type": "integer",
+                        "example": 100
+                    },
+                    "sale_value_estimated": {
+                        "type": "integer",
+                        "example": 500
+                    },
+                    "sale_actual_value": {
+                        "type": "integer",
+                        "example": 450
+                    },
+                    "wallet_amount": {
+                        "type": "integer",
+                        "example": 50
+                    },
+                    "self_purchase_total": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "first_referral_purchase_total": {
+                        "type": "integer",
+                        "example": 150
+                    },
+                    "second_referral_purchase_total": {
+                        "type": "integer",
+                        "example": 100
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00Z"
+                    },
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            }
+        },
         "responses": {
             "200": {
                 "description": "Successful response",
@@ -1400,6 +1813,10 @@
         {
             "name": "Categories",
             "description": "Categories"
+        },
+        {
+            "name": "Earnings",
+            "description": "Earnings"
         },
         {
             "name": "Authentication",
