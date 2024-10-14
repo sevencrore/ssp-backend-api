@@ -15,6 +15,7 @@ class OrderItem extends Model
         'user_id',
         'quantity',
         'price',
+        'total_amount',
     ];
 
     // Define relationships if needed
