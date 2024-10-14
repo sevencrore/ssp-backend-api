@@ -14,6 +14,7 @@ class Order extends Model
         'address_id',
         'order_status',
         'tracking_number',
+        'total_amount',
     ];
 
     // Define relationships if needed
