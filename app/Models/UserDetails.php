@@ -18,5 +18,8 @@ class UserDetails extends Model
         'phone_1',
         'phone_2',
         'email',
+        'user_id',
+        'aadhar_number',
+        'referral_code',
     ];
 }

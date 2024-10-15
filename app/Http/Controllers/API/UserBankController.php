@@ -141,7 +141,7 @@ class UserBankController extends BaseController
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
-     *         required=false,
+     *         required=true,
      *         @OA\JsonContent(
      *             @OA\Property(property="bank_name", type="string"),
      *             @OA\Property(property="account_number", type="string"),

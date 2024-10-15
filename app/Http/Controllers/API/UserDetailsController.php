@@ -28,6 +28,9 @@ class UserDetailsController extends Controller
             'phone_1' => 'required|string|max:15',
             'phone_2' => 'nullable|string|max:15',
             'email' => 'required|string|email|max:255|unique:user_details,email',
+            'user_id'=>'required|integer',
+            'aadhar_number'=>'required|integer',
+            'referral_code'=>'required|string',
         ]);
 
         $userDetail = UserDetails::create($validatedData); // Create a new user detail
@@ -63,6 +66,9 @@ class UserDetailsController extends Controller
             'phone_1' => 'sometimes|required|string|max:15',
             'phone_2' => 'sometimes|nullable|string|max:15',
             'email' => 'sometimes|required|string|email|max:255|unique:user_details,email,' . $userDetail->id,
+            'user_id'=>'required|integer',
+            'aadhar_number'=>'required|integer',
+            'referral_code'=>'required|string',
         ]);
 
         $userDetail->update($validatedData); // Update the user detail

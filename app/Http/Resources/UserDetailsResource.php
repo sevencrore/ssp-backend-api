@@ -22,6 +22,9 @@ class UserDetailsResource extends JsonResource
             'phone_1' => $this->phone_1,
             'phone_2' => $this->phone_2,
             'email' => $this->email,
+            'user_id' => $this->user_id,
+            'aadhar_number' => $this->aadhar_number,
+            'referral_code' => $this->referral_code,
             'created_at' => $this->created_at->format('d/m/Y'),
             'updated_at' => $this->updated_at->format('d/m/Y'),
         ];

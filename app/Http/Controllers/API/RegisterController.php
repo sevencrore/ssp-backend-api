@@ -61,6 +61,52 @@ class RegisterController extends BaseController
         ], 200);
     }
 
+
+    public function registerwithreferral(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email',
+            'password' => 'required',
+            'c_password' => 'required|same:password',
+            'referral_code' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false, // Change to false
+                'data' => $validator->errors(),
+                'message' => 'Register Validation failed',
+            ], 422); // 422 Unprocessable Entity for validation errors
+        }
+
+        $input = $request->all();
+        $input['password'] = bcrypt($input['password']); 
+
+        $user = User::create($input);
+
+        // get user->id => reg_user_id
+        $reg_user_id = $user->id;
+
+        // get user_details by referral code . here user_id is referral_id
+        
+
+        //Create UserDetails::create 
+
+        // Get earnings by user_id is nothing but referral_id
+        //  Create Earnings::update with referral_incentive = referral_incentive + 300;
+        // If row does not exist create
+
+        $success['token'] = $user->createToken('MyApp')->plainTextToken;
+        $success['name'] = $user->name;
+
+        return response()->json([
+            'success' => true,
+            'data' => $success,
+            'message' => 'User registered successfully.',
+        ], 200);
+    }
+
     /**
      * @OA\Post(
      *     path="/api/login",
