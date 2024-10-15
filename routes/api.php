@@ -223,11 +223,12 @@ Route::put('earnings/{earning}', [EarningController::class, 'update'])->name('ea
 Route::delete('earnings/{earning}', [EarningController::class, 'destroy'])->name('earnings.destroy');
 
 
-Route::get('user-bank', [UserBankController::class, 'index']);
-Route::post('user-bank', [UserBankController::class, 'store']);
-Route::get('user-bank/{id}', [UserBankController::class, 'show']);
-Route::put('user-bank/{id}', [UserBankController::class, 'update']);
-Route::delete('user-bank/{id}', [UserBankController::class, 'destroy']);
+Route::get('user-bank', [UserBankController::class, 'index'])->name('user-bank.index');
+Route::post('user-bank', [UserBankController::class, 'store'])->name('user-bank.store');
+Route::get('user-bank/{id}', [UserBankController::class, 'show'])->name('user-bank.show');
+Route::put('user-bank/{id}', [UserBankController::class, 'update'])->name('user-bank.update');
+Route::delete('user-bank/{id}', [UserBankController::class, 'destroy'])->name('user-bank.destroy');
+
 
 
 });
