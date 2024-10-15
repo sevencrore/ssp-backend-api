@@ -2874,6 +2874,267 @@
                 }
             }
         },
+        "/api/user-details": {
+            "get": {
+                "tags": [
+                    "UserDetails"
+                ],
+                "summary": "Get all user details",
+                "operationId": "5d05a66b400a8e88c74cf841656a53f2",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserReferral"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "UserDetails"
+                ],
+                "summary": "Store a new user detail",
+                "operationId": "69536073c5f4ae7ee8b4b24bbf8ac42d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string"
+                                    },
+                                    "middle_name": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "last_name": {
+                                        "type": "string"
+                                    },
+                                    "phone_1": {
+                                        "type": "string"
+                                    },
+                                    "phone_2": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/user-details/{id}": {
+            "get": {
+                "tags": [
+                    "UserDetails"
+                ],
+                "summary": "Get a specific user detail by ID",
+                "description": "Returns details of a specific city.",
+                "operationId": "85d7dd6e5b5d7b95641198cfe6c3a691",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "first_name": {
+                                                    "type": "string",
+                                                    "example": "New Category"
+                                                },
+                                                "middle_name": {
+                                                    "type": "string",
+                                                    "example": "Category Description"
+                                                },
+                                                "last_name": {
+                                                    "type": "string",
+                                                    "example": "Category Description"
+                                                },
+                                                "phone_1": {
+                                                    "type": "string",
+                                                    "example": "Category Description"
+                                                },
+                                                "phone_2": {
+                                                    "type": "string",
+                                                    "example": "Category Description"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User detail not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "UserDetails"
+                ],
+                "summary": "Update a specific user detail",
+                "operationId": "77f6bba6bed009f61225457ee287ea78",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string"
+                                    },
+                                    "middle_name": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "last_name": {
+                                        "type": "string"
+                                    },
+                                    "phone_1": {
+                                        "type": "string"
+                                    },
+                                    "phone_2": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User detail updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "first_name": {
+                                                    "type": "string",
+                                                    "example": "New Category"
+                                                },
+                                                "middle_name": {
+                                                    "type": "string",
+                                                    "example": "Category Description"
+                                                },
+                                                "last_name": {
+                                                    "type": "string",
+                                                    "example": "Category Description"
+                                                },
+                                                "phone_1": {
+                                                    "type": "string",
+                                                    "example": "Category Description"
+                                                },
+                                                "phone_2": {
+                                                    "type": "string",
+                                                    "example": "Category Description"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "UserDetails"
+                ],
+                "summary": "Delete a specific user detail",
+                "operationId": "63e4573dd874b3eb408bf4ee830af0f5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "User detail deleted successfully"
+                    },
+                    "404": {
+                        "description": "User detail not found"
+                    }
+                }
+            }
+        },
         "/api/user-referrals": {
             "get": {
                 "tags": [
@@ -3267,6 +3528,40 @@
                 },
                 "type": "object"
             },
+            "UserDetailsResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "middle_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "phone_1": {
+                        "type": "string"
+                    },
+                    "phone_2": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
             "UserReferral": {
                 "properties": {
                     "id": {
@@ -3386,6 +3681,10 @@
         {
             "name": "Unit",
             "description": "Unit"
+        },
+        {
+            "name": "UserDetails",
+            "description": "UserDetails"
         },
         {
             "name": "UserReferrals",
