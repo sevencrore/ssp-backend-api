@@ -13,23 +13,30 @@ class CityController extends BaseController
 
      /**
      * @OA\Get(
-     *     path="/api/cities",
+     *     path="/api/city",
      *     tags={"City"},
-     *     summary="Get authenticated cities",
-     *     description="Returns the authenticated cities ",
-     *     security={{"bearerAuth":{}}},
+     *     summary="Get all citys",
+     *     description="Returns a list of all citys.",
      *     @OA\Response(
      *         response=200,
      *         description="Successful response",
      *         @OA\JsonContent(
-     *             @OA\Property(property="id", type="integer", example=1),
-     *             @OA\Property(property="name", type="string", example="Business Name"),
-     *             @OA\Property(property="email", type="string", example="business@example.com")
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="title", type="string", example="Category Title"),
+     *                     @OA\Property(property="description", type="string", example="Category Description")
+     *                 )
+     *             )
      *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthenticated")
+     *     )
      * )
      */
+
     // Get all Citys
     public function index()
     {
@@ -37,12 +44,13 @@ class CityController extends BaseController
         return City::all();
     }
 
+
     /**
      * @OA\Get(
      *     path="/api/cities-get-all-paginated",
-     *     tags={"Categories"},
-     *     summary="Get paginated categories",
-     *     description="Returns a paginated list of categories.",
+     *     tags={"City"},
+     *     summary="Get paginated citys",
+     *     description="Returns a paginated list of citys.",
      *     @OA\Parameter(
      *         name="per_page",
      *         in="query",
@@ -76,8 +84,7 @@ class CityController extends BaseController
      *                     type="object",
      *                     @OA\Property(property="id", type="integer", example=1),
      *                     @OA\Property(property="title", type="string", example="Category Title"),
-     *                     @OA\Property(property="description", type="string", example="Category Description"),
-     *                     @OA\Property(property="image_url", type="string", example="http://example.com/image.jpg")
+     *                     @OA\Property(property="description", type="string", example="Category Description")
      *                 )),
      *                 @OA\Property(
      *                     property="pagination",
@@ -123,23 +130,30 @@ class CityController extends BaseController
 
     /**
      * @OA\Post(
-     *     path="/api/cities",
+     *     path="/api/city",
      *     tags={"City"},
      *     summary="Create a new city",
-     *     description="Creates a new city",
+     *     description="Creates a new city.",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"title", "description"},
-     *             @OA\Property(property="title", type="string", description="City title"),
-     *             @OA\Property(property="description", type="string", description="City description")
-     *         )
+     *             @OA\Property(property="title", type="string", example="New Category"),
+     *             @OA\Property(property="description", type="string", example="Category Description")
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="City created successfully"
+     *         description="City created successfully.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="title", type="string", example="New Category"),
+     *                 @OA\Property(property="description", type="string", example="Category Description")
+     *             )
+     * )
+     *         )
      *     ),
-     *     @OA\Response(response=400, description="Invalid input")
+     *     @OA\Response(response=400, description="Invalid input.")
      * )
      */
 
@@ -158,25 +172,27 @@ class CityController extends BaseController
 
     /**
      * @OA\Get(
-     *     path="/api/cities/{id}",
+     *     path="/api/city/{id}",
      *     tags={"City"},
-     *     summary="Get a single city",
-     *     description="Returns a single city by ID",
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="City ID",
-     *         @OA\Schema(type="integer")
-     *     ),
+     *     summary="Get a specific city",
+     *     description="Returns details of a specific city.",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\Response(
      *         response=200,
-     *         description="City retrieved successfully"),
-     *     @OA\Response(response=404, description="City not found")
+     *         description="Successful response.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="title", type="string", example="Cityy Title"),
+     *                 @OA\Property(property="description", type="string", example="City Description")     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="City not found.")
      * )
      */
 
-
+     
     // Get a single City by id
     public function show($id)
     {
@@ -186,30 +202,29 @@ class CityController extends BaseController
 
     /**
      * @OA\Put(
-     *     path="/api/cities/{id}",
+     *     path="/api/city/{id}",
      *     tags={"City"},
      *     summary="Update a city",
-     *     description="Updates a city by ID",
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="City ID",
-     *         @OA\Schema(type="integer")
-     *     ),
+     *     description="Updates an existing city.",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="title", type="string", description="City title"),
-     *             @OA\Property(property="description", type="string", description="City description")
-     *         )
+     *             @OA\Property(property="title", type="string", example="Updated City"),
+     *             @OA\Property(property="description", type="string", example="Updated Description")     *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="City updated successfully"
+     *         description="City updated successfully.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="title", type="string", example="Updated City"),
+     *                 @OA\Property(property="description", type="string", example="Updated Description")     *             )
+     *         )
      *     ),
-     *     @OA\Response(response=404, description="City not found"),
-     *     @OA\Response(response=400, description="Invalid input")
+     *     @OA\Response(response=404, description="City not found.")
      * )
      */
 
@@ -228,27 +243,17 @@ class CityController extends BaseController
     }
 
     /**
-     * @OA\Post(
-     *     path="/api/cities/{id}",
+     * @OA\Delete(
+     *     path="/api/city/{id}",
      *     tags={"City"},
      *     summary="Delete a city",
-     *     description="Deletes a city by ID",
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="City ID",
-     *         @OA\Schema(type="integer")
-     *     ),
+     *     description="Deletes a specific city.",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\Response(
-     *         response=200,
-     *         description="City deleted successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean"),
-     *             @OA\Property(property="message", type="string", example="City deleted successfully")
-     *         )
+     *         response=204,
+     *         description="City deleted successfully."
      *     ),
-     *     @OA\Response(response=404, description="City not found")
+     *     @OA\Response(response=404, description="City not found.")
      * )
      */
     

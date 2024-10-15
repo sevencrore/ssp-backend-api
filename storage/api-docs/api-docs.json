@@ -1226,14 +1226,14 @@
                 }
             }
         },
-        "/api/cities": {
+        "/api/city": {
             "get": {
                 "tags": [
                     "City"
                 ],
-                "summary": "Get authenticated cities",
-                "description": "Returns the authenticated cities ",
-                "operationId": "c822efcc3a583121c365f5be793afce0",
+                "summary": "Get all citys",
+                "description": "Returns a list of all citys.",
+                "operationId": "7363283289731a0776ed7f6bd67cbcfa",
                 "responses": {
                     "200": {
                         "description": "Successful response",
@@ -1241,58 +1241,58 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "id": {
-                                            "type": "integer",
-                                            "example": 1
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
                                         },
-                                        "name": {
-                                            "type": "string",
-                                            "example": "Business Name"
-                                        },
-                                        "email": {
-                                            "type": "string",
-                                            "example": "business@example.com"
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Category Title"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Category Description"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
                     "City"
                 ],
                 "summary": "Create a new city",
-                "description": "Creates a new city",
-                "operationId": "92d1aa8744e6a992db8217b8ebe44cda",
+                "description": "Creates a new city.",
+                "operationId": "d7744ae6571c47ec6cb646d19d6e9696",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "title",
-                                    "description"
-                                ],
                                 "properties": {
                                     "title": {
-                                        "description": "City title",
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "New Category"
                                     },
                                     "description": {
-                                        "description": "City description",
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Category Description"
                                     }
                                 },
                                 "type": "object"
@@ -1301,11 +1301,8 @@
                     }
                 },
                 "responses": {
-                    "201": {
-                        "description": "City created successfully"
-                    },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Invalid input."
                     }
                 }
             }
@@ -1313,10 +1310,10 @@
         "/api/cities-get-all-paginated": {
             "get": {
                 "tags": [
-                    "Categories"
+                    "City"
                 ],
-                "summary": "Get paginated categories",
-                "description": "Returns a paginated list of categories.",
+                "summary": "Get paginated citys",
+                "description": "Returns a paginated list of citys.",
                 "operationId": "8a275adf1ea204d3e03a2f425aed3d8c",
                 "parameters": [
                     {
@@ -1378,10 +1375,6 @@
                                                             "description": {
                                                                 "type": "string",
                                                                 "example": "Category Description"
-                                                            },
-                                                            "image_url": {
-                                                                "type": "string",
-                                                                "example": "http://example.com/image.jpg"
                                                             }
                                                         },
                                                         "type": "object"
@@ -1422,19 +1415,18 @@
                 }
             }
         },
-        "/api/cities/{id}": {
+        "/api/city/{id}": {
             "get": {
                 "tags": [
                     "City"
                 ],
-                "summary": "Get a single city",
-                "description": "Returns a single city by ID",
-                "operationId": "4a941a702e52c7f0f530654ed115959e",
+                "summary": "Get a specific city",
+                "description": "Returns details of a specific city.",
+                "operationId": "0070b517658535fed02343b7e93e567b",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "City ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1443,10 +1435,40 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "City retrieved successfully"
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Cityy Title"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "City Description"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "404": {
-                        "description": "City not found"
+                        "description": "City not found."
                     }
                 }
             },
@@ -1455,13 +1477,12 @@
                     "City"
                 ],
                 "summary": "Update a city",
-                "description": "Updates a city by ID",
-                "operationId": "74ccdee85d91af2f599f7c89f9e14f0d",
+                "description": "Updates an existing city.",
+                "operationId": "8e7432d5887b5b5af5536321c7f3a9ec",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "City ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1475,12 +1496,12 @@
                             "schema": {
                                 "properties": {
                                     "title": {
-                                        "description": "City title",
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Updated City"
                                     },
                                     "description": {
-                                        "description": "City description",
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Updated Description"
                                     }
                                 },
                                 "type": "object"
@@ -1490,47 +1511,31 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "City updated successfully"
-                    },
-                    "404": {
-                        "description": "City not found"
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "City"
-                ],
-                "summary": "Delete a city",
-                "description": "Deletes a city by ID",
-                "operationId": "25bf5bec3ecb36c17044a2bd05f3eee2",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "City ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "City deleted successfully",
+                        "description": "City updated successfully.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "success": {
-                                            "type": "boolean"
+                                            "type": "boolean",
+                                            "example": true
                                         },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "City deleted successfully"
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Updated City"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Updated Description"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -1539,7 +1544,393 @@
                         }
                     },
                     "404": {
-                        "description": "City not found"
+                        "description": "City not found."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "City"
+                ],
+                "summary": "Delete a city",
+                "description": "Deletes a specific city.",
+                "operationId": "6e1e0ab1861a1b9f6db499dbac60ffb0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "City deleted successfully."
+                    },
+                    "404": {
+                        "description": "City not found."
+                    }
+                }
+            }
+        },
+        "/api/earnings": {
+            "get": {
+                "tags": [
+                    "Earnings"
+                ],
+                "summary": "Get all earnings",
+                "description": "Returns a paginated list of all earnings.",
+                "operationId": "4cf987c00e9c566a7ad33693700b3dd3",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earnings retrieved successfully."
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/EarningResource"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Earnings"
+                ],
+                "summary": "Store a new earning",
+                "description": "Creates a new earning record.",
+                "operationId": "6d68817a5d266210fbb1e0051067fcef",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "referral_incentive": {
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "sale_value_estimated": {
+                                        "type": "integer",
+                                        "example": 500
+                                    },
+                                    "sale_actual_value": {
+                                        "type": "integer",
+                                        "example": 450
+                                    },
+                                    "wallet_amount": {
+                                        "type": "integer",
+                                        "example": 50
+                                    },
+                                    "self_purchase_total": {
+                                        "type": "integer",
+                                        "example": 200
+                                    },
+                                    "first_referral_purchase_total": {
+                                        "type": "integer",
+                                        "example": 150
+                                    },
+                                    "second_referral_purchase_total": {
+                                        "type": "integer",
+                                        "example": 100
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Earning created successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning created successfully."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/EarningResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/earnings/{id}": {
+            "get": {
+                "tags": [
+                    "Earnings"
+                ],
+                "summary": "Get a specific earning",
+                "description": "Retrieves a specific earning by ID.",
+                "operationId": "d08e27a953b2b52a5fb512ae99300bd4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Earning retrieved successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning retrieved successfully."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/EarningResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Earning not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Earnings"
+                ],
+                "summary": "Update a specific earning",
+                "description": "Updates a specific earning by ID.",
+                "operationId": "dc16422758ac2a58c7e21b49c3dea6c1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "referral_incentive": {
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "sale_value_estimated": {
+                                        "type": "integer",
+                                        "example": 500
+                                    },
+                                    "sale_actual_value": {
+                                        "type": "integer",
+                                        "example": 450
+                                    },
+                                    "wallet_amount": {
+                                        "type": "integer",
+                                        "example": 50
+                                    },
+                                    "self_purchase_total": {
+                                        "type": "integer",
+                                        "example": 200
+                                    },
+                                    "first_referral_purchase_total": {
+                                        "type": "integer",
+                                        "example": 150
+                                    },
+                                    "second_referral_purchase_total": {
+                                        "type": "integer",
+                                        "example": 100
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Earning updated successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning updated successfully."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/EarningResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Earning not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Earnings"
+                ],
+                "summary": "Delete a specific earning",
+                "description": "Deletes a specific earning by ID.",
+                "operationId": "23752712a7f2e62480169efadd99b796",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Earning deleted successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Earning not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earning not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -1647,9 +2038,411 @@
                     }
                 ]
             }
+        },
+        "/api/unit": {
+            "get": {
+                "tags": [
+                    "Unit"
+                ],
+                "summary": "Get all units",
+                "description": "Returns a list of all units.",
+                "operationId": "1b7dbcbff0890ea390524c12c822facb",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Unit Title"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Unit Description"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Unit"
+                ],
+                "summary": "Create a new unit",
+                "description": "Creates a new unit.",
+                "operationId": "49c635d26219479de7c9b3d6cddf9101",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "New Category"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Category Description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid input."
+                    }
+                }
+            }
+        },
+        "/api/units-get-all-paginated": {
+            "get": {
+                "tags": [
+                    "Unit"
+                ],
+                "summary": "Get paginated units",
+                "description": "Returns a paginated list of units.",
+                "operationId": "2c0c6290fe52627799fcd3cd3321f813",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Field to sort by.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "title"
+                        }
+                    },
+                    {
+                        "name": "current_page",
+                        "in": "query",
+                        "description": "Current page number.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "Unit Title"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "Unit Description"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "pagination": {
+                                                    "properties": {
+                                                        "current_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "last_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "per_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "total": {
+                                                            "type": "integer"
+                                                        },
+                                                        "next_page_url": {
+                                                            "type": "string"
+                                                        },
+                                                        "prev_page_url": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/unit/{id}": {
+            "get": {
+                "tags": [
+                    "Unit"
+                ],
+                "summary": "Get a specific unit",
+                "description": "Returns details of a specific unit.",
+                "operationId": "98b02015c962af7e553b5848193a8053",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Cityy Title"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "City Description"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "City not found."
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Unit"
+                ],
+                "summary": "Update a unit",
+                "description": "Updates an existing unit.",
+                "operationId": "2c71e908abcc1a6dbe75f8b9ff83d9ea",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Updated City"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated Description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Unit updated successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Updated Unit"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Updated Description"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unit not found."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Unit"
+                ],
+                "summary": "Delete a unit",
+                "description": "Deletes a specific unit.",
+                "operationId": "77228f74a736d8c7cca44cc71afd767a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "City deleted successfully."
+                    },
+                    "404": {
+                        "description": "Unit not found."
+                    }
+                }
+            }
         }
     },
     "components": {
+        "schemas": {
+            "EarningResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "referral_incentive": {
+                        "type": "integer",
+                        "example": 100
+                    },
+                    "sale_value_estimated": {
+                        "type": "integer",
+                        "example": 500
+                    },
+                    "sale_actual_value": {
+                        "type": "integer",
+                        "example": 450
+                    },
+                    "wallet_amount": {
+                        "type": "integer",
+                        "example": 50
+                    },
+                    "self_purchase_total": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "first_referral_purchase_total": {
+                        "type": "integer",
+                        "example": 150
+                    },
+                    "second_referral_purchase_total": {
+                        "type": "integer",
+                        "example": 100
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00Z"
+                    },
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            }
+        },
         "responses": {
             "200": {
                 "description": "Successful response",
@@ -1724,8 +2517,16 @@
             "description": "City"
         },
         {
+            "name": "Earnings",
+            "description": "Earnings"
+        },
+        {
             "name": "Authentication",
             "description": "Authentication"
+        },
+        {
+            "name": "Unit",
+            "description": "Unit"
         }
     ],
     "security": [
