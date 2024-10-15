@@ -7,6 +7,25 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserDetailsResource extends JsonResource
 {
+
+    
+/**
+ * @OA\Schema(
+ *     schema="UserDetailsResource",
+ *     type="object",
+ *     title="UserDetailsResource",
+ *     description="A resource representing a userDetails",
+ *     @OA\Property(property="id", type="integer", description="UserDetails ID"),
+ *     @OA\Property(property="first_name", type="string", description="User name"),
+ *     @OA\Property(property="middle_name", type="string", description="User middle name"),
+ *     @OA\Property(property="last_name", type="string", description="User last name"),
+ *     @OA\Property(property="phone_1", type="string", description="Contact Phone Number1"),
+ *     @OA\Property(property="phone_2", type="string", description="Contact Phone Number2"),
+ *     @OA\Property(property="email", type="string", email="User email"),
+ *     @OA\Property(property="created_at", type="string", format="date-time", description="Creation date"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time", description="Update date")
+ * )
+ */
     /**
      * Transform the resource into an array.
      *
