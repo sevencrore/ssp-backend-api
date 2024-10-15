@@ -2525,6 +2525,183 @@
                 ]
             }
         },
+        "/api/user-bank": {
+            "get": {
+                "tags": [
+                    "User Bank"
+                ],
+                "summary": "Get all user banks",
+                "operationId": "beb2bec08984f941e96f42e11b80521c",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User banks retrieved successfully"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "User Bank"
+                ],
+                "summary": "Store a new user bank",
+                "operationId": "02c6d2a1feb1bbf95e545654a91b6a9b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "bank_name",
+                                    "account_number",
+                                    "ifsc_code",
+                                    "branch_name"
+                                ],
+                                "properties": {
+                                    "bank_name": {
+                                        "type": "string"
+                                    },
+                                    "account_number": {
+                                        "type": "string"
+                                    },
+                                    "ifsc_code": {
+                                        "type": "string"
+                                    },
+                                    "branch_name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User bank created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/user-bank/{id}": {
+            "get": {
+                "tags": [
+                    "User Bank"
+                ],
+                "summary": "Get a specific user bank by ID",
+                "operationId": "e74ffcec68382490bd94fc29274a4f06",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user bank",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User bank retrieved successfully"
+                    },
+                    "404": {
+                        "description": "User bank not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "User Bank"
+                ],
+                "summary": "Update a specific user bank",
+                "operationId": "f7f7cee70738ec7da607c30aa43e8a5b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user bank",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "bank_name": {
+                                        "type": "string"
+                                    },
+                                    "account_number": {
+                                        "type": "string"
+                                    },
+                                    "ifsc_code": {
+                                        "type": "string"
+                                    },
+                                    "branch_name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User bank updated successfully"
+                    },
+                    "404": {
+                        "description": "User bank not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "User Bank"
+                ],
+                "summary": "Delete a specific user bank",
+                "operationId": "9aaf1991faabfb3065c84786be3abf63",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user bank",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User bank deleted successfully"
+                    },
+                    "404": {
+                        "description": "User bank not found"
+                    }
+                }
+            }
+        },
         "/api/unit": {
             "get": {
                 "tags": [
@@ -3677,6 +3854,10 @@
         {
             "name": "Authentication",
             "description": "Authentication"
+        },
+        {
+            "name": "User Bank",
+            "description": "User Bank"
         },
         {
             "name": "Unit",

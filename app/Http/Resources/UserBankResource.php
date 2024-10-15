@@ -10,7 +10,16 @@ class UserBankResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @return array
+     * @OA\Schema(
+     *     schema="UserBankResource",
+     *     @OA\Property(property="id", type="integer"),
+     *     @OA\Property(property="bank_name", type="string"),
+     *     @OA\Property(property="account_number", type="string"),
+     *     @OA\Property(property="ifsc_code", type="string"),
+     *     @OA\Property(property="branch_name", type="string"),
+     *     @OA\Property(property="created_at", type="string", format="date-time"),
+     *     @OA\Property(property="updated_at", type="string", format="date-time"),
+     * )
      */
     public function toArray(Request $request): array
     {
