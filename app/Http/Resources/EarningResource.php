@@ -42,6 +42,7 @@ class EarningResource extends JsonResource
             'second_referral_purchase_total' => $this->second_referral_purchase_total,
             'created_at' => $this->created_at->toISOString(),
             'updated_at' => $this->updated_at->toISOString(),
+            'user_id'=>$this->user_id,
         ];
     }
 }

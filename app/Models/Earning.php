@@ -19,6 +19,7 @@ class Earning extends Model
         'self_purchase_total',
         'first_referral_purchase_total',
         'second_referral_purchase_total',
+        'user_id',
     ];
 
     // Removed user relation since user_id is no longer part of the schema

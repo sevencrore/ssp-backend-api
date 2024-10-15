@@ -36,6 +36,7 @@ class EarningController extends BaseController
             'self_purchase_total' => 'required|integer',
             'first_referral_purchase_total' => 'required|integer',
             'second_referral_purchase_total' => 'required|integer',
+            'user_id' => 'required|integer',
         ]);
     }
 
