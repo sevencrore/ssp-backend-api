@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
+use App\Models\UserDetails;
+use App\Models\Earning;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
@@ -89,14 +91,33 @@ class RegisterController extends BaseController
         $reg_user_id = $user->id;
 
         // get user_details by referral code . here user_id is referral_id
+        $referrer = UserDetails::where('referral_code', $input['referral_code'])->first();
+        $referrer_id = null;
+        if(referrer) {
+            $referrer_id = $referrer->user_id;
+
+             // Get earnings by user_id is nothing but referral_id
+            $earningRow = Earning::where('user_id', $referrer_id)->first();
+
+            if(!$earningRow) {
+                $earningData = [
+                    'referral_incentive' => 300,
+                    'sale_value_estimated' => 0,
+                    'sale_actual_value' => 0,
+                    'wallet_amount' => 0,
+                    'self_purchase_total' => 0,
+                    'first_referral_purchase_total' => 0,
+                    'second_referral_purchase_total' => 0,
+                    'user_id' => $referrer_id,
+                ];
+                Earning::create($earningData);
+            } else {
+                $earningRow->referral_incentive =  $earningRow->referral_incentive + 300;
+
+                $earningRow->update(earningRow);     
+            }
+        }
         
-
-        //Create UserDetails::create 
-
-        // Get earnings by user_id is nothing but referral_id
-        //  Create Earnings::update with referral_incentive = referral_incentive + 300;
-        // If row does not exist create
-
         $success['token'] = $user->createToken('MyApp')->plainTextToken;
         $success['name'] = $user->name;
 
