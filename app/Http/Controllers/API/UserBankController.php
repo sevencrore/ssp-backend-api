@@ -74,7 +74,7 @@ class UserBankController extends BaseController
     {
         $validatedData = $request->validate([
             'bank_name' => 'required|string',
-            'account_number' => 'required|string|unique:user_banks',
+            'account_number' => 'required|string',
             'ifsc_code' => 'required|string',
             'branch_name' => 'required|string',
         ]);
@@ -176,7 +176,7 @@ class UserBankController extends BaseController
 
         $validatedData = $request->validate([
             'bank_name' => 'sometimes|required|string',
-            'account_number' => 'sometimes|required|string|unique:user_banks,account_number,' . $userBank->id,
+            'account_number' => 'sometimes|required|string|unique:user_bank,account_number,' . $userBank->id,
             'ifsc_code' => 'sometimes|required|string',
             'branch_name' => 'sometimes|required|string',
         ]);
