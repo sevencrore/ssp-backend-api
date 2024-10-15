@@ -1226,6 +1226,355 @@
                 }
             }
         },
+        "/api/city": {
+            "get": {
+                "tags": [
+                    "City"
+                ],
+                "summary": "Get all citys",
+                "description": "Returns a list of all citys.",
+                "operationId": "7363283289731a0776ed7f6bd67cbcfa",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Category Title"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Category Description"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "City"
+                ],
+                "summary": "Create a new city",
+                "description": "Creates a new city.",
+                "operationId": "d7744ae6571c47ec6cb646d19d6e9696",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "New Category"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Category Description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid input."
+                    }
+                }
+            }
+        },
+        "/api/cities-get-all-paginated": {
+            "get": {
+                "tags": [
+                    "City"
+                ],
+                "summary": "Get paginated citys",
+                "description": "Returns a paginated list of citys.",
+                "operationId": "8a275adf1ea204d3e03a2f425aed3d8c",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Field to sort by.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "title"
+                        }
+                    },
+                    {
+                        "name": "current_page",
+                        "in": "query",
+                        "description": "Current page number.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "Category Title"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "Category Description"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "pagination": {
+                                                    "properties": {
+                                                        "current_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "last_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "per_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "total": {
+                                                            "type": "integer"
+                                                        },
+                                                        "next_page_url": {
+                                                            "type": "string"
+                                                        },
+                                                        "prev_page_url": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/city/{id}": {
+            "get": {
+                "tags": [
+                    "City"
+                ],
+                "summary": "Get a specific city",
+                "description": "Returns details of a specific city.",
+                "operationId": "0070b517658535fed02343b7e93e567b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Cityy Title"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "City Description"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "City not found."
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "City"
+                ],
+                "summary": "Update a city",
+                "description": "Updates an existing city.",
+                "operationId": "8e7432d5887b5b5af5536321c7f3a9ec",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Updated City"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated Description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "City updated successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Updated City"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Updated Description"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "City not found."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "City"
+                ],
+                "summary": "Delete a city",
+                "description": "Deletes a specific city.",
+                "operationId": "6e1e0ab1861a1b9f6db499dbac60ffb0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "City deleted successfully."
+                    },
+                    "404": {
+                        "description": "City not found."
+                    }
+                }
+            }
+        },
         "/api/earnings": {
             "get": {
                 "tags": [
@@ -2353,6 +2702,355 @@
                 }
             }
         },
+        "/api/unit": {
+            "get": {
+                "tags": [
+                    "Unit"
+                ],
+                "summary": "Get all units",
+                "description": "Returns a list of all units.",
+                "operationId": "1b7dbcbff0890ea390524c12c822facb",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Unit Title"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Unit Description"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Unit"
+                ],
+                "summary": "Create a new unit",
+                "description": "Creates a new unit.",
+                "operationId": "49c635d26219479de7c9b3d6cddf9101",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "New Category"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Category Description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid input."
+                    }
+                }
+            }
+        },
+        "/api/units-get-all-paginated": {
+            "get": {
+                "tags": [
+                    "Unit"
+                ],
+                "summary": "Get paginated units",
+                "description": "Returns a paginated list of units.",
+                "operationId": "2c0c6290fe52627799fcd3cd3321f813",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Field to sort by.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "title"
+                        }
+                    },
+                    {
+                        "name": "current_page",
+                        "in": "query",
+                        "description": "Current page number.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "Unit Title"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "Unit Description"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "pagination": {
+                                                    "properties": {
+                                                        "current_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "last_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "per_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "total": {
+                                                            "type": "integer"
+                                                        },
+                                                        "next_page_url": {
+                                                            "type": "string"
+                                                        },
+                                                        "prev_page_url": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/unit/{id}": {
+            "get": {
+                "tags": [
+                    "Unit"
+                ],
+                "summary": "Get a specific unit",
+                "description": "Returns details of a specific unit.",
+                "operationId": "98b02015c962af7e553b5848193a8053",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Cityy Title"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "City Description"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "City not found."
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Unit"
+                ],
+                "summary": "Update a unit",
+                "description": "Updates an existing unit.",
+                "operationId": "2c71e908abcc1a6dbe75f8b9ff83d9ea",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Updated City"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated Description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Unit updated successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Updated Unit"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Updated Description"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unit not found."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Unit"
+                ],
+                "summary": "Delete a unit",
+                "description": "Deletes a specific unit.",
+                "operationId": "77228f74a736d8c7cca44cc71afd767a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "City deleted successfully."
+                    },
+                    "404": {
+                        "description": "Unit not found."
+                    }
+                }
+            }
+        },
         "/api/user-referrals": {
             "get": {
                 "tags": [
@@ -2843,6 +3541,10 @@
             "description": "Categories"
         },
         {
+            "name": "City",
+            "description": "City"
+        },
+        {
             "name": "Earnings",
             "description": "Earnings"
         },
@@ -2861,6 +3563,10 @@
         {
             "name": "User Bank",
             "description": "User Bank"
+        },
+        {
+            "name": "Unit",
+            "description": "Unit"
         },
         {
             "name": "UserReferrals",

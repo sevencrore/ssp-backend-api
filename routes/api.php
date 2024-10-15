@@ -232,12 +232,3 @@ Route::delete('user-bank/{id}', [UserBankController::class, 'destroy'])->name('u
 
 
 });
-
-
-
-
-
-
-
-
-
