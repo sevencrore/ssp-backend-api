@@ -64,7 +64,7 @@ class RegisterController extends BaseController
     }
 
 
-    public function registerwithreferral(Request $request): JsonResponse
+    public function registerWthReferral(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -101,8 +101,8 @@ class RegisterController extends BaseController
 
             if(!$earningRow) {
                 $earningData = [
-                    'referral_incentive' => 300,
-                    'sale_value_estimated' => 0,
+                    'referral_incentive' => 30,
+                    'sale_value_estimated' => 3000,
                     'sale_actual_value' => 0,
                     'wallet_amount' => 0,
                     'self_purchase_total' => 0,
@@ -117,7 +117,7 @@ class RegisterController extends BaseController
                 $earningRow->update(earningRow);     
             }
         }
-        
+
         $success['token'] = $user->createToken('MyApp')->plainTextToken;
         $success['name'] = $user->name;
 
