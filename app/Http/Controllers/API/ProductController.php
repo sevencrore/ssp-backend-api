@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use App\Http\Resources\ProductResource;
 use Illuminate\Support\Facades\Validator;
@@ -65,9 +66,21 @@ class ProductController extends BaseController
             'image_url' => 'required|string',
             'price' => 'required|numeric',
             'priority' => 'nullable|integer',
+            'category_id'=>'required|integer',
+            'discount'=>'required|numeric',
+            'unit_id'=>'required|integer',
+            'unit_quantity'=>'required|integer'
         ]);
 
         $product = Product::create($validatedData);
+
+        $product_id = null;
+        if($product) {
+            $product_id =  $product->id;
+            $validatedData['product_id'] = $product_id;
+            
+            $productVariant = ProductVariant::create($validatedData);
+        }
 
         return response()->json([
             'success' => true,
