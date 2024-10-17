@@ -67,9 +67,7 @@ class ProductController extends BaseController
             'price' => 'required|numeric',
             'priority' => 'nullable|integer',
             'category_id'=>'required|integer',
-            'discount'=>'required|numeric',
-            'unit_id'=>'required|integer',
-            'unit_quantity'=>'required|integer'
+            'discount'=>'required|numeric'
         ]);
 
         $product = Product::create($validatedData);

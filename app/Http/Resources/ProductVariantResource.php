@@ -18,6 +18,8 @@ class ProductVariantResource extends JsonResource
             'image_url' => $this->image_url,
             'price' => $this->price,
             'discount' => $this->discount,
+            'unit_id' => $this->unit_id,
+            'unit_quantity' => $this->unit_quantity,
             'created_at' => $this->created_at->format('d/m/Y'),
             'updated_at' => $this->updated_at->format('d/m/Y'),
         ];

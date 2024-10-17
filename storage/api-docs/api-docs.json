@@ -5,6 +5,355 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/brand": {
+            "get": {
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Get all brands",
+                "description": "Returns a list of all brands.",
+                "operationId": "663e9ab529e37cde4ad525e8ca49ad27",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Brand Title"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Brand Description"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Create a new brand",
+                "description": "Creates a new brand.",
+                "operationId": "5bc33efeaa87a4f8c379438e80e2868d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "New Brand"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Brand Description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid input."
+                    }
+                }
+            }
+        },
+        "/api/brands-get-all-paginated": {
+            "get": {
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Get paginated brands",
+                "description": "Returns a paginated list of brands.",
+                "operationId": "a07cdda5c84e4813f7a8b2d0d0570694",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Field to sort by.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "title"
+                        }
+                    },
+                    {
+                        "name": "current_page",
+                        "in": "query",
+                        "description": "Current page number.",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "Brand Title"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "Brand Description"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "pagination": {
+                                                    "properties": {
+                                                        "current_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "last_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "per_page": {
+                                                            "type": "integer"
+                                                        },
+                                                        "total": {
+                                                            "type": "integer"
+                                                        },
+                                                        "next_page_url": {
+                                                            "type": "string"
+                                                        },
+                                                        "prev_page_url": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/brand/{id}": {
+            "get": {
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Get a specific brand",
+                "description": "Returns details of a specific brand.",
+                "operationId": "2602574237813811bc9e88ceb7ae60dc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Brand Title"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Brand Description"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Brand not found."
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Update a brand",
+                "description": "Updates an existing brand.",
+                "operationId": "0886ff8f242018bfe1212c96c4e7d846",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Updated Brand"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated Description"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Brand updated successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Updated Brand"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Updated Description"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Brand not found."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Delete a brand",
+                "description": "Deletes a specific brand.",
+                "operationId": "46f1eb393c2a2d3befcb9efe8127a3c1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Brand deleted successfully."
+                    },
+                    "404": {
+                        "description": "Brand not found."
+                    }
+                }
+            }
+        },
         "/api/business": {
             "get": {
                 "tags": [
@@ -3823,6 +4172,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Brand",
+            "description": "Brand"
+        },
         {
             "name": "Business",
             "description": "Business"

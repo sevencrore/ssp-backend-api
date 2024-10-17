@@ -1,6 +1,7 @@
 <?php
   
-  use App\Http\Controllers\API\CityController;
+  use App\Http\Controllers\API\BrandController;
+use App\Http\Controllers\API\CityController;
   use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
   
@@ -228,6 +229,13 @@ Route::post('user-bank', [UserBankController::class, 'store'])->name('user-bank.
 Route::get('user-bank/{id}', [UserBankController::class, 'show'])->name('user-bank.show');
 Route::put('user-bank/{id}', [UserBankController::class, 'update'])->name('user-bank.update');
 Route::delete('user-bank/{id}', [UserBankController::class, 'destroy'])->name('user-bank.destroy');
+
+Route::get('brand', [BrandController::class, 'index'])->name('brand.index');
+Route::post('brand', [BrandController::class, 'store'])->name('brand.store');
+Route::get('brand-get-all-paginated', [BrandController::class, 'getAllPaginated']);
+Route::get('brand/{brand}', [BrandController::class, 'show'])->name('brand.show');
+Route::post('brand/{id}', [BrandController::class, 'update'])->name('brand.update');
+Route::delete('brand/{brand}', [BrandController::class, 'destroy'])->name('brand.destroy');
 
 
 
