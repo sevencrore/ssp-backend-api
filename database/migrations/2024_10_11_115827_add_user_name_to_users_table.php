@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('user_name')->after('name'); // Add the new column
-        });
+        // Check if the column already exists before adding it
+        if (!Schema::hasColumn('users', 'user_name')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('user_name')->after('name'); // Add the new column
+            });
+        }
     }
 
     /**

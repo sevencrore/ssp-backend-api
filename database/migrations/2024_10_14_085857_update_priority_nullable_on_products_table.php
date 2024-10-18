@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('product', function (Blueprint $table) {
             $table->integer('priority')->nullable()->change(); // Make the priority column nullable
         });
     }
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('product', function (Blueprint $table) {
             $table->integer('priority')->nullable(false)->change(); // Revert the nullable change if needed
         });
     }

@@ -66,19 +66,18 @@ class ProductController extends BaseController
             'image_url' => 'required|string',
             'price' => 'required|numeric',
             'priority' => 'nullable|integer',
-            'category_id'=>'required|integer',
-            'discount'=>'required|numeric'
+            'category_id'=>'required|integer'
         ]);
 
         $product = Product::create($validatedData);
 
-        $product_id = null;
-        if($product) {
-            $product_id =  $product->id;
-            $validatedData['product_id'] = $product_id;
+        // $product_id = null;
+        // if($product) {
+        //     $product_id =  $product->id;
+        //     $validatedData['product_id'] = $product_id;
             
-            $productVariant = ProductVariant::create($validatedData);
-        }
+        //     $productVariant = ProductVariant::create($validatedData);
+        // }
 
         return response()->json([
             'success' => true,

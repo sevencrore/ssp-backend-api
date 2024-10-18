@@ -44,22 +44,26 @@ class ProductVariantController extends BaseController
     }
 
     // Store a new product variant
-    public function store(Request $request): JsonResponse
-    {
-        $validatedData = $request->validate([
-            'product_id' => 'required|string', // Ensures product_id exists in products table
-            'category_id' => 'required|string', // Ensure category_id is also validated
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'image_url' => 'required|string',
-            'price' => 'required|numeric',
-            'discount' => 'nullable|numeric',
-        ]);
+ // Store a new product variant
+public function store(Request $request): JsonResponse
+{
+    $validatedData = $request->validate([
+        'product_id' => 'required|string', 
+        'category_id' => 'required|string',
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'image_url' => 'required|string',
+        'price' => 'required|numeric',
+        'discount' => 'nullable|numeric',
+        'unit_id' => 'required|integer', // Add validation for unit_id
+        'unit_quantity' => 'required|numeric', // Add validation for unit_quantity
+    ]);
 
-        $productVariant = ProductVariant::create($validatedData);
+    $productVariant = ProductVariant::create($validatedData);
 
-        return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant created successfully.', 201);
-    }
+    return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant created successfully.', 201);
+}
+
 
     // Get a specific product variant by ID
     public function show($id): JsonResponse
@@ -69,24 +73,28 @@ class ProductVariantController extends BaseController
     }
 
     // Update a product variant
-    public function update(Request $request, $id): JsonResponse
-    {
-        $productVariant = ProductVariant::findOrFail($id);
+  // Update a product variant
+public function update(Request $request, $id): JsonResponse
+{
+    $productVariant = ProductVariant::findOrFail($id);
 
-        $validatedData = $request->validate([
-            'product_id' => 'sometimes|required|string',
-            'category_id' => 'sometimes|required|string', // Ensure category_id is also validated
-            'title' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|required|string',
-            'image_url' => 'sometimes|required|string',
-            'price' => 'sometimes|required|numeric',
-            'discount' => 'nullable|numeric',
-        ]);
+    $validatedData = $request->validate([
+        'product_id' => 'sometimes|required|string',
+        'category_id' => 'sometimes|required|string',
+        'title' => 'sometimes|required|string|max:255',
+        'description' => 'sometimes|required|string',
+        'image_url' => 'sometimes|required|string',
+        'price' => 'sometimes|required|numeric',
+        'discount' => 'nullable|numeric',
+        'unit_id' => 'sometimes|required|integer', // Add validation for unit_id
+        'unit_quantity' => 'sometimes|required|numeric', // Add validation for unit_quantity
+    ]);
 
-        $productVariant->update($validatedData);
+    $productVariant->update($validatedData);
 
-        return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant updated successfully.', 200);
-    }
+    return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant updated successfully.', 200);
+}
+
 
     // Delete a specific product variant
     public function destroy($id): JsonResponse
