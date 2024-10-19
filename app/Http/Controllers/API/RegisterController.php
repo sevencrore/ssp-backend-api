@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\API;
-
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
@@ -35,12 +35,15 @@ class RegisterController extends BaseController
      */
     public function register(Request $request): JsonResponse
     {
+
+       
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
             'password' => 'required',
             'c_password' => 'required|same:password',
         ]);
+
 
         if ($validator->fails()) {
             return response()->json([
@@ -63,9 +66,13 @@ class RegisterController extends BaseController
         ], 200);
     }
 
+    
+
+
 
     public function registerWthReferral(Request $request): JsonResponse
-    {
+    { 
+        Log::('I am  here');
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
@@ -116,6 +123,9 @@ class RegisterController extends BaseController
 
                 $earningRow->update($earningRow);     
             }
+        } else {
+            // if referral code is not found then create new earning row
+
         }
 
         $success['token'] = $user->createToken('MyApp')->plainTextToken;
