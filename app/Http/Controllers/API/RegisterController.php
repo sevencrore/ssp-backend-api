@@ -93,7 +93,7 @@ class RegisterController extends BaseController
         // get user_details by referral code . here user_id is referral_id
         $referrer = UserDetails::where('referral_code', $input['referral_code'])->first();
         $referrer_id = null;
-        if(referrer) {
+        if($referrer) {
             $referrer_id = $referrer->user_id;
 
              // Get earnings by user_id is nothing but referral_id
@@ -114,7 +114,7 @@ class RegisterController extends BaseController
             } else {
                 $earningRow->referral_incentive =  $earningRow->referral_incentive + 300;
 
-                $earningRow->update(earningRow);     
+                $earningRow->update($earningRow);     
             }
         }
 
