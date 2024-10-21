@@ -20,8 +20,8 @@ class ProductVariantResource extends JsonResource
             'discount' => $this->discount,
             'unit_id' => $this->unit_id,
             'unit_quantity' => $this->unit_quantity,
-            'created_at' => $this->created_at->format('d/m/Y'),
-            'updated_at' => $this->updated_at->format('d/m/Y'),
+            'created_at' => $this->created_at ? $this->created_at->toISOString() : null,
+            'updated_at' => $this->updated_at ? $this->updated_at->toISOString() : null,
         ];
     }
 }

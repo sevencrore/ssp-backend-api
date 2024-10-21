@@ -79,8 +79,8 @@ public function update(Request $request, $id): JsonResponse
     $productVariant = ProductVariant::findOrFail($id);
 
     $validatedData = $request->validate([
-        'product_id' => 'sometimes|required|string',
-        'category_id' => 'sometimes|required|string',
+        'product_id' => 'sometimes|required|numeric',
+        'category_id' => 'sometimes|required|numeric',
         'title' => 'sometimes|required|string|max:255',
         'description' => 'sometimes|required|string',
         'image_url' => 'sometimes|required|string',
