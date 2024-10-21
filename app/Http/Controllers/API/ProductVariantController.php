@@ -5,8 +5,11 @@ namespace App\Http\Controllers\API;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use App\Http\Resources\ProductVariantResource;
+use App\Http\Resources\ProductVariantCategoryProductResource;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProductVariantController extends BaseController
 {
@@ -68,8 +71,19 @@ public function store(Request $request): JsonResponse
     // Get a specific product variant by ID
     public function show($id): JsonResponse
     {
-        $productVariant = ProductVariant::findOrFail($id);
-        return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant retrieved successfully.', 200);
+        
+        $productVariant = ProductVariant::join('products',  'product_variants.product_id', '=', 'products.id')
+        ->join('category', 'product_variants.category_id', '=', 'category.id')
+        ->where('product_variants.product_id', $id)
+        ->get(['product_variants.*',  'products.title as product_title',  'category.title as category_title']);
+        
+        // Properly log the array
+        // Log::info('Product_Variant: ' . json_encode($productVariant));
+
+        return response()->json([
+            'success' => true,
+            'data' => $productVariant
+        ], 201);
     }
 
     // Update a product variant
