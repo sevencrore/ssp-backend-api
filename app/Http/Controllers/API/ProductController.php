@@ -15,7 +15,8 @@ class ProductController extends BaseController
     // Get all products
     public function index()
     {
-        return Product::all();
+        $data = Product::all();
+        return response()->json(['success' => true, 'data' => $data]);
     }
 
     public function getAllPaginated(Request $request): JsonResponse

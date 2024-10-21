@@ -72,7 +72,7 @@ class RegisterController extends BaseController
 
     public function registerWthReferral(Request $request): JsonResponse
     { 
-        Log::('I am  here');
+        Log::info('I am  here');
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
