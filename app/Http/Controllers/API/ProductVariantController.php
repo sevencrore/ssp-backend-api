@@ -91,8 +91,11 @@ public function update(Request $request, $id): JsonResponse
     ]);
 
     $productVariant->update($validatedData);
+    return response()->json([
+        'success' => true,
+        'data' => $productVariant
+    ], 201);
 
-    return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant updated successfully.', 200);
 }
 
 
