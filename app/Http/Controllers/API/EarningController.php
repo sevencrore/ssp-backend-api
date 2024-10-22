@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Earning;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
@@ -175,6 +176,31 @@ class EarningController extends BaseController
             'data' => new EarningResource($earning)
         ]);
     }
+
+
+    public function getEarningsByUser($id): JsonResponse
+    {
+        $user = User::find($id);
+    
+        if ($user) {
+            $earnings = Earning::where('user_id', $id)->get();
+            return response()->json([
+                'success' => true,
+                'message' => 'Earnings retrieved successfully.',
+                'data' => $earnings
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.',
+            ], 404);
+        }
+    }
+    
+
+
+
+
 
     /**
      * @OA\Put(

@@ -217,6 +217,9 @@ Route::get('earnings', [EarningController::class, 'index'])->name('earnings.inde
 // Route for retrieving paginated earnings
 Route::get('earnings/paginated', [EarningController::class, 'getAllPaginated'])->name('earnings.paginated');
 
+//Route for retreiving earning by referral
+Route::get('earnings/referral/{user_id}', [EarningController::class, 'getEarningsByUser'])->name('earnings.getEarningsByUser');
+
 // Route for retrieving a specific earning
 Route::get('earnings/{earning}', [EarningController::class, 'show'])->name('earnings.show');
 
