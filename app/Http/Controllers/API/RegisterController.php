@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\API;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
@@ -35,15 +36,12 @@ class RegisterController extends BaseController
      */
     public function register(Request $request): JsonResponse
     {
-
-       
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
             'password' => 'required',
             'c_password' => 'required|same:password',
         ]);
-
 
         if ($validator->fails()) {
             return response()->json([
@@ -56,7 +54,9 @@ class RegisterController extends BaseController
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
+
         $success['token'] = $user->createToken('MyApp')->plainTextToken;
+        $success['id'] = $user->id; // Directly use the user's ID
         $success['name'] = $user->name;
 
         return response()->json([
@@ -66,13 +66,9 @@ class RegisterController extends BaseController
         ], 200);
     }
 
-    
-
-
-
     public function registerWthReferral(Request $request): JsonResponse
     { 
-        Log::info('I am  here');
+        Log::info('I am here');
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
@@ -83,15 +79,14 @@ class RegisterController extends BaseController
 
         if ($validator->fails()) {
             return response()->json([
-                'success' => false, // Change to false
+                'success' => false,
                 'data' => $validator->errors(),
                 'message' => 'Register Validation failed',
-            ], 422); // 422 Unprocessable Entity for validation errors
+            ], 422);
         }
 
         $input = $request->all();
         $input['password'] = bcrypt($input['password']); 
-
         $user = User::create($input);
 
         // get user->id => reg_user_id
@@ -100,13 +95,14 @@ class RegisterController extends BaseController
         // get user_details by referral code . here user_id is referral_id
         $referrer = UserDetails::where('referral_code', $input['referral_code'])->first();
         $referrer_id = null;
-        if($referrer) {
+
+        if ($referrer) {
             $referrer_id = $referrer->user_id;
 
-             // Get earnings by user_id is nothing but referral_id
+            // Get earnings by user_id is nothing but referral_id
             $earningRow = Earning::where('user_id', $referrer_id)->first();
 
-            if(!$earningRow) {
+            if (!$earningRow) {
                 $earningData = [
                     'referral_incentive' => 30,
                     'sale_value_estimated' => 3000,
@@ -119,16 +115,15 @@ class RegisterController extends BaseController
                 ];
                 Earning::create($earningData);
             } else {
-                $earningRow->referral_incentive =  $earningRow->referral_incentive + 300;
-
+                $earningRow->referral_incentive = $earningRow->referral_incentive + 300;
                 $earningRow->update($earningRow);     
             }
         } else {
             // if referral code is not found then create new earning row
-
         }
 
         $success['token'] = $user->createToken('MyApp')->plainTextToken;
+        $success['id'] = $user->id; // Directly use the user's ID
         $success['name'] = $user->name;
 
         return response()->json([
@@ -162,6 +157,7 @@ class RegisterController extends BaseController
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
             $success['token'] = $user->createToken('MyApp')->plainTextToken;
+            $success['id'] = $user->id; // Directly use the user's ID
             $success['name'] = $user->name;
 
             return response()->json([
@@ -171,10 +167,10 @@ class RegisterController extends BaseController
             ], 200);
         } else {
             return response()->json([
-                'success' => false, // Change to false
+                'success' => false,
                 'data' => 'Unauthorised',
                 'message' => 'User login Failed.',
-            ], 401); // 401 Unauthorized for failed login
+            ], 401);
         }
     }
 }
