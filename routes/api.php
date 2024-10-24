@@ -18,6 +18,8 @@ use App\Http\Controllers\API\ProductVariantController;
 use App\Http\Controllers\API\UserReferralController;
 use App\Http\Controllers\API\EarningController;
 use App\Http\Controllers\API\UserBankController;
+use App\Http\Controllers\API\ImageController;
+
 
 
 
@@ -28,6 +30,13 @@ Route::controller(RegisterController::class)->group(function() {
   Route::post('register-referral', 'registerWthReferral'); // Correct the method name here
   Route::post('login', 'login');
 });
+
+// Route to upload an image
+Route::post('upload', [ImageController::class, 'upload'])->name('image.upload');
+
+// Route to view all images
+Route::get('images', [ImageController::class, 'index'])->name('image.index');
+
 
 
          
@@ -77,6 +86,8 @@ Route::get('product/{id}', [ProductController::class, 'show']);
 Route::put('products/{id}', [ProductController::class, 'update']);
 Route::delete('products/{id}', [ProductController::class, 'destroy']);
 Route::delete('Product/force-delete-multiple', [ProductController::class, 'forceDeleteMultiple']);
+
+
 
 
 Route::get('category', [CategoryController::class, 'index'])->name('category.index');
