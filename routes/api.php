@@ -81,6 +81,7 @@ Route::post('business/trashed-multiple', [BusinessController::class, 'trashedMul
 
 Route::get('products', [ProductController::class, 'index']);
 Route::get('products-get-all-paginated', [ProductController::class, 'getAllPaginated']);
+Route::get('products-Custom-Product-Get-All-Paginated', [ProductController::class, 'CustomProductGetAllPaginated']);
 Route::post('products', [ProductController::class, 'store']);
 Route::get('product/{id}', [ProductController::class, 'show']);
 Route::put('products/{id}', [ProductController::class, 'update']);

@@ -57,6 +57,62 @@ class ProductController extends BaseController
         ], 201);
     }
 
+    
+    public function CustomProductGetAllPaginated(Request $request): JsonResponse
+{
+    $perPage = $request->input('per_page', 10); 
+    $sortField = $request->input('sort', 'title');
+    $currentPage = $request->input('current_page', 1);
+
+    $query = Product::join('product_variants', 'product_variants.product_id', '=', 'products.id')
+        ->select(
+            'products.id', 
+            'products.title', 
+            'products.description', 
+            'products.image_url', 
+            'products.price', 
+            'products.priority', 
+            'products.category_id', 
+            'product_variants.title as product_variants_title'
+        );
+
+    // Optionally add sorting
+    $query->orderBy($sortField);
+
+    $items = $query->paginate($perPage, ['*'], 'page', $currentPage)
+        ->appends(['sort' => $sortField, 'current_page' => $currentPage]);
+
+    $data = [
+        'data' => $items->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'title' => $item->title,
+                'product_variants_title' => $item->product_variants_title, // Moved here
+                'description' => $item->description,
+                'image_url' => $item->image_url,
+                'price' => $item->price,
+                'priority' => $item->priority,
+                'category_id' => $item->category_id,
+            ];
+        }),
+        'pagination' => [
+            'current_page' => $items->currentPage(),
+            'last_page' => $items->lastPage(),
+            'per_page' => $items->perPage(),
+            'total' => $items->total(),
+            'next_page_url' => $items->nextPageUrl(),
+            'prev_page_url' => $items->previousPageUrl()
+        ]
+    ];
+
+    return response()->json([
+        'success' => true,
+        'data' => $data
+    ], 200);
+}
+
+    
+
 
     // Create a new product
     public function store(Request $request): JsonResponse
