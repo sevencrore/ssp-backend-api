@@ -50,17 +50,22 @@ class ProductVariantController extends BaseController
  // Store a new product variant
 public function store(Request $request): JsonResponse
 {
+
     $validatedData = $request->validate([
         'product_id' => 'required|string', 
         'category_id' => 'required|string',
         'title' => 'required|string|max:255',
         'description' => 'required|string',
-        'image_url' => 'required|string',
+        'image_url' => 'string',
         'price' => 'required|numeric',
         'discount' => 'nullable|numeric',
-        'unit_id' => 'required|integer', // Add validation for unit_id
-        'unit_quantity' => 'required|numeric', // Add validation for unit_quantity
+        'unit_id' => 'required|integer',
+        'unit_quantity' => 'required|numeric',
+        'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
+
+    $path = $request->file('pv_image')->store('images', 'public');
+    $validatedData['image_url'] = $path;
 
     $productVariant = ProductVariant::create($validatedData);
 
