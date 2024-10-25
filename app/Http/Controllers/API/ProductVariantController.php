@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\ProductVariant;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Resources\ProductVariantResource;
 use App\Http\Resources\ProductVariantCategoryProductResource;
@@ -116,6 +117,32 @@ public function update(Request $request, $id): JsonResponse
     ], 201);
 
 }
+public function getProductsWithVariants(Request $request): JsonResponse
+{
+    $products = Product::with('variants')->get();
+
+    $formattedProducts = $products->map(function ($product) {
+        return [
+            'product_id' => $product->id,
+            'product_variants' => $product->variants->map(function ($variant) {
+                return [
+                    'product_variant_id' => $variant->id,
+                    'title' => $variant->title,
+                    'description' => $variant->description,
+                    'image_url' => $variant->image_url,
+                    'price' => $variant->price,
+                    'discount' => $variant->discount,
+                    'unit_id' => $variant->unit_id,
+                    'unit_quantity' => $variant->unit_quantity,
+                    'unit_title' => $variant->unit ? $variant->unit->title : null, 
+                ];
+            }),
+        ];
+    });
+
+    return response()->json($formattedProducts);
+}
+
 
 
     // Delete a specific product variant
