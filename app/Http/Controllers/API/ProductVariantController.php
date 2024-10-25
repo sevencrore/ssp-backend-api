@@ -127,17 +127,21 @@ public function getProductsWithVariants(Request $request): JsonResponse
 
     $formattedProducts = $products->map(function ($product) {
         return [
-            'id' => $product->id,
-            'category_id' => 'required|exists:category,id', // Assuming this is static for example
-            'title' => $product->title,
-            'description' => $product->description,
-            'image_url' => $product->image_url,
-            'price' => $product->price,
-            'priority' => 'nullable|integer', // Assuming this is static for example
-            'created_at' => $product->created_at->format('d/m/Y'), // Format date
-            'updated_at' => $product->updated_at->format('d/m/Y'), // Format date
+            'product_id' => $product->id,
+            'product_variants' => $product->variants->map(function ($variant) {
+                return [
+                    'product_variant_id' => $variant->id,
+                    'title' => $variant->title,
+                    'description' => $variant->description,
+                    'image_url' => $variant->image_url,
+                    'price' => $variant->price,
+                    'discount' => $variant->discount,
+                    'unit_id' => $variant->unit_id,
+                    'unit_quantity' => $variant->unit_quantity,
+                ];
+            })->toArray(), // Convert collection to array
         ];
-    });
+    })->toArray(); // Convert collection to array
 
     return response()->json([
         'success' => true,
@@ -154,6 +158,7 @@ public function getProductsWithVariants(Request $request): JsonResponse
         ],
     ]);
 }
+
 
 
 
