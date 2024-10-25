@@ -12,4 +12,8 @@ class ProductVariant extends Model
     protected $fillable = [
         'product_id', 'category_id', 'title', 'description', 'image_url', 'price', 'discount', 'unit_id', 'unit_quantity'
     ];
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
 }

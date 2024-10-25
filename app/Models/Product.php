@@ -20,4 +20,8 @@ class Product extends Model
         'priority',
         'category_id'
     ];
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class, 'product_id');
+    }
 }
