@@ -12,4 +12,9 @@ class Unit extends Model
     protected $table = 'unit'; // Specify the table name if it's singular
     
     protected $fillable = ['title', 'description'];
+
+    public function productVariants()
+    {
+        return $this->hasMany(ProductVariant::class, 'unit_id');
+    }
 }
