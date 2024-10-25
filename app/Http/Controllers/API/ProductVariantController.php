@@ -14,14 +14,12 @@ use Illuminate\Support\Facades\Log;
 
 class ProductVariantController extends BaseController
 {
-    // Get all product variants
     public function index(): JsonResponse
     {
-        $productVariants = ProductVariant::all(); // Fetch all product variants
+        $productVariants = ProductVariant::all();
         return $this->sendResponse(ProductVariantResource::collection($productVariants), 'Product variants retrieved successfully.');
     }
 
-    // Get all product variants with pagination
     public function getAllPaginated(Request $request): JsonResponse
     {
         $perPage = $request->input('per_page', 10); // Default to 10 items per page
@@ -47,8 +45,7 @@ class ProductVariantController extends BaseController
         return $this->sendResponse($data, 'Paginated product variants retrieved successfully.');
     }
 
-    // Store a new product variant
- // Store a new product variant
+
  public function store(Request $request): JsonResponse
  {
      $validatedData = $request->validate([
@@ -64,8 +61,8 @@ class ProductVariantController extends BaseController
          'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
      ]);
  
-     if ($request->hasFile('pv_image')) {
-         $path = $request->file('pv_image')->store('images', 'public');
+     if ($request->hasFile('image')) {
+         $path = $request->file('image')->store('images', 'public');
          $validatedData['image_url'] = $path;
      }
  
@@ -75,17 +72,15 @@ class ProductVariantController extends BaseController
  }
 
 
-    // Get a specific product variant by ID
+    
     public function show($id): JsonResponse
     {
-        
         $productVariant = ProductVariant::join('products',  'product_variants.product_id', '=', 'products.id')
         ->join('category', 'product_variants.category_id', '=', 'category.id')
         ->where('product_variants.product_id', $id)
         ->get(['product_variants.*',  'products.title as product_title',  'category.title as category_title']);
         
-        // Properly log the array
-        // Log::info('Product_Variant: ' . json_encode($productVariant));
+        
 
         return response()->json([
             'success' => true,
@@ -93,8 +88,7 @@ class ProductVariantController extends BaseController
         ], 201);
     }
 
-    // Update a product variant
-  // Update a product variant
+    
 public function update(Request $request, $id): JsonResponse
 {
     $productVariant = ProductVariant::findOrFail($id);
@@ -107,8 +101,8 @@ public function update(Request $request, $id): JsonResponse
         'image_url' => 'sometimes|required|string',
         'price' => 'sometimes|required|numeric',
         'discount' => 'nullable|numeric',
-        'unit_id' => 'sometimes|required|integer', // Add validation for unit_id
-        'unit_quantity' => 'sometimes|required|numeric', // Add validation for unit_quantity
+        'unit_id' => 'sometimes|required|integer', 
+        'unit_quantity' => 'sometimes|required|numeric', 
     ]);
 
     $productVariant->update($validatedData);
@@ -120,7 +114,7 @@ public function update(Request $request, $id): JsonResponse
 }
 public function getProductsWithVariants(Request $request): JsonResponse
 {
-    $perPage = $request->input('per_page', 10); // Default to 10 items per page
+    $perPage = $request->input('per_page', 10); 
     $currentPage = $request->input('current_page', 1);
 
     $products = Product::with('variants')->paginate($perPage, ['*'], 'page', $currentPage)
@@ -139,11 +133,11 @@ public function getProductsWithVariants(Request $request): JsonResponse
                     'discount' => $variant->discount,
                     'unit_id' => $variant->unit_id,
                     'unit_quantity' => $variant->unit_quantity,
-                    'unit_title' => $variant->unit ? $variant->unit->title : null, // Get the unit title
+                    'unit_title' => $variant->unit ? $variant->unit->title : null, 
                 ];
-            })->toArray(), // Convert collection to array
+            })->toArray(), 
         ];
-    })->toArray(); // Convert collection to array
+    })->toArray(); 
 
     return response()->json([
         'success' => true,
@@ -166,7 +160,6 @@ public function getProductsWithVariants(Request $request): JsonResponse
 
 
 
-    // Delete a specific product variant
     public function destroy($id): JsonResponse
     {
         $productVariant = ProductVariant::findOrFail($id);
@@ -175,7 +168,6 @@ public function getProductsWithVariants(Request $request): JsonResponse
         return $this->sendResponse(null, 'Product variant deleted successfully.');
     }
 
-    // Delete multiple product variants
     public function deleteMultiple(Request $request): JsonResponse
     {
         $ids = $request->input('ids');
@@ -189,7 +181,6 @@ public function getProductsWithVariants(Request $request): JsonResponse
         return $this->sendResponse(null, "{$count} Product variants deleted successfully.");
     }
 
-    // Restore multiple product variants
     public function restoreMultiple(Request $request): JsonResponse
     {
         $ids = $request->input('ids');
@@ -203,7 +194,6 @@ public function getProductsWithVariants(Request $request): JsonResponse
         return $this->sendResponse(null, "{$count} Product variants restored successfully.");
     }
 
-    // Force delete multiple product variants
     public function forceDeleteMultiple(Request $request): JsonResponse
     {
         $ids = $request->input('ids');
@@ -217,7 +207,6 @@ public function getProductsWithVariants(Request $request): JsonResponse
         return $this->sendResponse(null, "{$count} Product variants permanently deleted.");
     }
 
-    // Get trashed product variants
     public function trashedMultiple(Request $request): JsonResponse
     {
         $ids = $request->input('ids');
