@@ -138,6 +138,7 @@ public function getProductsWithVariants(Request $request): JsonResponse
                     'discount' => $variant->discount,
                     'unit_id' => $variant->unit_id,
                     'unit_quantity' => $variant->unit_quantity,
+                    'unit_title' => $variant->unit ? $variant->unit->title : null, // Get the unit title
                 ];
             })->toArray(), // Convert collection to array
         ];
