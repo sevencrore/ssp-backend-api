@@ -119,29 +119,43 @@ public function update(Request $request, $id): JsonResponse
 }
 public function getProductsWithVariants(Request $request): JsonResponse
 {
-    $products = Product::with('variants')->get();
+    $perPage = $request->input('per_page', 10); // Default to 10 items per page
+    $currentPage = $request->input('current_page', 1);
+
+    $products = Product::with('variants')->paginate($perPage, ['*'], 'page', $currentPage)
+        ->appends(['per_page' => $perPage, 'current_page' => $currentPage]);
 
     $formattedProducts = $products->map(function ($product) {
         return [
-            'product_id' => $product->id,
-            'product_variants' => $product->variants->map(function ($variant) {
-                return [
-                    'product_variant_id' => $variant->id,
-                    'title' => $variant->title,
-                    'description' => $variant->description,
-                    'image_url' => $variant->image_url,
-                    'price' => $variant->price,
-                    'discount' => $variant->discount,
-                    'unit_id' => $variant->unit_id,
-                    'unit_quantity' => $variant->unit_quantity,
-                    'unit_title' => $variant->unit ? $variant->unit->title : null, 
-                ];
-            }),
+            'id' => $product->id,
+            'category_id' => 'required|exists:category,id', // Assuming this is static for example
+            'title' => $product->title,
+            'description' => $product->description,
+            'image_url' => $product->image_url,
+            'price' => $product->price,
+            'priority' => 'nullable|integer', // Assuming this is static for example
+            'created_at' => $product->created_at->format('d/m/Y'), // Format date
+            'updated_at' => $product->updated_at->format('d/m/Y'), // Format date
         ];
     });
 
-    return response()->json($formattedProducts);
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'data' => $formattedProducts,
+            'pagination' => [
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'per_page' => $products->perPage(),
+                'total' => $products->total(),
+                'next_page_url' => $products->nextPageUrl(),
+                'prev_page_url' => $products->previousPageUrl(),
+            ],
+        ],
+    ]);
 }
+
+
 
 
 
