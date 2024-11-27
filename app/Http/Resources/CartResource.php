@@ -33,6 +33,8 @@ class CartResource extends JsonResource
             'id' => $this->id,
             'user_id' => $this->user_id,
             'product_id' => $this->product_id,
+            'product_variants_id' => $this->product_variants_id,
+            'discount' => $this->discount,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

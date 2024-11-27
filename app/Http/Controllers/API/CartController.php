@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers\API;
 
 use App\Models\Cart;
@@ -29,7 +28,10 @@ class CartController extends BaseController
      *                     type="object",
      *                     @OA\Property(property="id", type="integer", example=1),
      *                     @OA\Property(property="user_id", type="integer", example=1),
-     *                     @OA\Property(property="product_id", type="integer", example=2)
+     *                     @OA\Property(property="product_id", type="integer", example=2),
+     *                     @OA\Property(property="product_variants_id", type="integer", example=5),
+     *                     @OA\Property(property="discount", type="integer", example=10),
+     *                     @OA\Property(property="created_at", type="string", example="2024-10-15T12:00:00Z")
      *                 )
      *             )
      *         )
@@ -43,7 +45,7 @@ class CartController extends BaseController
         return response()->json(['success' => true, 'data' => $data]);
     }
 
-     /**
+    /**
      * @OA\Get(
      *     path="/api/cart/{id}",
      *     tags={"Cart"},
@@ -69,7 +71,6 @@ class CartController extends BaseController
      *     @OA\Response(response=401, description="Unauthenticated")
      * )
      */
-
     public function show(int $id): JsonResponse
     {
         $cart = Cart::findOrFail($id);
@@ -81,14 +82,16 @@ class CartController extends BaseController
      *     path="/api/cart",
      *     tags={"Cart"},
      *     summary="Create a new cart item",
-     *     description="Stores a new cart item with user_id and product_id.",
+     *     description="Stores a new cart item with user_id, product_id, product_variants_id, and discount.",
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"user_id", "product_id"},
+     *             required={"user_id", "product_id", "product_variants_id", "discount"},
      *             @OA\Property(property="user_id", type="integer", example=1),
-     *             @OA\Property(property="product_id", type="integer", example=2)
+     *             @OA\Property(property="product_id", type="integer", example=2),
+     *             @OA\Property(property="product_variants_id", type="integer", example=5),
+     *             @OA\Property(property="discount", type="integer", example=10)
      *         )
      *     ),
      *     @OA\Response(
@@ -103,12 +106,13 @@ class CartController extends BaseController
      *     @OA\Response(response=401, description="Unauthenticated")
      * )
      */
-
     public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
             'user_id' => 'required|integer',
             'product_id' => 'required|integer',
+            'product_variants_id' => 'required|integer',
+            'discount' => 'required|integer|min:0',
         ]);
 
         $cartItem = Cart::create($validatedData);
@@ -120,7 +124,7 @@ class CartController extends BaseController
      *     path="/api/cart/{id}",
      *     tags={"Cart"},
      *     summary="Update an existing cart item",
-     *     description="Updates a cart item with new data.",
+     *     description="Updates a cart item with new data, including product_variants_id and discount.",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
@@ -133,7 +137,9 @@ class CartController extends BaseController
      *         required=true,
      *         @OA\JsonContent(
      *             @OA\Property(property="user_id", type="integer", example=1),
-     *             @OA\Property(property="product_id", type="integer", example=2)
+     *             @OA\Property(property="product_id", type="integer", example=2),
+     *             @OA\Property(property="product_variants_id", type="integer", example=5),
+     *             @OA\Property(property="discount", type="integer", example=10)
      *         )
      *     ),
      *     @OA\Response(
@@ -148,12 +154,13 @@ class CartController extends BaseController
      *     @OA\Response(response=401, description="Unauthenticated")
      * )
      */
-
     public function update(Request $request, int $id): JsonResponse
     {
         $validatedData = $request->validate([
             'user_id' => 'sometimes|required|integer',
             'product_id' => 'sometimes|required|integer',
+            'product_variants_id' => 'sometimes|required|integer',
+            'discount' => 'sometimes|required|integer|min:0',
         ]);
 
         $cart = Cart::findOrFail($id);
@@ -188,7 +195,6 @@ class CartController extends BaseController
      *     @OA\Response(response=401, description="Unauthenticated")
      * )
      */
-
     public function destroy(int $id): JsonResponse
     {
         $cart = Cart::findOrFail($id);
