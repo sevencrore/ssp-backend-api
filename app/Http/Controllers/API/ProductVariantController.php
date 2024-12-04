@@ -48,28 +48,37 @@ class ProductVariantController extends BaseController
 
  public function store(Request $request): JsonResponse
  {
-     $validatedData = $request->validate([
-         'product_id' => 'required|string', 
-         'category_id' => 'required|string',
-         'title' => 'required|string|max:255',
-         'description' => 'required|string',
-         'image_url' => 'string',
-         'price' => 'required|numeric',
-         'discount' => 'nullable|numeric',
-         'unit_id' => 'required|string',
-         'unit_quantity' => 'required|numeric',
-         'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-     ]);
- 
-     if ($request->hasFile('image')) {
-         $path = $request->file('image')->store('images', 'public');
-         $validatedData['image_url'] = $path;
-     }
- 
-     $productVariant = ProductVariant::create($validatedData);
- 
-     return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant created successfully.', 201);
- }
+    try {
+            $validatedData = $request->validate([
+                'product_id' => 'required|string', 
+                //  'category_id' => 'required|string',
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'image_url' => 'nullable|string',
+                'price' => 'required|numeric',
+                'discount' => 'nullable|numeric',
+                'unit_id' => 'required|string',
+                'unit_quantity' => 'required|numeric',
+                'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+        
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('images', 'public');
+                $validatedData['image_url'] = $path;
+            }
+        
+            $productVariant = ProductVariant::create($validatedData);
+        
+            return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant created successfully.', 201);
+     }catch (\Exception $e) {
+        // Handle the exception
+        return response()->json([
+            'success' => false,
+            'message' => 'Error: ' . $e->getMessage()
+        ], 500);
+    }
+
+}
 
 
     
