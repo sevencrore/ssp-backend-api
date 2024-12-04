@@ -85,9 +85,13 @@ class ProductVariantController extends BaseController
     public function show($id): JsonResponse
     {
         $productVariant = ProductVariant::join('products',  'product_variants.product_id', '=', 'products.id')
-        ->join('category', 'product_variants.category_id', '=', 'category.id')
-        ->where('product_variants.product_id', $id)
-        ->get(['product_variants.*',  'products.title as product_title',  'category.title as category_title']);
+        ->where('product_variants.id', $id)
+        ->get(['product_variants.*',  'products.title as product_title', ]);
+        
+        // $productVariant = ProductVariant::join('products',  'product_variants.product_id', '=', 'products.id')
+        // ->join('category', 'product_variants.category_id', '=', 'category.id')
+        // ->where('product_variants.product_id', $id)
+        // ->get(['product_variants.*',  'products.title as product_title',  'category.title as category_title']);
         
         
 
