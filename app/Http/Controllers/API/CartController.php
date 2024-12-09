@@ -112,7 +112,7 @@ class CartController extends BaseController
             'user_id' => 'required|integer',
             'product_id' => 'required|integer',
             'product_variants_id' => 'required|integer',
-            'discount' => 'required|integer|min:0',
+            'quantity' => 'required|integer|min:0',
         ]);
 
         $cartItem = Cart::create($validatedData);
