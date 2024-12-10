@@ -120,31 +120,39 @@ class ProductController extends BaseController
     // Create a new product
     public function store(Request $request): JsonResponse
     {
+        // Validate the incoming request
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'image_url' => 'required|string',
-            // 'price' => 'required|numeric',
+            'image_url' => 'nullable|file|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate as a file and an image
             'priority' => 'nullable|integer',
-            'category_id'=>'required|integer'
+            'category_id' => 'required|integer|exists:category,id',
         ]);
-
-        $product = Product::create($validatedData);
-
-        // $product_id = null;
-        // if($product) {
-        //     $product_id =  $product->id;
-        //     $validatedData['product_id'] = $product_id;
-            
-        //     $productVariant = ProductVariant::create($validatedData);
-        // }
-
-        return response()->json([
-            'success' => true,
-            'data' => $product
-        ], 201);
+    
+        try {
+            // Check if an image file is provided and store it
+            if ($request->hasFile('image_url')) {
+                $path = $request->file('image_url')->store('images', 'public');
+                $validatedData['image_url'] = $path; // Save the file path as a string
+            }
+    
+            // Create the product
+            $product = Product::create($validatedData);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Product created successfully.',
+                'data' => $product,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create product. Please try again.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
-
+    
     // Get a single product by id
     public function show($id)
     {
