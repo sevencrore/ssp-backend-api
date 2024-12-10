@@ -136,12 +136,12 @@ public function getProductsWithVariants(Request $request): JsonResponse
     $formattedProducts = $products->map(function ($product) {
         return [
             'product_id' => $product->id,
+            'image_url' => $product->image_url,
             'product_variants' => $product->variants->map(function ($variant) {
                 return [
                     'product_variant_id' => $variant->id,
                     'title' => $variant->title,
                     'description' => $variant->description,
-                    'image_url' => $variant->image_url,
                     'price' => $variant->price,
                     'discount' => $variant->discount,
                     'unit_id' => $variant->unit_id,
