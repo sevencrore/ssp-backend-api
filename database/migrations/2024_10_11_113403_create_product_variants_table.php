@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('product_variants', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('product')->onDelete('cascade'); // Foreign key referencing the 'products' table
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade'); // Foreign key referencing the 'products' table
             $table->string('title');
             $table->text('description');
-            $table->string('image_url');
+            // $table->string('image_url');
             $table->float('price');
             $table->float('discount')->nullable(); // Discount can be nullable
             $table->timestamps();

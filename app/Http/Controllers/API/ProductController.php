@@ -70,7 +70,7 @@ class ProductController extends BaseController
             'products.title', 
             'products.description', 
             'products.image_url', 
-            'products.price', 
+            // 'products.price', 
             'products.priority', 
             'products.category_id', 
             'product_variants.title as product_variants_title'
@@ -90,7 +90,7 @@ class ProductController extends BaseController
                 'product_variants_title' => $item->product_variants_title, // Moved here
                 'description' => $item->description,
                 'image_url' => $item->image_url,
-                'price' => $item->price,
+                // 'price' => $item->price,
                 'priority' => $item->priority,
                 'category_id' => $item->category_id,
             ];
@@ -124,7 +124,7 @@ class ProductController extends BaseController
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'image_url' => 'required|string',
-            'price' => 'required|numeric',
+            // 'price' => 'required|numeric',
             'priority' => 'nullable|integer',
             'category_id'=>'required|integer'
         ]);
@@ -163,7 +163,7 @@ class ProductController extends BaseController
             'title' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
             'image_url' => 'sometimes|required|string',
-            'price' => 'sometimes|required|numeric',
+            // 'price' => 'sometimes|required|numeric',
             'priority' => 'nullable|integer',
         ]);
 
