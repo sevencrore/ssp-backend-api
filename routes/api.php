@@ -176,6 +176,9 @@ Route::put('cart/{cart}', [CartController::class, 'update'])->name('cart.update'
 // Route for deleting a specific cart item
 Route::delete('cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
 
+// Route for getting cart details by user id
+Route::get('cart/user/{userId}', [CartController::class, 'getCartByUserId'])->name('cart.getCartByUserId');
+
 
 
 
