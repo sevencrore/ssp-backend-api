@@ -130,6 +130,9 @@ Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
 // Route for retrieving a specific order
 Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
 
+// Route for retrieving a specific tracking number
+Route::get('orders/track/{tracking_number}', [OrderController::class, 'getOrderByTrackingNumber'])->name('orders.getOrderByTrackingNumber');
+
 // Route for updating a specific order
 Route::put('orders/{order}', [OrderController::class, 'update'])->name('orders.update');
 

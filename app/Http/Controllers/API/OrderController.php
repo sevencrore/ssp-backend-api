@@ -134,8 +134,28 @@ class OrderController extends BaseController
             'cart_data' => 'required|array',
         ]);
 
-        // Generate a unique tracking number
-        $trackingNumber = 'TRK' . strtoupper(uniqid());
+            // Generate the current year and month (yyyymm)
+        $currentYearMonth = now()->format('Ym');
+
+        // Find the last order's tracking number for the current month
+        $lastOrder = Order::where('tracking_number', 'like','SSP'. $currentYearMonth . '%')
+                        ->orderBy('id', 'desc')
+                        ->first();
+
+        // Generate the unique incremental number
+        $incrementalNumber = 1; // Default if no orders exist for this month
+        if ($lastOrder) {
+            // Extract the last incremental number from the tracking number and increment
+            $lastTrackingNumber = $lastOrder->tracking_number;
+            $lastIncremental = (int) substr($lastTrackingNumber, 9); // Extract numeric part after 'yyyymm_'
+            $incrementalNumber = $lastIncremental + 1;
+        }
+
+        // Pad the incremental number to ensure it's 6 digits long
+        $uniqueNumber = str_pad($incrementalNumber, 7, '0', STR_PAD_LEFT);
+
+        // Generate the full tracking number
+        $trackingNumber = 'SSP'.$currentYearMonth . $uniqueNumber;
 
         // Use DB transaction for atomicity
         DB::beginTransaction();
@@ -195,6 +215,51 @@ class OrderController extends BaseController
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+
+    public function getOrderByTrackingNumber($trackingNumber)
+    {
+        // Retrieve the order using the provided tracking number
+    $order = Order::where('tracking_number', $trackingNumber)->first();
+
+        if (!$order) {
+            return response()->json([
+                'message' => 'Order not found.',
+            ], 404);
+        }
+
+        // Retrieve the associated order items
+        $orderItems = OrderItem::where('order_id', $order->id)->get();
+
+        // Prepare the response data
+        $response = [
+            'order_id' => $order->id,
+            'user_id' => $order->user_id,
+            'order_status' => $order->order_status,
+            'total_amount' => $order->total_amount,
+            'discount' => $order->discount,
+            'grand_total' => $order->grand_total,
+            'tracking_number' => $order->tracking_number,
+            'order_items' => $orderItems->map(function ($item) {
+                return [
+                    'product_id' => $item->product_id,
+                    'product_variant_id' => $item->product_variant_id,
+                    'quantity' => $item->quantity,
+                    'unit_quantity' => $item->unit_quantity,
+                    'unit_title' => $item->unit_title,
+                    'price' => $item->price,
+                    'discount' => $item->discount,
+                    'total_amount' => $item->total_amount,
+                ];
+            }),
+        ];
+
+        // Return the order details as a response
+        return response()->json([
+            'message' => 'Order details retrieved successfully.',
+            'order' => $response,
+        ], 200);
     }
 
 
