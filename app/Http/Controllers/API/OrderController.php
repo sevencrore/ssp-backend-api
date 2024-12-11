@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
 
@@ -116,6 +118,86 @@ class OrderController extends BaseController
      *     )
      * )
      */
+
+
+    /**
+     * Store order and order items.
+     */
+    public function storeOrder(Request $request)
+    {
+        // Validate request payload
+        $validated = $request->validate([
+            'user_id' => 'required|integer',
+            'subtotal' => 'required|numeric',
+            'savings' => 'required|numeric',
+            'grand_total' => 'required|numeric',
+            'cart_data' => 'required|array',
+        ]);
+
+        // Generate a unique tracking number
+        $trackingNumber = 'TRK' . strtoupper(uniqid());
+
+        // Use DB transaction for atomicity
+        DB::beginTransaction();
+
+        try {
+            // Store data into orders table
+            $order = Order::create([
+                'user_id' => $validated['user_id'],
+                'order_status' => 0, // Default status
+                'total_amount' => $validated['subtotal'],
+                'discount' => $validated['savings'],
+                'grand_total' => $validated['grand_total'],
+                'tracking_number' => $trackingNumber,
+            ]);
+
+            // Retrieve the created order ID
+            $orderId = $order->id;
+
+            // Prepare order items data
+            $orderItems = [];
+            foreach ($validated['cart_data'] as $cartItem) {
+                $orderItems[] = [
+                    'order_id' => $orderId,
+                    'user_id' => $validated['user_id'],
+                    'product_id' => $cartItem['product_id'],
+                    'product_variant_id' => $cartItem['product_variant_id'],
+                    'quantity' => $cartItem['quantity'],
+                    'unit_quantity' => $cartItem['unit_quantity'],
+                    'unit_title' => $cartItem['unit_title'],
+                    'price' => $cartItem['price'],
+                    'discount' =>$cartItem['discount'],
+                    'total_amount'  => $cartItem['quantity'] * $cartItem['price'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+
+            // Insert data into order_items table
+            OrderItem::insert($orderItems);
+
+            // Commit the transaction
+            DB::commit();
+
+            // Return response
+            return response()->json([
+                'message' => 'Order placed successfully.',
+                'order_id' => $orderId,
+                'tracking_number' => $trackingNumber,
+            ], 201);
+        } catch (\Exception $e) {
+            // Rollback the transaction on error
+            DB::rollBack();
+
+            // Return error response
+            return response()->json([
+                'message' => 'Failed to place order.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
     public function show(Order $order)
     {
         return response()->json([

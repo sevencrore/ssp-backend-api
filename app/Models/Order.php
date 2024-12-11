@@ -15,6 +15,9 @@ class Order extends Model
         'order_status',
         'tracking_number',
         'total_amount',
+        'grand_total',
+        'discount',
+    
     ];
 
     // Define relationships if needed

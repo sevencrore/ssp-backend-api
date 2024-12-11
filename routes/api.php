@@ -121,6 +121,9 @@ Route::delete('city/{city}', [CityController::class, 'destroy'])->name('city.des
 // Route for creating a new order
 Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
 
+// Route for creating a new order
+Route::post('orders/create', [OrderController::class, 'storeOrder'])->name('orders.storeOrder');
+
 // Route for retrieving all orders
 Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
 
