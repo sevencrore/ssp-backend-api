@@ -90,9 +90,11 @@ class CartController extends BaseController
                 ->select(
                     'carts.id as id',
                     'carts.quantity',
+                    'products.id as product_id',
                     'products.title as product_title',
                     'products.category_id',
                     'products.image_url',
+                    'product_variants.id as product_variant_id',
                     'product_variants.title as variant_title',
                     'product_variants.description',
                     'product_variants.price',
