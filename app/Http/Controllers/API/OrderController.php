@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\API\BaseController as BaseController;
@@ -191,10 +192,15 @@ class OrderController extends BaseController
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
+                // Collect the cart item id for deletion later
+            $cartIds[] = $cartItem['id'];
             }
 
             // Insert data into order_items table
             OrderItem::insert($orderItems);
+
+            // Delete cart items that were used in the order
+        Cart::whereIn('id', $cartIds)->delete();
 
             // Commit the transaction
             DB::commit();
