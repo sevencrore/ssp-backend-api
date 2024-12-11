@@ -137,6 +137,8 @@ public function getProductsWithVariants(Request $request): JsonResponse
         return [
             'product_id' => $product->id,
             'image_url' => $product->image_url,
+            'title'=>$product->title,
+            'description'=>$product->description,
             'product_variants' => $product->variants->map(function ($variant) {
                 return [
                     'product_variant_id' => $variant->id,
