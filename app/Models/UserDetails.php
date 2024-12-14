@@ -21,5 +21,8 @@ class UserDetails extends Model
         'user_id',
         'aadhar_number',
         'referral_code',
+        'minimum_order',
+        'commission',
+        'is_first_order_completed',
     ];
 }
