@@ -137,6 +137,9 @@ Route::get('orders/track/{tracking_number}', [OrderController::class, 'getOrderB
 // Route for updating a specific order
 Route::put('orders/{order}', [OrderController::class, 'update'])->name('orders.update');
 
+// Route for updating a specific order
+Route::put('orders/status/{order}', [OrderController::class, 'updateOrderStatus'])->name('orders.updateOrderStatus');
+
 // Route for deleting a specific order
 Route::delete('orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
 

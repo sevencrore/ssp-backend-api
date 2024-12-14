@@ -393,6 +393,30 @@ class OrderController extends BaseController
         ]);
     }
 
+    //  update the order status by orrder id 
+    
+    public function updateOrderStatus(Request $request,Order $order )
+    {
+        // Validate the request to ensure order_id and status are provided
+        $request->validate([
+            'order_status' => 'required|Integer', // Adjust valid statuses as needed
+        ]);
+
+
+        $order->update(['order_status' => $request->order_status]);
+
+       // Return a success response
+        return response()->json([
+            'message' => 'Order status updated successfully.',
+            'order' => [
+                'order_id' => $order->id,
+                'order_status' => $order->order_status,
+            ],
+        ], 200);
+    }
+
+
+
     /**
      * @OA\Delete(
      *     path="/api/orders/{order}",
