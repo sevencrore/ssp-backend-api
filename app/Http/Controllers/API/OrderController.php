@@ -270,6 +270,50 @@ class OrderController extends BaseController
     }
 
 
+    // getting all the orders desc on date with pagination
+    
+    public function getAllOrders(Request $request)
+    {
+        // Retrieve orders with pagination and order them by created_at in descending order
+        $orders = Order::orderBy('created_at', 'desc')->paginate(10); // Adjust the number per page as needed
+        
+        if ($orders->isEmpty()) {
+            return response()->json([
+                'message' => 'No orders found.',
+            ], 404);
+        }
+
+        // Map the orders to include their associated items and product image
+        $response = $orders->map(function ($order) {
+            // Retrieve the associated order items
+            $orderItems = OrderItem::where('order_id', $order->id)->get();
+        
+            return [
+                'order_id' => $order->id,
+                'user_id' => $order->user_id,
+                'order_status' => $order->order_status,
+                'total_amount' => $order->total_amount,
+                'discount' => $order->discount,
+                'grand_total' => $order->grand_total,
+                'tracking_number' => $order->tracking_number,
+                'OrderDate' => $order->created_at,
+            ];
+        });
+
+        // Return the paginated orders as a response
+        return response()->json([
+            'message' => 'All orders retrieved successfully.',
+            'orders' => $response,
+            'pagination' => [
+                'current_page' => $orders->currentPage(),
+                'total_pages' => $orders->lastPage(),
+                'per_page' => $orders->perPage(),
+                'total_orders' => $orders->total(),
+            ],
+        ], 200);
+    }
+
+
 
 
     public function getOrdersByUserId(Request $request)
@@ -303,6 +347,7 @@ class OrderController extends BaseController
                 'discount' => $order->discount,
                 'grand_total' => $order->grand_total,
                 'tracking_number' => $order->tracking_number,
+                'OrderDate'=>$order->created_at,
                 'order_items' => $orderItems->map(function ($item) {
                     // Retrieve the product for the current item
                     $product = Product::find($item->product_id);

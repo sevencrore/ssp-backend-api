@@ -272,4 +272,13 @@ Route::delete('brand/{brand}', [BrandController::class, 'destroy'])->name('brand
 
 
 
+
+//  Admin Routes 
+
+// Route for retrieving all orders off he user  by user_id
+Route::get('orders/admin', [OrderController::class, 'getAllOrders'])->name('orders.getAllOrders');
+// Route for retrieving a specific order item
+Route::get('order-items/admin/{orderItem}', [OrderItemController::class, 'getOrderItemsByOrderId'])->name('order-items.getOrderItemsByOrderId');
+
+
 });
