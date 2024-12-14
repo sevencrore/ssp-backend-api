@@ -127,8 +127,9 @@ Route::post('orders/create', [OrderController::class, 'storeOrder'])->name('orde
 // Route for retrieving all orders
 Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
 
-// Route for retrieving a specific order
-Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+
+// Route for retrieving all orders off he user  by user_id
+Route::get('orders/user-orders', [OrderController::class, 'getOrdersByUserId'])->name('orders.getOrdersByUserId');
 
 // Route for retrieving a specific tracking number
 Route::get('orders/track/{tracking_number}', [OrderController::class, 'getOrderByTrackingNumber'])->name('orders.getOrderByTrackingNumber');

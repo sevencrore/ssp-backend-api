@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -135,13 +136,13 @@ class OrderController extends BaseController
             'cart_data' => 'required|array',
         ]);
 
-            // Generate the current year and month (yyyymm)
+        // Generate the current year and month (yyyymm)
         $currentYearMonth = now()->format('Ym');
 
         // Find the last order's tracking number for the current month
-        $lastOrder = Order::where('tracking_number', 'like','SSP'. $currentYearMonth . '%')
-                        ->orderBy('id', 'desc')
-                        ->first();
+        $lastOrder = Order::where('tracking_number', 'like', 'SSP' . $currentYearMonth . '%')
+            ->orderBy('id', 'desc')
+            ->first();
 
         // Generate the unique incremental number
         $incrementalNumber = 1; // Default if no orders exist for this month
@@ -156,7 +157,7 @@ class OrderController extends BaseController
         $uniqueNumber = str_pad($incrementalNumber, 7, '0', STR_PAD_LEFT);
 
         // Generate the full tracking number
-        $trackingNumber = 'SSP'.$currentYearMonth . $uniqueNumber;
+        $trackingNumber = 'SSP' . $currentYearMonth . $uniqueNumber;
 
         // Use DB transaction for atomicity
         DB::beginTransaction();
@@ -187,20 +188,20 @@ class OrderController extends BaseController
                     'unit_quantity' => $cartItem['unit_quantity'],
                     'unit_title' => $cartItem['unit_title'],
                     'price' => $cartItem['price'],
-                    'discount' =>$cartItem['discount'],
+                    'discount' => $cartItem['discount'],
                     'total_amount'  => $cartItem['quantity'] * $cartItem['price'],
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
                 // Collect the cart item id for deletion later
-            $cartIds[] = $cartItem['id'];
+                $cartIds[] = $cartItem['id'];
             }
 
             // Insert data into order_items table
             OrderItem::insert($orderItems);
 
             // Delete cart items that were used in the order
-        Cart::whereIn('id', $cartIds)->delete();
+            Cart::whereIn('id', $cartIds)->delete();
 
             // Commit the transaction
             DB::commit();
@@ -227,7 +228,7 @@ class OrderController extends BaseController
     public function getOrderByTrackingNumber($trackingNumber)
     {
         // Retrieve the order using the provided tracking number
-    $order = Order::where('tracking_number', $trackingNumber)->first();
+        $order = Order::where('tracking_number', $trackingNumber)->first();
 
         if (!$order) {
             return response()->json([
@@ -267,6 +268,69 @@ class OrderController extends BaseController
             'order' => $response,
         ], 200);
     }
+
+
+
+
+    public function getOrdersByUserId(Request $request)
+    {
+        // Validate the request to ensure user_id is provided
+        $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
+    
+        // Retrieve the user_id from the request
+        $userId = $request->input('user_id');
+    
+        // Retrieve all orders for the specified user
+        $orders = Order::where('user_id', $userId)->get();
+    
+        if ($orders->isEmpty()) {
+            return response()->json([
+                'message' => 'No orders found for this user.',
+            ], 404);
+        }
+    
+        // Map the orders to include their associated items and product image
+        $response = $orders->map(function ($order) {
+            // Retrieve the associated order items
+            $orderItems = OrderItem::where('order_id', $order->id)->get();
+    
+            return [
+                'order_id' => $order->id,
+                'order_status' => $order->order_status,
+                'total_amount' => $order->total_amount,
+                'discount' => $order->discount,
+                'grand_total' => $order->grand_total,
+                'tracking_number' => $order->tracking_number,
+                'order_items' => $orderItems->map(function ($item) {
+                    // Retrieve the product for the current item
+                    $product = Product::find($item->product_id);
+    
+                    return [
+                        'product_id' => $item->product_id,
+                        'image_url' => $product ? $product->image_url : null, // Get image_url if product exists
+                        'product_title' => $product->title,
+                        'product_variant_id' => $item->product_variant_id,
+                        'quantity' => $item->quantity,
+                        'unit_quantity' => $item->unit_quantity,
+                        'unit_title' => $item->unit_title,
+                        'price' => $item->price,
+                        'discount' => $item->discount,
+                        'total_amount' => $item->total_amount,
+                    ];
+                }),
+            ];
+        });
+    
+        // Return the user orders as a response
+        return response()->json([
+            'message' => 'User orders retrieved successfully.',
+            'orders' => $response,
+        ], 200);
+    }
+    
+
 
 
     public function show(Order $order)
