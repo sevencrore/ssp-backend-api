@@ -8,6 +8,7 @@ use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\Earning;
+use App\Models\ConfigSetting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
@@ -99,12 +100,14 @@ class RegisterController extends BaseController
         if ($referrer) {
             $referrer_id = $referrer->user_id;
 
+            $configSetting = ConfigSetting::find(1);
+
             // Get earnings by user_id is nothing but referral_id
             $earningRow = Earning::where('user_id', $referrer_id)->first();
 
             if (!$earningRow) {
                 $earningData = [
-                    'referral_incentive' => 30,
+                    'referral_incentive' => $configSetting->referal_incentive,
                     'sale_value_estimated' => 3000,
                     'sale_actual_value' => 0,
                     'wallet_amount' => 0,
@@ -115,8 +118,9 @@ class RegisterController extends BaseController
                 ];
                 Earning::create($earningData);
             } else {
-                $earningRow->referral_incentive = $earningRow->referral_incentive + 300;
-                $earningRow->update($earningRow);     
+                $earningRow->referral_incentive += $configSetting->referal_incentive; // Increment the value
+                $earningRow->save(); // Save the updated model to the database
+                
             }
         } else {
             // if referral code is not found then create new earning row
