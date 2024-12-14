@@ -76,7 +76,15 @@ class RegisterController extends BaseController
             'password' => 'required',
             'c_password' => 'required|same:password',
             'referral_code' => 'required',
+            'last_name' => 'required',
+            
+            // New fields
+            'phone_1' => 'required',               // Required field
+            'phone2' => 'nullable',               // Optional field
+            'aadhar_number' => 'nullable',          // Required field
+            'minimum_order' => 'required|numeric' // Required field and must be numeric
         ]);
+        
 
         if ($validator->fails()) {
             return response()->json([
@@ -87,8 +95,30 @@ class RegisterController extends BaseController
         }
 
         $input = $request->all();
-        $input['password'] = bcrypt($input['password']); 
-        $user = User::create($input);
+        $userData = [
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => bcryp($request->input('password')), // Hashing the password
+            'referral_code' => $request->input('referral_code'),
+            'last_name' => $request->input('last_name'),
+        ];
+
+        $user = User::create($userData);
+
+        $details =[
+
+            'first_name' =>$validator['name'],
+            'last-name' =>$validator['last_name'],
+            'phone_1' => $validator['phone_1'],
+            'email' =>$validator['email'],
+            'user_id' => $user->id,
+            'aadhar_number' => $validator['aadhar_number'],
+            'referral_code' => $user->id,
+            'minimum_order' => $validator['minimum_order'],
+            'commission' => $validator['minimum_order'] == 3000 ? 2 :1,
+        ];
+
+        $userDetails = UserDetails::create($details);
 
         // get user->id => reg_user_id
         $reg_user_id = $user->id;
