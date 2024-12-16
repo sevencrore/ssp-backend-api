@@ -68,24 +68,24 @@ class RegisterController extends BaseController
     }
 
     public function registerWthReferral(Request $request): JsonResponse
-    { 
+    {
         Log::info('I am here');
+    
+        // Validator definition
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
             'email' => 'required|email',
+            'user_name' => 'required',
             'password' => 'required',
             'c_password' => 'required|same:password',
             'referral_code' => 'required',
             'last_name' => 'required',
-            
-            // New fields
             'phone_1' => 'required',               // Required field
             'phone2' => 'nullable',               // Optional field
-            'aadhar_number' => 'nullable',          // Required field
+            'aadhar_number' => 'nullable',        // Optional field
             'minimum_order' => 'required|numeric' // Required field and must be numeric
         ]);
-        
-
+    
+        // If validation fails, return error response
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -93,38 +93,43 @@ class RegisterController extends BaseController
                 'message' => 'Register Validation failed',
             ], 422);
         }
-
-        $input = $request->all();
+    
+        // Use only validated data
+        $validatedData = $validator->validated();
+    
+        // Create user data using validated fields
         $userData = [
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'password' => bcryp($request->input('password')), // Hashing the password
-            'referral_code' => $request->input('referral_code'),
-            'last_name' => $request->input('last_name'),
+            'name' => $validatedData['user_name'],
+            'email' => $validatedData['email'],
+            'user_name' => $validatedData['user_name'],
+            'password' => bcrypt($validatedData['password']), // Hashing the password
+            'referral_code' => $validatedData['referral_code'],
+            'last_name' => $validatedData['last_name'],
         ];
-
+    
         $user = User::create($userData);
-
-        $details =[
-
-            'first_name' =>$validator['name'],
-            'last-name' =>$validator['last_name'],
-            'phone_1' => $validator['phone_1'],
-            'email' =>$validator['email'],
+    
+        // Prepare details for UserDetails table
+        $details = [
+            'first_name' => $validatedData['user_name'], // Assuming user_name is first name
+            'last_name' => $validatedData['last_name'],
+            'phone_1' => $validatedData['phone_1'],
+            'email' => $validatedData['email'],
             'user_id' => $user->id,
-            'aadhar_number' => $validator['aadhar_number'],
+            // Optional fields
+            'aadhar_number' => $validatedData['aadhar_number'] ?? null,
             'referral_code' => $user->id,
-            'minimum_order' => $validator['minimum_order'],
-            'commission' => $validator['minimum_order'] == 3000 ? 2 :1,
+            'minimum_order' => $validatedData['minimum_order'],
+            'commission' => $validatedData['minimum_order'] == 3000 ? 2 : 1,
         ];
-
+    
         $userDetails = UserDetails::create($details);
 
         // get user->id => reg_user_id
         $reg_user_id = $user->id;
 
         // get user_details by referral code . here user_id is referral_id
-        $referrer = UserDetails::where('referral_code', $input['referral_code'])->first();
+        $referrer = UserDetails::where('referral_code', $validatedData['referral_code'])->first();
         $referrer_id = null;
 
         if ($referrer) {
