@@ -38,23 +38,56 @@ class RegisterController extends BaseController
     public function register(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
             'email' => 'required|email',
+            'user_name' => 'required',
             'password' => 'required',
             'c_password' => 'required|same:password',
+            'referral_code' => 'nullable',
+            'last_name' => 'required',
+            'phone_1' => 'required',               // Required field
+            'phone2' => 'nullable',               // Optional field
+            'aadhar_number' => 'nullable',        // Optional field
+            'minimum_order' => 'required|numeric' // Required field and must be numeric
         ]);
-
+    
+        // If validation fails, return error response
         if ($validator->fails()) {
             return response()->json([
-                'success' => false, // Change to false
+                'success' => false,
                 'data' => $validator->errors(),
                 'message' => 'Register Validation failed',
-            ], 422); // 422 Unprocessable Entity for validation errors
+            ], 422);
         }
-
-        $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
+    
+        // Use only validated data
+        $validatedData = $validator->validated();
+    
+        // Create user data using validated fields
+        $userData = [
+            'name' => $validatedData['user_name'],
+            'email' => $validatedData['email'],
+            'user_name' => $validatedData['user_name'],
+            'password' => bcrypt($validatedData['password']), // Hashing the password
+            'last_name' => $validatedData['last_name'],
+        ];
+    
+        $user = User::create($userData);
+    
+        // Prepare details for UserDetails table
+        $details = [
+            'first_name' => $validatedData['user_name'], // Assuming user_name is first name
+            'last_name' => $validatedData['last_name'],
+            'phone_1' => $validatedData['phone_1'],
+            'email' => $validatedData['email'],
+            'user_id' => $user->id,
+            // Optional fields
+            'aadhar_number' => $validatedData['aadhar_number'] ?? null,
+            'referral_code' => $user->id,
+            'minimum_order' => $validatedData['minimum_order'],
+            'commission' => $validatedData['minimum_order'] == 3000 ? 2 : 1,
+        ];
+    
+        $userDetails = UserDetails::create($details);
 
         $success['token'] = $user->createToken('MyApp')->plainTextToken;
         $success['id'] = $user->id; // Directly use the user's ID
