@@ -141,6 +141,11 @@ class RegisterController extends BaseController
         ];
     
         $user = User::create($userData);
+
+        // get user_details by referral code . here user_id is referral_id
+        $referrer = UserDetails::where('referral_code', $validatedData['referral_code'])->first();
+        $referrer_id = null;
+
     
         // Prepare details for UserDetails table
         $details = [
@@ -154,6 +159,7 @@ class RegisterController extends BaseController
             'referral_code' => $user->id,
             'minimum_order' => $validatedData['minimum_order'],
             'commission' => $validatedData['minimum_order'] == 3000 ? 2 : 1,
+            'referred_by' => $referrer->user_id ,
         ];
     
         $userDetails = UserDetails::create($details);
@@ -161,10 +167,7 @@ class RegisterController extends BaseController
         // get user->id => reg_user_id
         $reg_user_id = $user->id;
 
-        // get user_details by referral code . here user_id is referral_id
-        $referrer = UserDetails::where('referral_code', $validatedData['referral_code'])->first();
-        $referrer_id = null;
-
+        
         if ($referrer) {
             $referrer_id = $referrer->user_id;
 

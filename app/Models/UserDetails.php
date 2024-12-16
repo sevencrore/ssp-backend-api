@@ -24,5 +24,6 @@ class UserDetails extends Model
         'minimum_order',
         'commission',
         'is_first_order_completed',
+        'referred_by',
     ];
 }
