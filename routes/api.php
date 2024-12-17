@@ -259,6 +259,10 @@ Route::put('earnings/{earning}', [EarningController::class, 'update'])->name('ea
 Route::delete('earnings/{earning}', [EarningController::class, 'destroy'])->name('earnings.destroy');
 
 
+// Route updatting the wallet amountt whhen the purchase occcurs
+Route::post('earnings/comission/{id}', [EarningController::class, 'addcomission'])->name('earnings.addcomission');
+
+
 Route::get('user-bank', [UserBankController::class, 'index'])->name('user-bank.index');
 Route::post('user-bank', [UserBankController::class, 'store'])->name('user-bank.store');
 Route::get('user-bank/{id}', [UserBankController::class, 'show'])->name('user-bank.show');

@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\API\EarningController;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
 
@@ -449,6 +450,13 @@ class OrderController extends BaseController
 
 
         $order->update(['order_status' => $request->order_status]);
+
+        if ($request->order_status== 2){
+            $earningController = new EarningController();
+
+            // Call the addComission method
+            $earningController->addComission($order->id);
+        }
 
        // Return a success response
         return response()->json([
