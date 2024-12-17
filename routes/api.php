@@ -19,6 +19,8 @@ use App\Http\Controllers\API\UserReferralController;
 use App\Http\Controllers\API\EarningController;
 use App\Http\Controllers\API\UserBankController;
 use App\Http\Controllers\API\ImageController;
+use App\Http\Controllers\ComissionController;
+use App\Http\Controllers\ComissionDetailController;
 
 
 
@@ -269,6 +271,42 @@ Route::get('brand-get-all-paginated', [BrandController::class, 'getAllPaginated'
 Route::get('brand/{brand}', [BrandController::class, 'show'])->name('brand.show');
 Route::post('brand/{id}', [BrandController::class, 'update'])->name('brand.update');
 Route::delete('brand/{brand}', [BrandController::class, 'destroy'])->name('brand.destroy');
+
+
+
+
+// Route to get all records
+Route::get('comissions', [ComissionController::class, 'index'])->name('comissions.index');
+
+// Route to get a single record
+Route::get('comissions/{id}', [ComissionController::class, 'show'])->name('comissions.show');
+
+// Route to create a new record
+Route::post('comissions', [ComissionController::class, 'store'])->name('comissions.store');
+
+// Route to update an existing record
+Route::put('comissions/{id}', [ComissionController::class, 'update'])->name('comissions.update');
+
+// Route to delete a record
+Route::delete('comissions/{id}', [ComissionController::class, 'destroy'])->name('comissions.destroy');
+
+
+
+// Route to get all records
+Route::get('comission-details', [ComissionDetailController::class, 'index'])->name('comission_details.index');
+
+// Route to get a single record
+Route::get('comission-details/{id}', [ComissionDetailController::class, 'show'])->name('comission_details.show');
+
+// Route to create a new record
+Route::post('comission-details', [ComissionDetailController::class, 'store'])->name('comission_details.store');
+
+// Route to update an existing record
+Route::put('comission-details/{id}', [ComissionDetailController::class, 'update'])->name('comission_details.update');
+
+// Route to delete a record
+Route::delete('comission-details/{id}', [ComissionDetailController::class, 'destroy'])->name('comission_details.destroy');
+
 
 
 
