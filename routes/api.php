@@ -281,8 +281,7 @@ Route::get('comissions', [ComissionController::class, 'index'])->name('comission
 // Route to get a single record
 Route::get('comissions/{id}', [ComissionController::class, 'show'])->name('comissions.show');
 
-// Route to create a new record
-Route::post('comissions', [ComissionController::class, 'store'])->name('comissions.store');
+
 
 // Route to update an existing record
 Route::put('comissions/{id}', [ComissionController::class, 'update'])->name('comissions.update');
@@ -320,3 +319,5 @@ Route::get('order-items/admin/{orderItem}', [OrderItemController::class, 'getOrd
 
 
 });
+// Route to create a new record
+Route::post('comissions', [ComissionController::class, 'store'])->name('comissions.store');

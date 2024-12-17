@@ -21,8 +21,7 @@ class UserDetails extends Model
         'user_id',
         'aadhar_number',
         'referral_code',
-        'minimum_order',
-        'commission',
+        'comission_id',
         'is_first_order_completed',
         'referred_by',
     ];

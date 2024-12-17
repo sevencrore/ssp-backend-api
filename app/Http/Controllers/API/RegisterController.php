@@ -47,7 +47,7 @@ class RegisterController extends BaseController
             'phone_1' => 'required',               // Required field
             'phone2' => 'nullable',               // Optional field
             'aadhar_number' => 'nullable',        // Optional field
-            'minimum_order' => 'required|numeric' // Required field and must be numeric
+            'comission_id' => 'required',
         ]);
     
         // If validation fails, return error response
@@ -83,8 +83,7 @@ class RegisterController extends BaseController
             // Optional fields
             'aadhar_number' => $validatedData['aadhar_number'] ?? null,
             'referral_code' => $user->id,
-            'minimum_order' => $validatedData['minimum_order'],
-            'commission' => $validatedData['minimum_order'] == 3000 ? 2 : 1,
+            'comission_id' => $validatedData['comission_id'] ,
         ];
     
         $userDetails = UserDetails::create($details);
@@ -115,7 +114,7 @@ class RegisterController extends BaseController
             'phone_1' => 'required',               // Required field
             'phone2' => 'nullable',               // Optional field
             'aadhar_number' => 'nullable',        // Optional field
-            'minimum_order' => 'required|numeric' // Required field and must be numeric
+            'comission_id' => 'required',
         ]);
     
         // If validation fails, return error response
@@ -157,8 +156,7 @@ class RegisterController extends BaseController
             // Optional fields
             'aadhar_number' => $validatedData['aadhar_number'] ?? null,
             'referral_code' => $user->id,
-            'minimum_order' => $validatedData['minimum_order'],
-            'commission' => $validatedData['minimum_order'] == 3000 ? 2 : 1,
+            'comission_id' => $validatedData['comission_id'] ,
             'referred_by' => $referrer->user_id ,
         ];
     
