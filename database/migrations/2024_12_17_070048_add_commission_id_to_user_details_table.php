@@ -20,8 +20,8 @@ class AddCommissionIdToUserDetailsTable extends Migration
             
 
             // Add 'commission_id' as a foreign key referencing 'id' on 'commissions' table
-            $table->unsignedBigInteger('commission_id')->after('user_id');
-            $table->foreign('commission_id')->references('id')->on('commissions')->onDelete('set null');
+            $table->unsignedBigInteger('comission_id')->after('user_id');
+            $table->foreign('comission_id')->references('id')->on('comission')->onDelete('set null');
         });
     }
 
