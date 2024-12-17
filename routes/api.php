@@ -291,8 +291,7 @@ Route::delete('comissions/{id}', [ComissionController::class, 'destroy'])->name(
 
 
 
-// Route to get all records
-Route::get('comission-details', [ComissionDetailController::class, 'index'])->name('comission_details.index');
+
 
 // Route to get a single record
 Route::get('comission-details/{id}', [ComissionDetailController::class, 'show'])->name('comission_details.show');
@@ -319,5 +318,8 @@ Route::get('order-items/admin/{orderItem}', [OrderItemController::class, 'getOrd
 
 
 });
+
+// Route to get all records
+Route::get('comission-details', [ComissionDetailController::class, 'index'])->name('comission_details.index');
 // Route to create a new record
 Route::post('comissions', [ComissionController::class, 'store'])->name('comissions.store');
