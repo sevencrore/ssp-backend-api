@@ -279,8 +279,6 @@ Route::delete('brand/{brand}', [BrandController::class, 'destroy'])->name('brand
 
 
 
-// Route to get all records
-Route::get('comissions', [ComissionController::class, 'index'])->name('comissions.index');
 
 // Route to get a single record
 Route::get('comissions/{id}', [ComissionController::class, 'show'])->name('comissions.show');
@@ -322,6 +320,10 @@ Route::get('order-items/admin/{orderItem}', [OrderItemController::class, 'getOrd
 
 
 });
+
+
+// Route to get all records
+Route::get('comissions', [ComissionController::class, 'index'])->name('comissions.index');
 
 // Route to get all records
 Route::get('comission-details', [ComissionDetailController::class, 'index'])->name('comission_details.index');
