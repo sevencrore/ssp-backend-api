@@ -19,9 +19,11 @@ class AddCommissionIdToUserDetailsTable extends Migration
                 $table->dropColumn('minimum_order');
             
 
-            // Add 'commission_id' as a foreign key referencing 'id' on 'commissions' table
-            $table->unsignedBigInteger('comission_id')->after('user_id');
-            $table->foreign('comission_id')->references('id')->on('comission')->onDelete('set null');
+                $table->unsignedBigInteger('comission_id')->nullable()->after('user_id');; // Add the comission_id column
+                $table->foreign('comission_id') // Define the foreign key constraint
+                      ->references('id')
+                      ->on('comission')
+                      ->onDelete('set null'); // Set to null if the referenced record is deleted
         });
     }
 
