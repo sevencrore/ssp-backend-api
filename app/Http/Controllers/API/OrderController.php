@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Cart;
+use App\Models\UserDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\API\EarningController;
@@ -452,10 +453,21 @@ class OrderController extends BaseController
         $order->update(['order_status' => $request->order_status]);
 
         if ($request->order_status== 2){
+            $userDetail = UserDetails::where('user_id', $order->user_id)->first();
             $earningController = new EarningController();
 
-            // Call the addComission method
-            $earningController->addComission($order->id);
+            if($userDetail->is_first_order_completed == 0){
+                $referal_id = $userDetail->referred_by;
+                $sucess =$earningController->updateEarningsWithReferralIncentive($referal_id);
+                if($sucess == 'success'){
+                    $userDetail->is_first_order_completed = 1;
+                    $userDetail->save(); // Persist changes
+                }
+
+            }
+
+            // // Call the addComission method
+             $earningController->addComission($order->id);
         }
 
        // Return a success response

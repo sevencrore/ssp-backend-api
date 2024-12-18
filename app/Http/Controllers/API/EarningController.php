@@ -6,8 +6,11 @@ use App\Models\Earning;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\UserDetails;
+use App\Models\ConfigSetting;
 use App\Models\ComissionDetail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\EarningResource;
@@ -320,6 +323,60 @@ class EarningController extends BaseController
 
 
 
+    public function updateEarningsWithReferralIncentive($id)
+    {
+        try {
+            // Validate the input
+            if (!$id) {
+                return response()->json(['error' => 'User ID is required.'], 400);
+            }
+
+            // Start a database transaction
+            DB::beginTransaction();
+
+            // Fetch the matching earnings record
+            $earning = Earning::where('user_id', $id)->first();
+
+            if (!$earning) {
+                return response()->json(['message' => 'No earnings found for this user.'], 404);
+            }
+
+            // Fetch the referral incentive from the config_setting table
+            $configSetting = ConfigSetting::find(1);
+            if (!$configSetting) {
+                return response()->json(['error' => 'Config setting not found.'], 404);
+            }
+
+            $referralIncentive = $configSetting->referal_incentive;
+            Log::info($configSetting);
+           
+            if ($earning->referral_incentive <= $referralIncentive){
+                $earning->wallet_amount += $earning->referral_incentive; // Add referral incentive to wallet
+                $earning->referral_incentive=0;
+            }
+            else {
+                 // Update wallet_amount and adjust the previous amount
+                $earning->wallet_amount += $referralIncentive; // Add referral incentive to wallet
+                $earning->referral_incentive -= $referralIncentive; // Deduct referral incentive from the previous amount
+            }
+            // Save the updated earnings record
+            $earning->save();
+
+            // Commit the transaction
+            DB::commit();
+
+            return 'success';
+
+        } catch (\Exception $e) {
+            // Rollback the transaction in case of error
+            DB::rollBack();
+
+            return 'fail';
+        }
+    }
+
+
+
     public function calculateCommission($userId, $grandTotal, $level)
     {
         // Fetch the user details using user_id
@@ -385,9 +442,10 @@ class EarningController extends BaseController
     
         // Call the reusable function for level 1
         $currentUserId = $this->calculateCommission($userId, $grandTotal, 1);
-    
+        
+        $max_depth = ConfigSetting::find(1)->max_level;
         // Ensure $currentUserId is valid and continue for levels 2 and 3
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $max_depth <= 2; $i++) {
             if (!$currentUserId) {
                 break;  // Exit the loop if no valid user ID is returned
             }
