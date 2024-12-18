@@ -87,6 +87,18 @@ class RegisterController extends BaseController
         ];
     
         $userDetails = UserDetails::create($details);
+        $configSetting = ConfigSetting::find(1);
+        $earningData = [
+            'referral_incentive' => 0,
+            'sale_value_estimated' => 3000,
+            'sale_actual_value' => 0,
+            'wallet_amount' => 0,
+            'self_purchase_total' => 0,
+            'first_referral_purchase_total' => 0,
+            'second_referral_purchase_total' => 0,
+            'user_id' => $user->id,
+        ];
+        Earning::create($earningData);
 
         $success['token'] = $user->createToken('MyApp')->plainTextToken;
         $success['id'] = $user->id; // Directly use the user's ID
@@ -140,6 +152,18 @@ class RegisterController extends BaseController
         ];
     
         $user = User::create($userData);
+        $configSetting = ConfigSetting::find(1);
+        $earningData = [
+            'referral_incentive' => 0,
+            'sale_value_estimated' => 3000,
+            'sale_actual_value' => 0,
+            'wallet_amount' => 0,
+            'self_purchase_total' => 0,
+            'first_referral_purchase_total' => 0,
+            'second_referral_purchase_total' => 0,
+            'user_id' => $user->id,
+        ];
+        Earning::create($earningData);
 
         // get user_details by referral code . here user_id is referral_id
         $referrer = UserDetails::where('referral_code', $validatedData['referral_code'])->first();
