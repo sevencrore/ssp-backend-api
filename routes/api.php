@@ -283,7 +283,7 @@ Route::delete('brand/{brand}', [BrandController::class, 'destroy'])->name('brand
 // Route to get a single record
 Route::get('comissions/{id}', [ComissionController::class, 'show'])->name('comissions.show');
 
-
+Route::get('/get-minimum-order', [ComissionController::class, 'getMinimumOrder']);
 
 // Route to update an existing record
 Route::put('comissions/{id}', [ComissionController::class, 'update'])->name('comissions.update');

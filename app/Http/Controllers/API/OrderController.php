@@ -7,6 +7,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Cart;
 use App\Models\UserDetails;
+use App\Models\Comission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\API\EarningController;
@@ -137,6 +138,17 @@ class OrderController extends BaseController
             'grand_total' => 'required|numeric',
             'cart_data' => 'required|array',
         ]);
+
+        $userDetail = UserDetails::where('user_id', $validated['user_id'])->first();  
+        $comission_id = $userDetail->comission_id;
+        
+        $comission = Comission::where('id',$comission_id)->first();
+
+        if($validated['grand_total']<$comission->minimum_order){
+            return response()->json([
+                'message' => "The minimum amount to place the order is $comission->minimum_order" ,
+            ], 500);
+        }
 
         // Generate the current year and month (yyyymm)
         $currentYearMonth = now()->format('Ym');

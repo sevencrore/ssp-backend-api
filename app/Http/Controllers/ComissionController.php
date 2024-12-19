@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comission;
+use App\Models\UserDetails;
 use Illuminate\Http\Request;
 
 class ComissionController extends Controller
@@ -64,4 +65,37 @@ class ComissionController extends Controller
             return response()->json(['message' => 'Comission not found'], 404);
         }
     }
+
+    public function getMinimumOrder(Request $request)
+    {
+        // Validate the input
+        $validated = $request->validate([
+            'user_id' => 'required|integer',
+        ]);
+
+        // Fetch user details
+        $userDetail = UserDetails::where('user_id', $validated['user_id'])->first();
+
+        if (!$userDetail) {
+            return response()->json([
+                'message' => 'User details not found.',
+            ], 404);
+        }
+
+        // Get commission details
+        $comission = Comission::find($userDetail->comission_id);
+
+        if (!$comission) {
+            return response()->json([
+                'message' => 'Commission details not found.',
+            ], 404);
+        }
+
+        // Return the minimum order
+        return response()->json([
+            'minimum_order' => $comission->minimum_order,
+        ], 200);
+    }
+
+
 }
