@@ -1,11 +1,11 @@
 <?php
 
-
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\ComissionHistory;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class ComissionHistoryController extends Controller
 {
@@ -43,7 +43,7 @@ class ComissionHistoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  ComissionHistory  $commissionHistory
+     * @param  ComissionHistory  $comissionHistory
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(ComissionHistory $comissionHistory)
@@ -55,14 +55,14 @@ class ComissionHistoryController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  ComissionHistory  $commissionHistory
+     * @param  ComissionHistory  $comissionHistory
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, ComissionHistory $comissionHistory)
     {
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
-            'comission_type' => 'required|integer',
+            'comission_type' => 'nullable|integer',
             'referal_id' => 'nullable|exists:users,id',
             'amount' => 'required|numeric',
             'description' => 'nullable|string',
@@ -82,5 +82,17 @@ class ComissionHistoryController extends Controller
     {
         $comissionHistory->delete();
         return response()->json(null, 204);
+    }
+
+    /**
+     * Get commission histories by user_id.
+     *
+     * @param  int  $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getByUserId($userId)
+    {
+        $comissions = ComissionHistory::where('user_id', $userId)->get();
+        return response()->json($comissions);
     }
 }

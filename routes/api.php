@@ -309,8 +309,8 @@ Route::put('comission-details/{id}', [ComissionDetailController::class, 'update'
 Route::delete('comission-details/{id}', [ComissionDetailController::class, 'destroy'])->name('comission_details.destroy');
 
 
-// Route to get a single record
-Route::get('comission-history/{id}', [ComissionHistoryController::class, 'show'])->name('comission_history.show');
+// Route to get a single record by ID
+Route::get('comission-history/{comissionHistory}', [ComissionHistoryController::class, 'show'])->name('comission_history.show');
 
 // Route to get all records
 Route::get('comission-history', [ComissionHistoryController::class, 'index'])->name('comission_history.index');
@@ -318,11 +318,11 @@ Route::get('comission-history', [ComissionHistoryController::class, 'index'])->n
 // Route to create a new record
 Route::post('comission-history', [ComissionHistoryController::class, 'store'])->name('comission_history.store');
 
-// Route to update an existing record
-Route::put('comission-history/{id}', [ComissionHistoryController::class, 'update'])->name('commission_history.update');
+// Route to update an existing record by ID
+Route::put('comission-history/{comissionHistory}', [ComissionHistoryController::class, 'update'])->name('comission_history.update');
 
-// Route to delete a record
-Route::delete('comission-history/{id}', [ComissionHistoryController::class, 'destroy'])->name('commission_history.destroy');
+// Route to delete a record by ID
+Route::delete('comission-history/{comissionHistory}', [ComissionHistoryController::class, 'destroy'])->name('comission_history.destroy');
 
 
 
