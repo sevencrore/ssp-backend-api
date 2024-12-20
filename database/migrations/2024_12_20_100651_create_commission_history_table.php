@@ -13,7 +13,7 @@ class CreateCommissionHistoryTable extends Migration
      */
     public function up()
     {
-        Schema::create('commission_history', function (Blueprint $table) {
+        Schema::create('comission_history', function (Blueprint $table) {
             $table->id(); // Primary key
             $table->unsignedBigInteger('user_id'); // Foreign key from users table
 
@@ -21,7 +21,7 @@ class CreateCommissionHistoryTable extends Migration
             // 2 => self-buy
             // 3 => first_referal_buy
             // 4 => second_referal_buy
-            $table->tinyInteger('commission_type')->nullable(); // Tiny integer for commission type
+            $table->tinyInteger('comission_type')->nullable(); // Tiny integer for commission type
             $table->unsignedBigInteger('referal_id')->nullable(); // Foreign key from users table, nullable
             $table->float('amount'); // Float for the commission amount
             $table->text('description')->nullable(); // Text for description, nullable
@@ -47,6 +47,6 @@ class CreateCommissionHistoryTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('commission_history');
+        Schema::dropIfExists('comission_history');
     }
 }

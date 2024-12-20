@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CommissionHistory extends Model
+class ComissionHistory extends Model
 {
     use HasFactory;
 
@@ -14,7 +14,7 @@ class CommissionHistory extends Model
      *
      * @var string
      */
-    protected $table = 'commission_history';
+    protected $table = 'comission_history';
 
     /**
      * The attributes that are mass assignable.

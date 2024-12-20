@@ -4,10 +4,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\CommissionHistory;
+use App\Models\ComissionHistory;
 use Illuminate\Http\Request;
 
-class CommissionHistoryController extends Controller
+class ComissionHistoryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,8 +16,8 @@ class CommissionHistoryController extends Controller
      */
     public function index()
     {
-        $commissions = CommissionHistory::all();
-        return response()->json($commissions);
+        $comissions = ComissionHistory::all();
+        return response()->json($comissions);
     }
 
     /**
@@ -30,57 +30,57 @@ class CommissionHistoryController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
-            'commission_type' => 'required|integer',
+            'comission_type' => 'required|integer',
             'referal_id' => 'nullable|exists:users,id',
             'amount' => 'required|numeric',
             'description' => 'nullable|string',
         ]);
 
-        $commission = CommissionHistory::create($validated);
-        return response()->json($commission, 201);
+        $comission = ComissionHistory::create($validated);
+        return response()->json($comission, 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  CommissionHistory  $commissionHistory
+     * @param  ComissionHistory  $commissionHistory
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(CommissionHistory $commissionHistory)
+    public function show(ComissionHistory $comissionHistory)
     {
-        return response()->json($commissionHistory);
+        return response()->json($comissionHistory);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  CommissionHistory  $commissionHistory
+     * @param  ComissionHistory  $commissionHistory
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, CommissionHistory $commissionHistory)
+    public function update(Request $request, ComissionHistory $comissionHistory)
     {
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
-            'commission_type' => 'required|integer',
+            'comission_type' => 'required|integer',
             'referal_id' => 'nullable|exists:users,id',
             'amount' => 'required|numeric',
             'description' => 'nullable|string',
         ]);
 
-        $commissionHistory->update($validated);
-        return response()->json($commissionHistory);
+        $comissionHistory->update($validated);
+        return response()->json($comissionHistory);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  CommissionHistory  $commissionHistory
+     * @param  ComissionHistory  $comissionHistory
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(CommissionHistory $commissionHistory)
+    public function destroy(ComissionHistory $comissionHistory)
     {
-        $commissionHistory->delete();
+        $comissionHistory->delete();
         return response()->json(null, 204);
     }
 }

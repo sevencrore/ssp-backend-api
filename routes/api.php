@@ -21,7 +21,7 @@ use App\Http\Controllers\API\UserBankController;
 use App\Http\Controllers\API\ImageController;
 use App\Http\Controllers\ComissionController;
 use App\Http\Controllers\ComissionDetailController;
-use App\Http\Controllers\Api\CommissionHistoryController;
+use App\Http\Controllers\Api\ComissionHistoryController;
 
 
 
@@ -310,19 +310,19 @@ Route::delete('comission-details/{id}', [ComissionDetailController::class, 'dest
 
 
 // Route to get a single record
-Route::get('commissions/{id}', [CommissionHistoryController::class, 'show'])->name('commissions.show');
+Route::get('comission-history/{id}', [ComissionHistoryController::class, 'show'])->name('comission_history.show');
 
 // Route to get all records
-Route::get('commissions', [CommissionHistoryController::class, 'index'])->name('commissions.index');
+Route::get('comission-history', [ComissionHistoryController::class, 'index'])->name('comission_history.index');
 
 // Route to create a new record
-Route::post('commissions', [CommissionHistoryController::class, 'store'])->name('commissions.store');
+Route::post('comission-history', [ComissionHistoryController::class, 'store'])->name('comission_history.store');
 
 // Route to update an existing record
-Route::put('commissions/{id}', [CommissionHistoryController::class, 'update'])->name('commissions.update');
+Route::put('comission-history/{id}', [ComissionHistoryController::class, 'update'])->name('commission_history.update');
 
 // Route to delete a record
-Route::delete('commissions/{id}', [CommissionHistoryController::class, 'destroy'])->name('commissions.destroy');
+Route::delete('comission-history/{id}', [ComissionHistoryController::class, 'destroy'])->name('commission_history.destroy');
 
 
 
