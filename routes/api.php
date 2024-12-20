@@ -21,6 +21,7 @@ use App\Http\Controllers\API\UserBankController;
 use App\Http\Controllers\API\ImageController;
 use App\Http\Controllers\ComissionController;
 use App\Http\Controllers\ComissionDetailController;
+use App\Http\Controllers\Api\CommissionHistoryController;
 
 
 
@@ -308,6 +309,20 @@ Route::put('comission-details/{id}', [ComissionDetailController::class, 'update'
 Route::delete('comission-details/{id}', [ComissionDetailController::class, 'destroy'])->name('comission_details.destroy');
 
 
+// Route to get a single record
+Route::get('commissions/{id}', [CommissionHistoryController::class, 'show'])->name('commissions.show');
+
+// Route to get all records
+Route::get('commissions', [CommissionHistoryController::class, 'index'])->name('commissions.index');
+
+// Route to create a new record
+Route::post('commissions', [CommissionHistoryController::class, 'store'])->name('commissions.store');
+
+// Route to update an existing record
+Route::put('commissions/{id}', [CommissionHistoryController::class, 'update'])->name('commissions.update');
+
+// Route to delete a record
+Route::delete('commissions/{id}', [CommissionHistoryController::class, 'destroy'])->name('commissions.destroy');
 
 
 
