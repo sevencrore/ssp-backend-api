@@ -23,7 +23,7 @@ class ComissionHistory extends Model
      */
     protected $fillable = [
         'user_id',
-        'commission_type',
+        'comission_type',
         'referal_id',
         'amount',
         'description',

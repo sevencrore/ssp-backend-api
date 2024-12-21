@@ -61,6 +61,49 @@ class ComissionHistoryController extends Controller
     }
 
     /**
+     * Retrieve commission history based on user ID.
+     *
+     * @param int $user_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getCommissionHistory($user_id)
+    {
+            try {
+              
+                // Fetch commission history for the given user_id
+                $commissionHistory = ComissionHistory::where('user_id', $user_id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+                // Check if any records found
+                if ($commissionHistory->isEmpty()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No commission history found for this user.',
+                    ], 404);
+                }
+
+                // Return success response with the fetched data
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Commission history retrieved successfully.',
+                    'data' => $commissionHistory,
+                ], 200);
+            } catch (\Exception $e) {
+                // Handle exception and return error response
+                Log::error("Error fetching commission history for user ID $user_id: " . $e->getMessage());
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to retrieve commission history.',
+                    'error' => $e->getMessage(),
+                ], 500);
+            }
+        }
+    
+
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request

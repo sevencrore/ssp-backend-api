@@ -315,6 +315,9 @@ Route::get('comission-history/{comissionHistory}', [ComissionHistoryController::
 // Route to get all records
 Route::get('comission-history', [ComissionHistoryController::class, 'index'])->name('comission_history.index');
 
+// Route to get all the records based on the userId
+Route::get('comission-history/user/{userId}', [ComissionHistoryController::class, 'getCommissionHistory'])->name('comission_history.getCommissionHistory');
+
 // Route to create a new record
 Route::post('comission-history', [ComissionHistoryController::class, 'store'])->name('comission_history.store');
 
