@@ -469,8 +469,9 @@ class OrderController extends BaseController
             $earningController = new EarningController();
 
             if($userDetail->is_first_order_completed == 0){
-                $referal_id = $userDetail->referred_by;
-                $sucess =$earningController->updateEarningsWithReferralIncentive($referal_id);
+                $ordered_user_id = $userDetail->user_id;
+                $referal_user_id = $userDetail->referred_by;
+                $sucess =$earningController->updateEarningsWithReferralIncentive($referal_user_id, $ordered_user_id);
                 if($sucess == 'success'){
                     $userDetail->is_first_order_completed = 1;
                     $userDetail->save(); // Persist changes

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ComissionHistory;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class ComissionHistoryController extends Controller
 {
@@ -18,6 +19,45 @@ class ComissionHistoryController extends Controller
     {
         $comissions = ComissionHistory::all();
         return response()->json($comissions);
+    }
+
+
+
+    public function addCommissionRecord($user_id, $comission_type, $referal_id, $amount, $description)
+    {
+        try {
+
+            Log::info("$user_id and the $amount in the add comissionrecord");
+
+            if ($user_id == $referal_id){
+                $comission_type=2;
+            }
+            // Create a new ComissionHistory record
+            $comissionHistory = ComissionHistory::create([
+                'user_id' => $user_id,
+                'comission_type' => $comission_type,
+                'referal_id' => $referal_id,
+                'amount' => $amount,
+                'description' => $description,
+            ]);
+
+            Log::info("$user_id and the $amount in the add comissionrecord but not savaing");
+
+            // Return success response
+            return response()->json([
+                'success' => true,
+                'message' => 'Commission record added successfully!',
+                'data' => $comissionHistory,
+            ], 201);
+        } catch (\Exception $e) {
+            // Handle exception and return error response
+            Log::info("$e");
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add commission record.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
