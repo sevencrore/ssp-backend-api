@@ -10,6 +10,7 @@ use App\Models\UserDetails;
 use App\Models\Earning;
 use App\Models\ConfigSetting;
 use App\Models\Comission;
+use App\Models\Vendor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
@@ -49,6 +50,7 @@ class RegisterController extends BaseController
             'phone2' => 'nullable',               // Optional field
             'aadhar_number' => 'nullable',        // Optional field
             'comission_id' => 'required',
+            'user_type' => 'required',
         ]);
     
         // If validation fails, return error response
@@ -70,6 +72,7 @@ class RegisterController extends BaseController
             'user_name' => $validatedData['user_name'],
             'password' => bcrypt($validatedData['password']), // Hashing the password
             'last_name' => $validatedData['last_name'],
+            'user_type'  => $validatedData['user_type'],
         ];
     
         $user = User::create($userData);
@@ -131,6 +134,7 @@ class RegisterController extends BaseController
             'phone2' => 'nullable',               // Optional field
             'aadhar_number' => 'nullable',        // Optional field
             'comission_id' => 'required',
+            'user_type' => 'required',
         ]);
     
         // If validation fails, return error response
@@ -153,6 +157,7 @@ class RegisterController extends BaseController
             'password' => bcrypt($validatedData['password']), // Hashing the password
             'referral_code' => $validatedData['referral_code'],
             'last_name' => $validatedData['last_name'],
+            'user_type'  => $validatedData['user_type'],
         ];
     
         $user = User::create($userData);
@@ -211,6 +216,81 @@ class RegisterController extends BaseController
         } else {
             // if referral code is not found then create new earning row
         }
+
+        $success['token'] = $user->createToken('MyApp')->plainTextToken;
+        $success['id'] = $user->id; // Directly use the user's ID
+        $success['name'] = $user->name;
+
+        return response()->json([
+            'success' => true,
+            'data' => $success,
+            'message' => 'User registered successfully.',
+        ], 200);
+    }
+
+    //  vendor registration 
+    public function registerVendor(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'user_name' => 'required',
+            'password' => 'required',
+            'c_password' => 'required|same:password',
+            'last_name' => 'required',
+            'phone_1' => 'required',               // Required field
+            'phone_2' => 'nullable',               // Optional field
+            'aadhar_number' => 'nullable',        // Optional field
+            'business_name' => 'required',
+            'address' => 'nullable',
+            'pincode' => 'required',
+            'latitude' => 'required',
+            'longitude' => 'required',
+            'user_type' => 'required',
+        ]);
+    
+        // If validation fails, return error response
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'data' => $validator->errors(),
+                'message' => 'Register Validation failed',
+            ], 422);
+        }
+    
+        // Use only validated data
+        $validatedData = $validator->validated();
+    
+        // Create user data using validated fields
+        $userData = [
+            'name' => $validatedData['user_name'],
+            'email' => $validatedData['email'],
+            'user_name' => $validatedData['user_name'],
+            'password' => bcrypt($validatedData['password']), // Hashing the password
+            'last_name' => $validatedData['last_name'],
+            'user_type'  => $validatedData['user_type'],
+        ];
+    
+        $user = User::create($userData);
+    
+        // Prepare details for UserDetails table
+        $vendordata = [
+            'first_name' => $validatedData['user_name'], // Assuming user_name is first name
+            'last_name' => $validatedData['last_name'],
+            'phone_1' => $validatedData['phone_1'],
+            'phone_2' => $validatedData['phone_2'],
+            'email' => $validatedData['email'],
+            'business_name' => $validatedData['business_name'],
+            'pincode' => $validatedData['pincode'],
+            'address' => $validatedData['address'],
+            'latitude' => $validatedData['latitude'],
+            'longitude' => $validatedData['longitude'],
+            'user_id' => $user->id,
+            // Optional fields
+            'aadhar_number' => $validatedData['aadhar_number'] ?? null,
+            
+        ];
+    
+        $vendor = Vendor::create($vendordata);
 
         $success['token'] = $user->createToken('MyApp')->plainTextToken;
         $success['id'] = $user->id; // Directly use the user's ID

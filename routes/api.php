@@ -31,6 +31,7 @@ use App\Http\Controllers\API\AddressController;
 Route::controller(RegisterController::class)->group(function() {
   Route::post('register', 'register');
   Route::post('register-referral', 'registerWthReferral'); // Correct the method name here
+  Route::post('register-vendor', 'registerVendor'); // Correct the method name here
   Route::post('login', 'login');
 });
 
