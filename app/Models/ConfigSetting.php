@@ -14,5 +14,6 @@ class ConfigSetting extends Model
     protected $fillable = [
         'referal_incentive',
         'max_level',
+        'vendor_comission',
     ];
 }
