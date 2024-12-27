@@ -419,6 +419,17 @@ class EarningController extends BaseController
         if ($earning) {
             // Update the wallet amount if the record exists
             $earning->wallet_amount += $commissionAmount;
+            if($level == 1){
+                if($userId == $ordered_user_id){
+                    $earning->self_purchase_total += $grandTotal;
+                }else{
+                    $earning->first_referral_purchase_total += $grandTotal;
+                }
+            }
+            if($level == 2){
+                $earning->second_referral_purchase_total += $grandTotal;
+            }
+
             $earning->save();
         } else {
             // Create a new earnings record if it doesn't exist
@@ -489,6 +500,37 @@ class EarningController extends BaseController
         return response()->json(['message' => 'Commission calculated successfully'], 200);
     }
     
+
+    // update the sales_value-estimated field on new registration
+    public function updateEstimatedsales($userId, $amount, $level)
+    {
+        // Fetch the Earning record
+        $earning = Earning::where('user_id', $userId)->first();
+
+        if (!$earning) {
+            return response()->json(['message' => 'Earning record not found'], 404);
+        }
+
+        // Update the sale_value_estimated
+        $earning->sale_value_estimated += $amount;
+        if ($level == 1){
+            $configSetting = ConfigSetting::find(1);
+            $earning->referral_incentive += $configSetting->referal_incentive;
+        }
+        $earning->save();
+
+        // Fetch referred_by from UserDetails
+        $userDetails = UserDetails::where('user_id', $userId)->first();
+
+        if (!$userDetails) {
+            return response()->json(['message' => 'UserDetails record not found'], 404);
+        }
+
+        $referredBy = $userDetails->referred_by;
+
+        // Return the result
+        return $referredBy;
+    }
 
 
 

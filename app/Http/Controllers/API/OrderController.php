@@ -494,6 +494,26 @@ class OrderController extends BaseController
     }
 
 
+    public function getPaidWallet(Request $request)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'user_id' => 'required|integer',
+        ]);
+
+        $userId = $request->input('user_id');
+
+        // Query to calculate the sum of grand_total for the given user_id
+        $total = Order::where('user_id', $userId)
+            ->whereIn('order_status', [0, 1]) // Check for order_status 0 or 1
+            ->sum('grand_total');
+
+        return response()->json([
+            'success' => true,
+            'user_id' => $userId,
+            'total_grand_total' => $total,
+        ]);
+    }
 
     /**
      * @OA\Delete(

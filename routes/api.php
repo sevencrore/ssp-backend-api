@@ -137,6 +137,10 @@ Route::get('orders/user-orders', [OrderController::class, 'getOrdersByUserId'])-
 // Route for retrieving a specific tracking number
 Route::get('orders/track/{tracking_number}', [OrderController::class, 'getOrderByTrackingNumber'])->name('orders.getOrderByTrackingNumber');
 
+// Route for retrieving user paid walletamount for orders which are in orderd or dispatched state showing pending amount goods is coming 
+Route::get('orders/get-paid-wallet', [OrderController::class, 'getPaidWallet'])->name('orders.getPaidWallet');
+
+
 // Route for updating a specific order
 Route::put('orders/{order}', [OrderController::class, 'update'])->name('orders.update');
 
