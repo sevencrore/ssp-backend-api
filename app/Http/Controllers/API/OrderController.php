@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\API\EarningController;
 use App\Http\Controllers\API\BaseController as BaseController;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -185,6 +186,9 @@ class OrderController extends BaseController
                 'discount' => $validated['savings'],
                 'grand_total' => $validated['grand_total'],
                 'tracking_number' => $trackingNumber,
+                'supplied_by' =>1,
+                'vendor_comission_percentage' => 2,
+                'vendor_comission_total' =>20,
             ]);
 
             // Retrieve the created order ID
@@ -364,12 +368,13 @@ class OrderController extends BaseController
                 'OrderDate'=>$order->created_at,
                 'order_items' => $orderItems->map(function ($item) {
                     // Retrieve the product for the current item
-                    $product = Product::find($item->product_id);
-    
+                    $product = Product::find( $item->product_id);
+                    Log::info("$item is from the orderdetails");
+                    Log::info("product $product");
                     return [
                         'product_id' => $item->product_id,
                         'image_url' => $product ? $product->image_url : null, // Get image_url if product exists
-                        'product_title' => $product->title,
+                        'product_title' =>$product ? $product->title : null,
                         'product_variant_id' => $item->product_variant_id,
                         'quantity' => $item->quantity,
                         'unit_quantity' => $item->unit_quantity,

@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\PersonalAccessToken;
 use Symfony\Component\HttpFoundation\Response;
 
 class CorsMiddleware
@@ -15,6 +16,16 @@ class CorsMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
+        // Get user_id from PersonalAccessToken using token and merge user_id to $request
+        $token = $request->bearerToken();
+        if($token) {
+            $personalAccessToken = PersonalAccessToken::findToken($token);
+            if($personalAccessToken) {
+                $request->merge(['user_id' => $personalAccessToken->tokenable_id]);
+            }
+        }
+        
+        
         $response = $next($request);
 
         // Set CORS headers

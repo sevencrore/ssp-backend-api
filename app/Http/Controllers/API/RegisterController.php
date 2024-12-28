@@ -323,10 +323,10 @@ class RegisterController extends BaseController
      * )
      */
     public function login(Request $request): JsonResponse
-    {
+    {   Log::info("$request->user_id");
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
-            $success['token'] = $user->createToken('MyApp')->plainTextToken;
+            $success['token'] = $user->createToken($user->id)->plainTextToken;
             $success['id'] = $user->id; // Directly use the user's ID
             $success['name'] = $user->name;
 
@@ -342,5 +342,23 @@ class RegisterController extends BaseController
                 'message' => 'User login Failed.',
             ], 401);
         }
+    }
+
+    public function logout(Request $request)
+    {
+        // Ensure the user is authenticated
+        if ($request->user()) {
+            Log::info("$request->user_id");
+            // Revoke the token
+            $request->user()->currentAccessToken()->delete();
+
+            return response()->json([
+                'message' => 'Logged out successfully.'
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'User not authenticated.'
+        ], 401);
     }
 }

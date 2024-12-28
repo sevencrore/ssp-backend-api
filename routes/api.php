@@ -45,6 +45,9 @@ Route::get('images', [ImageController::class, 'index'])->name('image.index');
 
          
 Route::middleware('auth:sanctum')->group( function () {
+
+
+  Route::post('logout', [RegisterController::class, 'logout']);
     
     // Example in api.php
 //Route::get('/bussiness', [BussinessController::class, 'index'])->name('bussiness.paginate');
