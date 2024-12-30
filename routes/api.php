@@ -267,26 +267,21 @@ Route::middleware('auth:sanctum')->group( function () {
   // Delete a specific customer-vendor relationship
   Route::delete('customer-vendors/{id}', [CustomerVendorController::class, 'destroy']);
 
-  // List all users
-  Route::get('/users', [UsersController::class, 'index'])->name('users.index');
+  // Route::get('/users', [UsersController::class, 'index'])->name('users.index');
 
-  // Display a specific user by ID
-  Route::get('/users/{id}', [UsersController::class, 'show'])->name('users.show');
+  // Route::get('/users/{id}', [UsersController::class, 'show'])->name('users.show');
 
-  // Create a new user
-  Route::post('/users', [UsersController::class, 'store'])->name('users.store');
+  // Route::post('/users', [UsersController::class, 'store'])->name('users.store');
 
-  // Update an existing user
-  Route::put('/users/{id}', [UsersController::class, 'update'])->name('users.update');
+  // Route::put('/users/{id}', [UsersController::class, 'update'])->name('users.update');
 
-  // Delete a user
-  Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
+  // Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
 
   // Change user state
   //Route::put('/users/change-state/{user_id}/{state}', [UsersController::class, 'changeUserState'])->name('users.changeState');
 
   // Get users with cold_state = 1 and filters
-  // Route::get('users/cold-state', [UsersController::class, 'getAllColdStateUsers'])->name('users.getAllColdStateUsers');
+  Route::get('users/cold-state', [UsersController::class, 'getAllColdStateUsers'])->name('users.getAllColdStateUsers');
   // Route::get('/users/cold-state', [UsersController::class, 'getAllColdStateUsers']);
 
   //  Admin Routes 
