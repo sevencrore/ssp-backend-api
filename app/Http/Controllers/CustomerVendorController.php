@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\CustomerVendor;
-use App\Models\User;
+use App\Http\Controllers\Api\UsersController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CustomerVendorController extends Controller
 {
@@ -12,7 +13,7 @@ class CustomerVendorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'customer_id' => 'required|integer|exists:customers,id', // Assuming a Customer model exists
+            'customer_id' => 'required|integer|exists:users,id', // Assuming a Customer model exists
             'vendor_id' => 'required|integer|exists:vendors,id', // Assuming a Vendor model exists
         ]);
 
@@ -20,9 +21,9 @@ class CustomerVendorController extends Controller
             'customer_id' => $request->customer_id,
             'vendor_id' => $request->vendor_id,
         ]);
-
+        Log::info(" in the customer vendor $customerVendor");
         if($customerVendor){
-            $userController = new User();
+            $userController = new UsersController();
             $update = $userController->changeUserState($customerVendor->customer_id , 0);
         }
         else{
