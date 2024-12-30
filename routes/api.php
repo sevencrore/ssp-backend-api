@@ -24,6 +24,7 @@ use App\Http\Controllers\ComissionDetailController;
 use App\Http\Controllers\API\ComissionHistoryController;
 use App\Http\Controllers\CustomerVendorController;
 use App\Http\Controllers\API\UsersController;
+use App\Http\Controllers\VendorController;
 
 
 
@@ -283,6 +284,14 @@ Route::middleware('auth:sanctum')->group( function () {
   // Get users with cold_state = 1 and filters
   Route::get('users/cold-state', [UsersController::class, 'getAllColdStateUsers'])->name('users.getAllColdStateUsers');
   // Route::get('/users/cold-state', [UsersController::class, 'getAllColdStateUsers']);
+
+
+  Route::get('vendors', [VendorController::class, 'index']); // Get all vendors                                                                                                                     
+  
+    Route::post('vendors', [VendorController::class, 'store']); // Create a new vendor
+    Route::get('vendors/{id}', [VendorController::class, 'show']); // Get a specific vendor by ID
+    Route::put('vendors/{id}', [VendorController::class, 'update']); // Update a specific vendor by ID
+    Route::delete('vendors/{id}', [VendorController::class, 'destroy']); // Delete a specific vendor by ID
 
   //  Admin Routes 
   // Route for retrieving all orders off he user  by user_id

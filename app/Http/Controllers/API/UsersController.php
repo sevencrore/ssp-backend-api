@@ -72,7 +72,7 @@ class UsersController extends BaseController
         
         // Apply filters if they are provided
         if (!empty($name)) {
-            $query->where('users.business_name', 'like', "%$name%");
+            $query->where('user_details.first_name', 'like', "%$name%");
         }
     
         if (!empty($pincode)) {
