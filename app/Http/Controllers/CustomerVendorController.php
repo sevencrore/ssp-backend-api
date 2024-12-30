@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CustomerVendor;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class CustomerVendorController extends Controller
@@ -19,6 +20,14 @@ class CustomerVendorController extends Controller
             'customer_id' => $request->customer_id,
             'vendor_id' => $request->vendor_id,
         ]);
+
+        if($customerVendor){
+            $userController = new User();
+            $update = $userController->changeUserState($customerVendor->customer_id , 0);
+        }
+        else{
+            return response()->json(['message' => 'failed to Create Customer-Vendor relationship'], 500);
+        }
 
         return response()->json(['message' => 'Customer-Vendor relationship created successfully', 'data' => $customerVendor], 201);
     }

@@ -22,6 +22,7 @@ use App\Http\Controllers\API\ImageController;
 use App\Http\Controllers\ComissionController;
 use App\Http\Controllers\ComissionDetailController;
 use App\Http\Controllers\Api\ComissionHistoryController;
+use App\Http\Controllers\CustomerVendorController;
 
 
 
@@ -335,6 +336,15 @@ Route::put('comission-history/{comissionHistory}', [ComissionHistoryController::
 // Route to delete a record by ID
 Route::delete('comission-history/{comissionHistory}', [ComissionHistoryController::class, 'destroy'])->name('comission_history.destroy');
 
+
+// Store a new customer-vendor relationship
+Route::post('customer-vendors', [CustomerVendorController::class, 'store']);
+
+// Get all customer-vendor relationships
+Route::get('customer-vendors', [CustomerVendorController::class, 'index']);
+
+// Delete a specific customer-vendor relationship
+Route::delete('customer-vendors/{id}', [CustomerVendorController::class, 'destroy']);
 
 
 //  Admin Routes 
