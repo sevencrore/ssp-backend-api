@@ -6,6 +6,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @OA\Schema(
@@ -125,7 +126,7 @@ class OrderItemController extends BaseController
                 'message' => 'No items found for this order.',
             ], 404);
         }
-
+        Log::info("ordeitems $orderItems");
         // Prepare the response with order item details and product data
         $response = $orderItems->map(function ($item) {
             $product = Product::find($item->product_id);
