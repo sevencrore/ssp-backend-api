@@ -6,6 +6,7 @@ use App\Models\Cart;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends BaseController
 {
@@ -77,6 +78,55 @@ class CartController extends BaseController
         return response()->json(['success' => true, 'data' => $cart]);
     }
 
+
+    // controller for the getting the cart details based on the user id
+    public function getCartByUserId(Request $request): JsonResponse
+    {
+        try {
+            $cartItems = DB::table('carts')
+                ->join('products', 'carts.product_id', '=', 'products.id')
+                ->join('product_variants', 'carts.product_variants_id', '=', 'product_variants.id')
+                ->join('unit', 'product_variants.unit_id', '=', 'unit.id')
+                ->select(
+                    'carts.id as id',
+                    'carts.quantity',
+                    'products.id as product_id',
+                    'products.title as product_title',
+                    'products.category_id',
+                    'products.image_url',
+                    'product_variants.id as product_variant_id',
+                    'product_variants.title as variant_title',
+                    'product_variants.description',
+                    'product_variants.price',
+                    'product_variants.discount',
+                    'product_variants.unit_id',
+                    'product_variants.unit_quantity',
+                    'unit.title as unit_title'
+                )
+                ->where('carts.user_id', $request->user_id)
+                ->get();
+
+            if ($cartItems->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No items found in the cart for this user.',
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $cartItems,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while fetching the cart items.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
     /**
      * @OA\Post(
      *     path="/api/cart",
@@ -112,7 +162,7 @@ class CartController extends BaseController
             'user_id' => 'required|integer',
             'product_id' => 'required|integer',
             'product_variants_id' => 'required|integer',
-            'discount' => 'required|integer|min:0',
+            'quantity' => 'required|integer|min:0',
         ]);
 
         $cartItem = Cart::create($validatedData);

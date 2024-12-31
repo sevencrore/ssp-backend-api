@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\OrderItem;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @OA\Schema(
@@ -110,6 +112,43 @@ class OrderItemController extends BaseController
     {
         $orderItem = OrderItem::findOrFail($id);
         return response()->json(['success' => true, 'data' => $orderItem]);
+    }
+
+
+    public function getOrderItemsByOrderId($orderId)
+    {
+        // Retrieve all order items for the given order_id
+        $orderItems = OrderItem::where('order_id', $orderId)->get();
+
+        if ($orderItems->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No items found for this order.',
+            ], 404);
+        }
+        Log::info("ordeitems $orderItems");
+        // Prepare the response with order item details and product data
+        $response = $orderItems->map(function ($item) {
+            $product = Product::find($item->product_id);
+
+            return [
+                'product_id' => $item->product_id,
+                'image_url' => $product ? $product->image_url : null,
+                'product_title' => $product ? $product->title : null,
+                'quantity' => $item->quantity,
+                'unit_quantity' => $item->unit_quantity,
+                'unit_title' => $item->unit_title,
+                'price' => $item->price,
+                'discount' => $item->discount,
+                'total_amount' => $item->total_amount,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $response,
+            'message' => 'Order items retrieved successfully.',
+        ], 200);
     }
 
     /**

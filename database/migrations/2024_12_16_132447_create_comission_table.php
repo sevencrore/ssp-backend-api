@@ -11,24 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('products', function (Blueprint $table) {
+        Schema::create('comission', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->float('minimum_order');
+            $table->timestamps(); 
         });
     }
 
-    // /**
-    //  * Reverse the migrations.
-    //  */
-    public function down(): void
-    {
-        Schema::dropIfExists('products');
-    }
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('comission');
     }
 };

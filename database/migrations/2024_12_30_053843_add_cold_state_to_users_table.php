@@ -11,24 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->tinyInteger('cold_state')->default(1)->after('user_type'); // Add cold_state column after user_type
         });
     }
 
-    // /**
-    //  * Reverse the migrations.
-    //  */
-    public function down(): void
-    {
-        Schema::dropIfExists('products');
-    }
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('cold_state'); // Remove cold_state column
+        });
     }
 };

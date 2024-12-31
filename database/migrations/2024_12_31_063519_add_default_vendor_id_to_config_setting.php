@@ -11,24 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('config_setting', function (Blueprint $table) {
+            $table->tinyInteger('default_vendor_id')->nullable()->after('max_level'); // Add default_vendor_id
         });
     }
 
-    // /**
-    //  * Reverse the migrations.
-    //  */
-    public function down(): void
-    {
-        Schema::dropIfExists('products');
-    }
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::table('config_setting', function (Blueprint $table) {
+            $table->dropColumn('default_vendor_id'); // Drop default_vendor_id column
+        });
     }
 };

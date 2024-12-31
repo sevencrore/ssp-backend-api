@@ -48,37 +48,50 @@ class ProductVariantController extends BaseController
 
  public function store(Request $request): JsonResponse
  {
-     $validatedData = $request->validate([
-         'product_id' => 'required|string', 
-         'category_id' => 'required|string',
-         'title' => 'required|string|max:255',
-         'description' => 'required|string',
-         'image_url' => 'string',
-         'price' => 'required|numeric',
-         'discount' => 'nullable|numeric',
-         'unit_id' => 'required|string',
-         'unit_quantity' => 'required|numeric',
-         'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-     ]);
- 
-     if ($request->hasFile('image')) {
-         $path = $request->file('image')->store('images', 'public');
-         $validatedData['image_url'] = $path;
-     }
- 
-     $productVariant = ProductVariant::create($validatedData);
- 
-     return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant created successfully.', 201);
- }
+    try {
+            $validatedData = $request->validate([
+                'product_id' => 'required|string', 
+                //  'category_id' => 'required|string',
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'image_url' => 'nullable|string',
+                'price' => 'required|numeric',
+                'discount' => 'nullable|numeric',
+                'unit_id' => 'required|string',
+                'unit_quantity' => 'required|numeric',
+                'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+        
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('images', 'public');
+                $validatedData['image_url'] = $path;
+            }
+        
+            $productVariant = ProductVariant::create($validatedData);
+        
+            return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant created successfully.', 201);
+     }catch (\Exception $e) {
+        // Handle the exception
+        return response()->json([
+            'success' => false,
+            'message' => 'Error: ' . $e->getMessage()
+        ], 500);
+    }
+
+}
 
 
     
     public function show($id): JsonResponse
     {
         $productVariant = ProductVariant::join('products',  'product_variants.product_id', '=', 'products.id')
-        ->join('category', 'product_variants.category_id', '=', 'category.id')
-        ->where('product_variants.product_id', $id)
-        ->get(['product_variants.*',  'products.title as product_title',  'category.title as category_title']);
+        ->where('product_variants.id', $id)
+        ->get(['product_variants.*',  'products.title as product_title', ]);
+        
+        // $productVariant = ProductVariant::join('products',  'product_variants.product_id', '=', 'products.id')
+        // ->join('category', 'product_variants.category_id', '=', 'category.id')
+        // ->where('product_variants.product_id', $id)
+        // ->get(['product_variants.*',  'products.title as product_title',  'category.title as category_title']);
         
         
 
@@ -113,7 +126,9 @@ public function update(Request $request, $id): JsonResponse
 
 }
 public function getProductsWithVariants(Request $request): JsonResponse
-{
+{   
+    Log::info("user_id from the request toke $request->user_id");
+    Log::info("user_id from the request toke $request");
     $perPage = $request->input('per_page', 10); 
     $currentPage = $request->input('current_page', 1);
 
@@ -123,12 +138,14 @@ public function getProductsWithVariants(Request $request): JsonResponse
     $formattedProducts = $products->map(function ($product) {
         return [
             'product_id' => $product->id,
+            'image_url' => $product->image_url,
+            'title'=>$product->title,
+            'description'=>$product->description,
             'product_variants' => $product->variants->map(function ($variant) {
                 return [
                     'product_variant_id' => $variant->id,
                     'title' => $variant->title,
                     'description' => $variant->description,
-                    'image_url' => $variant->image_url,
                     'price' => $variant->price,
                     'discount' => $variant->discount,
                     'unit_id' => $variant->unit_id,

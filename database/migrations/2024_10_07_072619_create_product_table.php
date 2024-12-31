@@ -11,14 +11,14 @@ return new class extends Migration
     //  */
     public function up(): void
     {
-        Schema::create('product', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->text('description');
-            $table->string('image_url');
-            $table->float('price');
-            $table->timestamps();
-        });
+        // Schema::create('product', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('title');
+        //     $table->text('description');
+        //     $table->string('image_url');
+        //     $table->float('price');
+        //     $table->timestamps();
+        // });
     }
 
     /**
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product');
+        // Schema::dropIfExists('product');
     }
 };

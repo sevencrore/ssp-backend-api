@@ -11,24 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->tinyInteger('user_type')->nullable()->after('password')->default(null);
         });
     }
 
-    // /**
-    //  * Reverse the migrations.
-    //  */
-    public function down(): void
-    {
-        Schema::dropIfExists('products');
-    }
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('user_type');
+        });
     }
 };

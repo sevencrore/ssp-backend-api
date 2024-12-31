@@ -70,7 +70,7 @@ class ProductController extends BaseController
             'products.title', 
             'products.description', 
             'products.image_url', 
-            'products.price', 
+            // 'products.price', 
             'products.priority', 
             'products.category_id', 
             'product_variants.title as product_variants_title'
@@ -90,7 +90,7 @@ class ProductController extends BaseController
                 'product_variants_title' => $item->product_variants_title, // Moved here
                 'description' => $item->description,
                 'image_url' => $item->image_url,
-                'price' => $item->price,
+                // 'price' => $item->price,
                 'priority' => $item->priority,
                 'category_id' => $item->category_id,
             ];
@@ -120,31 +120,39 @@ class ProductController extends BaseController
     // Create a new product
     public function store(Request $request): JsonResponse
     {
+        // Validate the incoming request
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'image_url' => 'required|string',
-            'price' => 'required|numeric',
+            'image_url' => 'nullable|file|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate as a file and an image
             'priority' => 'nullable|integer',
-            'category_id'=>'required|integer'
+            'category_id' => 'required|integer|exists:category,id',
         ]);
-
-        $product = Product::create($validatedData);
-
-        // $product_id = null;
-        // if($product) {
-        //     $product_id =  $product->id;
-        //     $validatedData['product_id'] = $product_id;
-            
-        //     $productVariant = ProductVariant::create($validatedData);
-        // }
-
-        return response()->json([
-            'success' => true,
-            'data' => $product
-        ], 201);
+    
+        try {
+            // Check if an image file is provided and store it
+            if ($request->hasFile('image_url')) {
+                $path = $request->file('image_url')->store('images', 'public');
+                $validatedData['image_url'] = $path; // Save the file path as a string
+            }
+    
+            // Create the product
+            $product = Product::create($validatedData);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Product created successfully.',
+                'data' => $product,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create product. Please try again.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
-
+    
     // Get a single product by id
     public function show($id)
     {
@@ -163,7 +171,7 @@ class ProductController extends BaseController
             'title' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
             'image_url' => 'sometimes|required|string',
-            'price' => 'sometimes|required|numeric',
+            // 'price' => 'sometimes|required|numeric',
             'priority' => 'nullable|integer',
         ]);
 

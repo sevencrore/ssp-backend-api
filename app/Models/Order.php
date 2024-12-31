@@ -15,6 +15,12 @@ class Order extends Model
         'order_status',
         'tracking_number',
         'total_amount',
+        'grand_total',
+        'discount',
+        'supplied_by',
+        'vendor_comission_percentage',
+        'vendor_comission_total',
+    
     ];
 
     // Define relationships if needed
