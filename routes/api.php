@@ -54,7 +54,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::post('business', [BusinessController::class, 'store'])->name('business.store');
   Route::get('business/{business}', [BusinessController::class, 'show'])->name('business.show');
   Route::get('business/{business}/edit', [BusinessController::class, 'edit'])->name('business.edit');
-  Route::post('business/{business}/edit', [BusinessController::class, 'edit'])->name('business.edit');
+  // Route::post('business/{business}/edit', [BusinessController::class, 'edit'])->name('business.edit');
   Route::put('business/{business}', [BusinessController::class, 'update'])->name('business.update');
   Route::post('business/delete-multiple', [BusinessController::class, 'deleteMultiple']);
   Route::post('business/restore-multiple', [BusinessController::class, 'restoreMultiple']);
@@ -247,7 +247,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('comission-history', [ComissionHistoryController::class, 'index'])->name('comission_history.index');
 
   // Route to get all the records based on the userId
-  Route::get('comission-history/user', [ComissionHistoryController::class, 'getCommissionHistory'])->name('comission_history.getCommissionHistory');
+  Route::get('comission-history/user/{userId}', [ComissionHistoryController::class, 'getCommissionHistory'])->name('comission_history.getCommissionHistory');
 
   // Route to create a new record
   Route::post('comission-history', [ComissionHistoryController::class, 'store'])->name('comission_history.store');
