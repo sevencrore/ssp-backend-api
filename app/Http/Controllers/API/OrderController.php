@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\API\EarningController;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\CustomerVendor;
+use App\Models\ConfigSetting;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
 
@@ -177,6 +179,10 @@ class OrderController extends BaseController
         // Use DB transaction for atomicity
         DB::beginTransaction();
 
+
+        $vendor = CustomerVendor::where('customer_id',$validated['user_id'])->first();
+        $config_settings = ConfigSetting::find(1);
+
         try {
             // Store data into orders table
             $order = Order::create([
@@ -186,9 +192,9 @@ class OrderController extends BaseController
                 'discount' => $validated['savings'],
                 'grand_total' => $validated['grand_total'],
                 'tracking_number' => $trackingNumber,
-                'supplied_by' =>1,
-                'vendor_comission_percentage' => 2,
-                'vendor_comission_total' =>20,
+                'supplied_by' =>$vendor->vendor_id,
+                'vendor_comission_percentage' => $config_settings->vendor_comission,
+                'vendor_comission_total' =>(($validated['grand_total']/100)* $config_settings->vendor_comission),
             ]);
 
             // Retrieve the created order ID
