@@ -63,7 +63,7 @@ class ComissionHistoryController extends Controller
     /**
      * Retrieve commission history based on user ID.
      *
-     * @param int $user_id
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function getCommissionHistory(Request $request)
@@ -167,6 +167,11 @@ class ComissionHistoryController extends Controller
     {
         $comissionHistory->delete();
         return response()->json(null, 204);
+    }
+
+    public function name(Request $request){
+        Log::info(("hello prabhu"));
+        return response("hello prabhu");
     }
 
     /**
