@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Http\Controllers\CustomerVendorController;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\Earning;
@@ -51,6 +52,7 @@ class RegisterController extends BaseController
             'aadhar_number' => 'nullable',        // Optional field
             'comission_id' => 'required',
             'user_type' => 'required',
+            'pincode' => 'required',
         ]);
     
         // If validation fails, return error response
@@ -76,6 +78,14 @@ class RegisterController extends BaseController
         ];
     
         $user = User::create($userData);
+
+        if(!$user){
+            return response()->json([
+                'success' => false,
+                'message' => 'User registered failed',
+            ], 422);
+        }
+
     
         // Prepare details for UserDetails table
         $details = [
@@ -88,9 +98,16 @@ class RegisterController extends BaseController
             'aadhar_number' => $validatedData['aadhar_number'] ?? null,
             'referral_code' => $user->id,
             'comission_id' => $validatedData['comission_id'] ,
+            'pincode' => $validatedData['pincode'],
         ];
     
         $userDetails = UserDetails::create($details);
+
+        //  auto asssigningg the vendor to customer
+        $customervendorcontroller  = new CustomerVendorController();
+        $vendorAssignment = $customervendorcontroller->autoAsssignCustomerVendor($user->id,$validatedData['pincode']);
+        Log::info("the auto assigned customer vendor $vendorAssignment ");
+
         $configSetting = ConfigSetting::find(1);
 
         // Find a record by its ID
@@ -135,6 +152,7 @@ class RegisterController extends BaseController
             'aadhar_number' => 'nullable',        // Optional field
             'comission_id' => 'required',
             'user_type' => 'required',
+            'pincode' => 'required',
         ]);
     
         // If validation fails, return error response
@@ -174,6 +192,7 @@ class RegisterController extends BaseController
             'first_referral_purchase_total' => 0,
             'second_referral_purchase_total' => 0,
             'user_id' => $user->id,
+            
         ];
         Earning::create($earningData);
 
@@ -194,9 +213,15 @@ class RegisterController extends BaseController
             'referral_code' => $user->id,
             'comission_id' => $validatedData['comission_id'] ,
             'referred_by' => $referrer->user_id ,
+            'pincode' => $validatedData['pincode'],
         ];
     
         $userDetails = UserDetails::create($details);
+
+         //  auto asssigningg the vendor to customer
+         $customervendorcontroller  = new CustomerVendorController();
+         $vendorAssignment = $customervendorcontroller->autoAsssignCustomerVendor($user->id,$validatedData['pincode']);
+         Log::info("the auto assigned customer vendor $vendorAssignment ");
 
         // get user->id => reg_user_id
         $reg_user_id = $user->id;

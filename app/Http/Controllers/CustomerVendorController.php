@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\CustomerVendor;
 use App\Http\Controllers\Api\UsersController;
+use App\Models\ConfigSetting;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -32,6 +34,38 @@ class CustomerVendorController extends Controller
 
         return response()->json(['message' => 'Customer-Vendor relationship created successfully', 'data' => $customerVendor], 201);
     }
+
+    //  auto assign the vendor to customer 
+    public function autoAsssignCustomerVendor($customerId,$pincode)
+    {   
+        $vendor = Vendor::where('pincode', $pincode)->first();
+        
+        if(!$vendor){
+            $config_settings = ConfigSetting::find(1);
+           // $vendor = Vendor::find(1);
+           $vendor_id = $config_settings->default_vendor_id;
+           
+        } else{
+            $vendor_id = $vendor->id;
+        } 
+        $customerVendor = CustomerVendor::create([
+            'customer_id' => $customerId,
+         // 'vendor_id' => $vendor->id,
+            'vendor_id' => $vendor_id,
+        ]);
+
+        Log::info("Created Customer-Vendor relationship: $customerVendor");
+
+        if ($customerVendor) {
+            $userController = new UsersController();
+            $userController->changeUserState($customerVendor->customer_id, 0);
+        } else {
+            throw new \Exception('Failed to create Customer-Vendor relationship');
+        }
+
+        return $customerVendor;
+    }
+
 
     // Get all customer-vendor relationships
     public function index()
