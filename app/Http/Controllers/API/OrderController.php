@@ -512,7 +512,7 @@ class OrderController extends BaseController
             'user_id' => 'required|integer',
         ]);
 
-        $userId = $request->input('user_id');
+        $userId = $request->user_id;
 
         // Query to calculate the sum of grand_total for the given user_id
         $total = Order::where('user_id', $userId)

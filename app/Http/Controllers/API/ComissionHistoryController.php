@@ -66,8 +66,10 @@ class ComissionHistoryController extends Controller
      * @param int $user_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getCommissionHistory($user_id)
-    {
+    public function getCommissionHistory(Request $request)
+    {    Log::info(("the user_id in the getcomissionhistory controller "));  
+         $user_id= $request->user_id;
+           
             try {
               
                 // Fetch commission history for the given user_id

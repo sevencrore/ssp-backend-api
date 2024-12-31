@@ -80,7 +80,7 @@ class CartController extends BaseController
 
 
     // controller for the getting the cart details based on the user id
-    public function getCartByUserId(int $userId): JsonResponse
+    public function getCartByUserId(Request $request): JsonResponse
     {
         try {
             $cartItems = DB::table('carts')
@@ -103,7 +103,7 @@ class CartController extends BaseController
                     'product_variants.unit_quantity',
                     'unit.title as unit_title'
                 )
-                ->where('carts.user_id', $userId)
+                ->where('carts.user_id', $request->user_id)
                 ->get();
 
             if ($cartItems->isEmpty()) {

@@ -185,12 +185,12 @@ class EarningController extends BaseController
     }
 
 
-    public function getEarningsByUser($id): JsonResponse
+    public function getEarningsByUser(Request $request): JsonResponse
     {
-        $user = User::find($id);
+        $user = User::find($request->user_id);
     
         if ($user) {
-            $earnings = Earning::where('user_id', $id)->get();
+            $earnings = Earning::where('user_id', $request->user_id)->get();
             return response()->json([
                 'success' => true,
                 'message' => 'Earnings retrieved successfully.',
