@@ -24,5 +24,6 @@ class UserDetails extends Model
         'comission_id',
         'is_first_order_completed',
         'referred_by',
+        'pincode',
     ];
 }
