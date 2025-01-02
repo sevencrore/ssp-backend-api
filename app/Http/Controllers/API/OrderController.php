@@ -586,6 +586,7 @@ class OrderController extends BaseController
                 'orders.supplied_by AS supplier',
                 'order_items.product_id AS Product_ID',
                 'order_items.unit_quantity AS Unit_Quantity',
+                'orders.order_status',
                 'order_items.unit_title AS Unit_title',
             ])
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
@@ -594,6 +595,7 @@ class OrderController extends BaseController
             ->groupBy(
                 'order_items.product_variant_id',
                 'orders.supplied_by',
+                'orders.order_status',
                 'order_items.product_id',
                 'order_items.unit_quantity',
                 'order_items.unit_title'

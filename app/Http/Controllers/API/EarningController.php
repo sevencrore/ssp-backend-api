@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\EarningResource;
+use Illuminate\Support\Carbon;
 use App\Http\Controllers\API\ComissionHistoryController;
 
 /**
@@ -93,6 +94,41 @@ class EarningController extends BaseController
             ],
         ]);
     }
+    
+
+    public function getReferralSales(Request $request)
+    {
+        // // Validate incoming request for user_id
+        // $request->validate([
+        //     'user_id' => 'required|exists:user_details,id',
+        // ]);
+
+        $userId = $request->user_id;
+        
+        // Get direct referrals of the given user
+        $directReferrals = UserDetails::where('referred_by', $userId)->pluck('user_id')->toArray();
+        
+        // Get referrals of the direct referrals (2nd level depth)
+        $secondLevelReferrals = UserDetails::whereIn('referred_by', $directReferrals)->pluck('user_id')->toArray();
+        
+        // Combine all user IDs (the given user, direct referrals, and second-level referrals)
+        $allUserIds = array_merge([$userId], $directReferrals, $secondLevelReferrals);
+       
+        // Define the date range (last month to now)
+        $oneMonthAgo = Carbon::now()->subMonth();
+       
+        // Get the sum of grand_total for orders matching the criteria
+        $orderTotal = Order::whereIn('user_id', $allUserIds)
+            ->whereIn('order_status', [0, 1, 2])  // Filter by order status 0 or 1
+            ->where('created_at', '>=', $oneMonthAgo)  // Orders within the last month
+            ->sum('grand_total');  // Sum of grand_total for the filtered orders
+
+        // Return the calculated sales value (grand_total)
+        return response()->json([
+            'real_sales_value' => $orderTotal,
+        ]);
+    }
+
 
     /**
      * @OA\Post(

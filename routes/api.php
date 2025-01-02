@@ -185,6 +185,9 @@ Route::middleware('auth:sanctum')->group( function () {
 
   // Route for retrieving all earnings
   Route::get('earnings', [EarningController::class, 'index'])->name('earnings.index');
+ 
+  // Route for retrieving the real sales value
+  Route::get('earnings/realsales', [EarningController::class, 'getReferralSales'])->name('earnings.getReferralSales');
 
   // Route for retrieving paginated earnings
   Route::get('earnings/paginated', [EarningController::class, 'getAllPaginated'])->name('earnings.paginated');
