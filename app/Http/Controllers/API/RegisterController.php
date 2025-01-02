@@ -124,7 +124,7 @@ class RegisterController extends BaseController
         ];
         Earning::create($earningData);
 
-        $success['token'] = $user->createToken('MyApp')->plainTextToken;
+       // $success['token'] = $user->createToken('MyApp')->plainTextToken;
         $success['id'] = $user->id; // Directly use the user's ID
         $success['name'] = $user->name;
 
@@ -242,7 +242,7 @@ class RegisterController extends BaseController
             // if referral code is not found then create new earning row
         }
 
-        $success['token'] = $user->createToken('MyApp')->plainTextToken;
+       // $success['token'] = $user->createToken('MyApp')->plainTextToken;
         $success['id'] = $user->id; // Directly use the user's ID
         $success['name'] = $user->name;
 
@@ -317,7 +317,7 @@ class RegisterController extends BaseController
     
         $vendor = Vendor::create($vendordata);
 
-        $success['token'] = $user->createToken('MyApp')->plainTextToken;
+       // $success['token'] = $user->createToken('MyApp')->plainTextToken;
         $success['id'] = $user->id; // Directly use the user's ID
         $success['name'] = $user->name;
 
@@ -354,6 +354,7 @@ class RegisterController extends BaseController
             $success['token'] = $user->createToken($user->id)->plainTextToken;
             $success['id'] = $user->id; // Directly use the user's ID
             $success['name'] = $user->name;
+            $success['user_type'] = $user->user_type;
 
             return response()->json([
                 'success' => true,
