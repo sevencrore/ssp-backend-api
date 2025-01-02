@@ -142,7 +142,7 @@ class OrderController extends BaseController
             'grand_total' => 'required|numeric',
             'cart_data' => 'required|array',
         ]);
-
+        $validated['user_id'] = $request->user_id;
         $userDetail = UserDetails::where('user_id', $validated['user_id'])->first();
         $comission_id = $userDetail->comission_id;
 
@@ -349,7 +349,7 @@ class OrderController extends BaseController
         ]);
 
         // Retrieve the user_id from the request
-        $userId = $request->input('user_id');
+        $userId = $request->user_id;
 
         // Retrieve all orders for the specified user
         $orders = Order::where('user_id', $userId)->get();
@@ -449,7 +449,6 @@ class OrderController extends BaseController
     public function update(Request $request, Order $order)
     {
         $request->validate([
-            'user_id' => 'nullable|integer',
             'address_id' => 'nullable|integer',
             'order_status' => 'required|integer',
             'tracking_number' => 'nullable|string',
