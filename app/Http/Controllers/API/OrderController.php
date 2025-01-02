@@ -352,7 +352,9 @@ class OrderController extends BaseController
         $userId = $request->user_id;
 
         // Retrieve all orders for the specified user
-        $orders = Order::where('user_id', $userId)->get();
+        $orders = Order::where('user_id', $userId)
+                    ->orderBy('created_at', 'desc') // Sorting in descending order    
+                    ->get();
 
         if ($orders->isEmpty()) {
             return response()->json([
