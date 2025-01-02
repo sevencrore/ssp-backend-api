@@ -97,6 +97,8 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('orders/track/{tracking_number}', [OrderController::class, 'getOrderByTrackingNumber'])->name('orders.getOrderByTrackingNumber');
   // Route for retrieving user paid walletamount for orders which are in orderd or dispatched state showing pending amount goods is coming 
   Route::get('orders/get-paid-wallet', [OrderController::class, 'getPaidWallet'])->name('orders.getPaidWallet');
+  // Route for retrieving vendors wise order items details 
+  Route::get('orders/get-supplier-orders', [OrderController::class, 'getOrderItemsForSupplier'])->name('orders.getOrderItemsForSupplier');
   // Route for updating a specific order
   Route::put('orders/{order}', [OrderController::class, 'update'])->name('orders.update');
   // Route for updating a specific order

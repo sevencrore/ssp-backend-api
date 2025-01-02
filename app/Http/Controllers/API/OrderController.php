@@ -14,6 +14,7 @@ use App\Http\Controllers\API\EarningController;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\CustomerVendor;
 use App\Models\ConfigSetting;
+use App\Models\Vendor;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
 
@@ -142,14 +143,14 @@ class OrderController extends BaseController
             'cart_data' => 'required|array',
         ]);
 
-        $userDetail = UserDetails::where('user_id', $validated['user_id'])->first();  
+        $userDetail = UserDetails::where('user_id', $validated['user_id'])->first();
         $comission_id = $userDetail->comission_id;
-        
-        $comission = Comission::where('id',$comission_id)->first();
 
-        if($validated['grand_total']<$comission->minimum_order){
+        $comission = Comission::where('id', $comission_id)->first();
+
+        if ($validated['grand_total'] < $comission->minimum_order) {
             return response()->json([
-                'message' => "The minimum amount to place the order is $comission->minimum_order" ,
+                'message' => "The minimum amount to place the order is $comission->minimum_order",
             ], 500);
         }
 
@@ -180,7 +181,7 @@ class OrderController extends BaseController
         DB::beginTransaction();
 
 
-        $vendor = CustomerVendor::where('customer_id',$validated['user_id'])->first();
+        $vendor = CustomerVendor::where('customer_id', $validated['user_id'])->first();
         $config_settings = ConfigSetting::find(1);
 
         try {
@@ -192,9 +193,9 @@ class OrderController extends BaseController
                 'discount' => $validated['savings'],
                 'grand_total' => $validated['grand_total'],
                 'tracking_number' => $trackingNumber,
-                'supplied_by' =>$vendor->vendor_id,
+                'supplied_by' => $vendor->vendor_id,
                 'vendor_comission_percentage' => $config_settings->vendor_comission,
-                'vendor_comission_total' =>(($validated['grand_total']/100)* $config_settings->vendor_comission),
+                'vendor_comission_total' => (($validated['grand_total'] / 100) * $config_settings->vendor_comission),
             ]);
 
             // Retrieve the created order ID
@@ -295,12 +296,12 @@ class OrderController extends BaseController
 
 
     // getting all the orders desc on date with pagination
-    
+
     public function getAllOrders(Request $request)
     {
         // Retrieve orders with pagination and order them by created_at in descending order
         $orders = Order::orderBy('created_at', 'desc')->paginate(10); // Adjust the number per page as needed
-        
+
         if ($orders->isEmpty()) {
             return response()->json([
                 'message' => 'No orders found.',
@@ -311,7 +312,7 @@ class OrderController extends BaseController
         $response = $orders->map(function ($order) {
             // Retrieve the associated order items
             $orderItems = OrderItem::where('order_id', $order->id)->get();
-        
+
             return [
                 'order_id' => $order->id,
                 'user_id' => $order->user_id,
@@ -346,24 +347,24 @@ class OrderController extends BaseController
         $request->validate([
             'user_id' => 'required|integer|exists:users,id',
         ]);
-    
+
         // Retrieve the user_id from the request
         $userId = $request->input('user_id');
-    
+
         // Retrieve all orders for the specified user
         $orders = Order::where('user_id', $userId)->get();
-    
+
         if ($orders->isEmpty()) {
             return response()->json([
                 'message' => 'No orders found for this user.',
             ], 404);
         }
-    
+
         // Map the orders to include their associated items and product image
         $response = $orders->map(function ($order) {
             // Retrieve the associated order items
             $orderItems = OrderItem::where('order_id', $order->id)->get();
-    
+
             return [
                 'order_id' => $order->id,
                 'order_status' => $order->order_status,
@@ -371,16 +372,16 @@ class OrderController extends BaseController
                 'discount' => $order->discount,
                 'grand_total' => $order->grand_total,
                 'tracking_number' => $order->tracking_number,
-                'OrderDate'=>$order->created_at,
+                'OrderDate' => $order->created_at,
                 'order_items' => $orderItems->map(function ($item) {
                     // Retrieve the product for the current item
-                    $product = Product::find( $item->product_id);
+                    $product = Product::find($item->product_id);
                     Log::info("$item is from the orderdetails");
                     Log::info("product $product");
                     return [
                         'product_id' => $item->product_id,
                         'image_url' => $product ? $product->image_url : null, // Get image_url if product exists
-                        'product_title' =>$product ? $product->title : null,
+                        'product_title' => $product ? $product->title : null,
                         'product_variant_id' => $item->product_variant_id,
                         'quantity' => $item->quantity,
                         'unit_quantity' => $item->unit_quantity,
@@ -392,14 +393,14 @@ class OrderController extends BaseController
                 }),
             ];
         });
-    
+
         // Return the user orders as a response
         return response()->json([
             'message' => 'User orders retrieved successfully.',
             'orders' => $response,
         ], 200);
     }
-    
+
 
 
 
@@ -464,8 +465,8 @@ class OrderController extends BaseController
     }
 
     //  update the order status by orrder id 
-    
-    public function updateOrderStatus(Request $request,Order $order )
+
+    public function updateOrderStatus(Request $request, Order $order)
     {
         // Validate the request to ensure order_id and status are provided
         $request->validate([
@@ -475,26 +476,25 @@ class OrderController extends BaseController
 
         $order->update(['order_status' => $request->order_status]);
 
-        if ($request->order_status== 2){
+        if ($request->order_status == 2) {
             $userDetail = UserDetails::where('user_id', $order->user_id)->first();
             $earningController = new EarningController();
 
-            if($userDetail->is_first_order_completed == 0){
+            if ($userDetail->is_first_order_completed == 0) {
                 $ordered_user_id = $userDetail->user_id;
                 $referal_user_id = $userDetail->referred_by;
-                $sucess =$earningController->updateEarningsWithReferralIncentive($referal_user_id, $ordered_user_id);
-                if($sucess == 'success'){
+                $sucess = $earningController->updateEarningsWithReferralIncentive($referal_user_id, $ordered_user_id);
+                if ($sucess == 'success') {
                     $userDetail->is_first_order_completed = 1;
                     $userDetail->save(); // Persist changes
                 }
-
             }
 
             // // Call the addComission method
-             $earningController->addComission($order->id);
+            $earningController->addComission($order->id);
         }
 
-       // Return a success response
+        // Return a success response
         return response()->json([
             'message' => 'Order status updated successfully.',
             'order' => [
@@ -554,5 +554,68 @@ class OrderController extends BaseController
             'success' => true,
             'message' => 'Order deleted successfully',
         ], 200);
+    }
+
+    public function getOrderItemsForSupplier(Request $request)
+    {
+        Log::info("hello this is getordersItems by supplier");
+        // Get the authenticated user's ID as the supplier
+        $supplier = Vendor::where('user_id', $request->user_id)->first();
+        $supplierId = $supplier->id;
+
+        // Default order status filter
+        $orderStatusFilter = [0, 1];
+
+        // Override order status filter if provided in the query string
+        if ($request->has('order_status')) {
+            $orderStatusFilter = (array) $request->query('order_status');
+        }
+
+        // Default category filter (all categories)
+        $categoryFilter = '*';
+        if ($request->has('category_id')) {
+            $categoryFilter = $request->query('category_id');
+        }
+
+        // Build the query
+        $query = OrderItem::query()
+            ->select([
+                'order_items.product_variant_id',
+                DB::raw('SUM(order_items.quantity) AS total_quantity'),
+                'orders.supplied_by AS supplier',
+                'order_items.product_id AS Product_ID',
+                'order_items.unit_quantity AS Unit_Quantity',
+                'order_items.unit_title AS Unit_title',
+            ])
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->where('orders.supplied_by', $supplierId)
+            ->whereIn('orders.order_status', $orderStatusFilter)
+            ->groupBy(
+                'order_items.product_variant_id',
+                'orders.supplied_by',
+                'order_items.product_id',
+                'order_items.unit_quantity',
+                'order_items.unit_title'
+            );
+
+        // Apply category filter if specified
+        if ($categoryFilter !== '*') {
+            $query->whereHas('product', function ($productQuery) use ($categoryFilter) {
+                $productQuery->where('category_id', $categoryFilter);
+            });
+        }
+
+        // Execute the query
+        $results = $query->get();
+
+        // Map the product details
+        $results->each(function ($item) {
+            $product = Product::find($item->Product_ID);
+            $item->product_title = $product->title ?? null;
+            $item->image_url = $product->image_url ?? null;
+            $item->category_id = $product->category_id ?? null;
+        });
+
+        return response()->json($results);
     }
 }
