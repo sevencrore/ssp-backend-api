@@ -280,7 +280,7 @@ Route::middleware('auth:sanctum')->group( function () {
 
   // Route::get('/users', [UsersController::class, 'index'])->name('users.index');
 
-  // Route::get('/users/{id}', [UsersController::class, 'show'])->name('users.show');
+   Route::get('/users/details', [UsersController::class, 'show'])->name('users.show');
 
   // Route::post('/users', [UsersController::class, 'store'])->name('users.store');
 

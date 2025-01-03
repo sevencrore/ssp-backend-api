@@ -20,10 +20,43 @@ class UsersController extends BaseController
         // Logic to list all users
     }
 
-    public function show($id)
+    public function show(Request $request)
     {
-        // Logic to display a specific user by ID
+        try {
+            // Retrieve the user by ID
+            $user = User::findOrFail($request->user_id);
+
+            // Retrieve user details associated with the user ID
+            $userDetails = UserDetails::where('user_id', $user->id)->first();
+
+            if (!$userDetails) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User details not found',
+                ], 404);
+            }
+
+            // Prepare response data
+            $data = [
+                'user' => $user,
+                'user_details' => $userDetails,
+            ];
+
+            // Return success response
+            return response()->json([
+                'success' => true,
+                'message' => 'User data retrieved successfully',
+                'data' => $data,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve user data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
+
 
     public function store(Request $request)
     {
