@@ -10,6 +10,8 @@ use App\Models\UserDetails;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\JsonResponse;
 
 class UsersController extends BaseController
 {
@@ -141,6 +143,55 @@ class UsersController extends BaseController
                 'data' => $user
             ]);
     }
+
+    public function updatePasswordWithOldPassword(Request $request): JsonResponse
+    {
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            // 'email' => 'required|email',  // Ensure email is provided and is valid
+            'old_password' => 'required',  // Old password is required
+            'password' => 'required|min:6',  // New password with a minimum length of 6
+            'c_password' => 'required|same:password',  // Ensure new password matches the confirmation password
+        ]);
+        $user_id = $request->user_id;
+        // If validation fails, return an error response
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'data' => $validator->errors(),
+                'message' => 'Password update validation failed',
+            ], 422);
+        }
+
+        // Retrieve the user by email
+        $user = User::where('id', $user_id)->first();
+
+        // If user not found, return error
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        // Check if the old password matches the one in the database
+        if (!Hash::check($request->old_password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Old password is incorrect',
+            ], 400);
+        }
+
+        // Update the user's password
+        $user->password = bcrypt($request->password);  // Hash the new password
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password updated successfully',
+        ], 200);
+    }
+
 
    // api for getting the users whose cold_state = 1 and with some filters
     public function getAllColdStateUsers(Request $request)

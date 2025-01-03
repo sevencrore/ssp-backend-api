@@ -25,6 +25,7 @@ use App\Http\Controllers\API\ComissionHistoryController;
 use App\Http\Controllers\CustomerVendorController;
 use App\Http\Controllers\API\UsersController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\API\AdminController;
 
 
 
@@ -284,6 +285,8 @@ Route::middleware('auth:sanctum')->group( function () {
   // Route::post('/users', [UsersController::class, 'store'])->name('users.store');
 
    Route::put('/users/edit', [UsersController::class, 'update'])->name('users.update');
+   
+   Route::put('/users/change-password', [UsersController::class, 'updatePasswordWithOldPassword'])->name('users.updatePasswordWithOldPassword');
 
   // Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
 
@@ -307,6 +310,8 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('orders/admin', [OrderController::class, 'getAllOrders'])->name('orders.getAllOrders');
   // Route for retrieving a specific order item
   Route::get('order-items/admin/{orderItem}', [OrderItemController::class, 'getOrderItemsByOrderId'])->name('order-items.getOrderItemsByOrderId');
+
+  Route::put('/admin/update-user-password', [AdminController::class, 'updatePassword']);
 
 });
 
