@@ -469,41 +469,58 @@ class OrderController extends BaseController
 
     public function updateOrderStatus(Request $request, Order $order)
     {
-        // Validate the request to ensure order_id and status are provided
+        // Validate the request to ensure order_status is provided
         $request->validate([
-            'order_status' => 'required|Integer', // Adjust valid statuses as needed
+            'order_status' => 'required|integer', // Adjust valid statuses as needed
         ]);
 
+        DB::beginTransaction();
 
-        $order->update(['order_status' => $request->order_status]);
+        try {
+            // Update the order status
+            $order->update(['order_status' => $request->order_status]);
 
-        if ($request->order_status == 2) {
-            $userDetail = UserDetails::where('user_id', $order->user_id)->first();
-            $earningController = new EarningController();
+            if ($request->order_status == 2) {
+                $userDetail = UserDetails::where('user_id', $order->user_id)->first();
+                $earningController = new EarningController();
 
-            if ($userDetail->is_first_order_completed == 0) {
-                $ordered_user_id = $userDetail->user_id;
-                $referal_user_id = $userDetail->referred_by;
-                $sucess = $earningController->updateEarningsWithReferralIncentive($referal_user_id, $ordered_user_id);
-                if ($sucess == 'success') {
-                    $userDetail->is_first_order_completed = 1;
-                    $userDetail->save(); // Persist changes
+                if ($userDetail->is_first_order_completed == 0) {
+                    $ordered_user_id = $userDetail->user_id;
+                    $referal_user_id = $userDetail->referred_by;
+
+                    $success = $earningController->updateEarningsWithReferralIncentive($referal_user_id, $ordered_user_id);
+
+                    if ($success === 'success') {
+                        $userDetail->is_first_order_completed = 1;
+                        $userDetail->save(); // Persist changes
+                    }
                 }
+
+                // Call the addComission method
+                $earningController->addComission($order->id);
             }
 
-            // // Call the addComission method
-            $earningController->addComission($order->id);
-        }
+            DB::commit();
 
-        // Return a success response
-        return response()->json([
-            'message' => 'Order status updated successfully.',
-            'order' => [
-                'order_id' => $order->id,
-                'order_status' => $order->order_status,
-            ],
-        ], 200);
+            // Return a success response
+            return response()->json([
+                'message' => 'Order status updated successfully.',
+                'order' => [
+                    'order_id' => $order->id,
+                    'order_status' => $order->order_status,
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error updating order status: " . $e->getMessage());
+
+            return response()->json([
+                'message' => 'An error occurred while updating the order status.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
+
 
 
     public function getPaidWallet(Request $request)
