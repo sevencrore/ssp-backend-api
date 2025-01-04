@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends BaseController
 {
@@ -28,6 +29,13 @@ class AdminController extends BaseController
                 'data' => $validator->errors(),
                 'message' => 'Password update validation failed',
             ], 422);
+        }
+        $admin = User::find($request->user_id);
+        if( $admin->user_type != 99){
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access',
+            ], 404);
         }
 
         // Retrieve the user by email
