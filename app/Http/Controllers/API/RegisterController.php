@@ -274,7 +274,7 @@ class RegisterController extends BaseController
             'longitude' => 'required',
             'user_type' => 'required',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -282,11 +282,11 @@ class RegisterController extends BaseController
                 'message' => 'Register Validation failed',
             ], 422);
         }
-    
+
         $validatedData = $validator->validated();
-    
+
         DB::beginTransaction();
-    
+
         try {
             // Create user data using validated fields
             $userData = [
@@ -297,9 +297,9 @@ class RegisterController extends BaseController
                 'last_name' => $validatedData['last_name'],
                 'user_type'  => $validatedData['user_type'],
             ];
-    
+
             $user = User::create($userData);
-    
+
             // Prepare details for Vendor table
             $vendordata = [
                 'first_name' => $validatedData['user_name'],
@@ -315,14 +315,14 @@ class RegisterController extends BaseController
                 'user_id' => $user->id,
                 'aadhar_number' => $validatedData['aadhar_number'] ?? null,
             ];
-    
+
             Vendor::create($vendordata);
-    
+
             DB::commit();
-    
+
             $success['id'] = $user->id;
             $success['name'] = $user->name;
-    
+
             return response()->json([
                 'success' => true,
                 'data' => $success,
@@ -331,14 +331,14 @@ class RegisterController extends BaseController
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Vendor registration failed: " . $e->getMessage());
-    
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred during registration.',
             ], 500);
         }
     }
-    
+
 
     /**
      * @OA\Post(
@@ -360,7 +360,8 @@ class RegisterController extends BaseController
      * )
      */
     public function login(Request $request): JsonResponse
-    {   Log::info("$request->user_id");
+    {
+        Log::info("$request->user_id");
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
             $success['token'] = $user->createToken($user->id)->plainTextToken;
