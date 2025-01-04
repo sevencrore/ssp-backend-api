@@ -15,6 +15,7 @@ use App\Models\Vendor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class RegisterController extends BaseController
 {
@@ -47,15 +48,14 @@ class RegisterController extends BaseController
             'c_password' => 'required|same:password',
             'referral_code' => 'nullable',
             'last_name' => 'required',
-            'phone_1' => 'required',               // Required field
-            'phone2' => 'nullable',               // Optional field
-            'aadhar_number' => 'nullable',        // Optional field
+            'phone_1' => 'required',
+            'phone2' => 'nullable',
+            'aadhar_number' => 'nullable',
             'comission_id' => 'required',
             'user_type' => 'required',
             'pincode' => 'required',
         ]);
-    
-        // If validation fails, return error response
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -63,83 +63,89 @@ class RegisterController extends BaseController
                 'message' => 'Register Validation failed',
             ], 422);
         }
-    
-        // Use only validated data
-        $validatedData = $validator->validated();
-    
-        // Create user data using validated fields
-        $userData = [
-            'name' => $validatedData['user_name'],
-            'email' => $validatedData['email'],
-            'user_name' => $validatedData['user_name'],
-            'password' => bcrypt($validatedData['password']), // Hashing the password
-            'last_name' => $validatedData['last_name'],
-            'user_type'  => $validatedData['user_type'],
-        ];
-    
-        $user = User::create($userData);
 
-        if(!$user){
+        $validatedData = $validator->validated();
+
+        DB::beginTransaction();
+
+        try {
+            // Create user data using validated fields
+            $userData = [
+                'name' => $validatedData['user_name'],
+                'email' => $validatedData['email'],
+                'user_name' => $validatedData['user_name'],
+                'password' => bcrypt($validatedData['password']),
+                'last_name' => $validatedData['last_name'],
+                'user_type'  => $validatedData['user_type'],
+            ];
+
+            $user = User::create($userData);
+
+            if (!$user) {
+                throw new \Exception('User registration failed');
+            }
+
+            // Prepare details for UserDetails table
+            $details = [
+                'first_name' => $validatedData['user_name'],
+                'last_name' => $validatedData['last_name'],
+                'phone_1' => $validatedData['phone_1'],
+                'email' => $validatedData['email'],
+                'user_id' => $user->id,
+                'aadhar_number' => $validatedData['aadhar_number'] ?? null,
+                'referral_code' => $user->id,
+                'comission_id' => $validatedData['comission_id'],
+                'pincode' => $validatedData['pincode'],
+            ];
+
+            $userDetails = UserDetails::create($details);
+
+            // Auto assigning the vendor to customer
+            $customervendorcontroller = new CustomerVendorController();
+            $vendorAssignment = $customervendorcontroller->autoAsssignCustomerVendor($user->id, $validatedData['pincode']);
+            Log::info("The auto-assigned customer vendor $vendorAssignment");
+
+            $configSetting = ConfigSetting::find(1);
+
+            // Find a record by its ID
+            $commission = Comission::find($validatedData['comission_id']);
+            $earningData = [
+                'referral_incentive' => 0,
+                'sale_value_estimated' => $commission->minimum_order,
+                'sale_actual_value' => 0,
+                'wallet_amount' => 0,
+                'self_purchase_total' => 0,
+                'first_referral_purchase_total' => 0,
+                'second_referral_purchase_total' => 0,
+                'user_id' => $user->id,
+            ];
+            Earning::create($earningData);
+
+            DB::commit();
+
+            $success['id'] = $user->id;
+            $success['name'] = $user->name;
+
+            return response()->json([
+                'success' => true,
+                'data' => $success,
+                'message' => 'User registered successfully.',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Registration failed: " . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'User registered failed',
-            ], 422);
+                'message' => 'An error occurred during registration.',
+            ], 500);
         }
-
-    
-        // Prepare details for UserDetails table
-        $details = [
-            'first_name' => $validatedData['user_name'], // Assuming user_name is first name
-            'last_name' => $validatedData['last_name'],
-            'phone_1' => $validatedData['phone_1'],
-            'email' => $validatedData['email'],
-            'user_id' => $user->id,
-            // Optional fields
-            'aadhar_number' => $validatedData['aadhar_number'] ?? null,
-            'referral_code' => $user->id,
-            'comission_id' => $validatedData['comission_id'] ,
-            'pincode' => $validatedData['pincode'],
-        ];
-    
-        $userDetails = UserDetails::create($details);
-
-        //  auto asssigningg the vendor to customer
-        $customervendorcontroller  = new CustomerVendorController();
-        $vendorAssignment = $customervendorcontroller->autoAsssignCustomerVendor($user->id,$validatedData['pincode']);
-        Log::info("the auto assigned customer vendor $vendorAssignment ");
-
-        $configSetting = ConfigSetting::find(1);
-
-        // Find a record by its ID
-        $commission = Comission::find($validatedData['comission_id']);
-        $earningData = [
-            'referral_incentive' => 0,
-            'sale_value_estimated' => $commission->minimum_order,
-            'sale_actual_value' => 0,
-            'wallet_amount' => 0,
-            'self_purchase_total' => 0,
-            'first_referral_purchase_total' => 0,
-            'second_referral_purchase_total' => 0,
-            'user_id' => $user->id,
-        ];
-        Earning::create($earningData);
-
-       // $success['token'] = $user->createToken('MyApp')->plainTextToken;
-        $success['id'] = $user->id; // Directly use the user's ID
-        $success['name'] = $user->name;
-
-        return response()->json([
-            'success' => true,
-            'data' => $success,
-            'message' => 'User registered successfully.',
-        ], 200);
     }
 
     public function registerWthReferral(Request $request): JsonResponse
     {
         Log::info('I am here');
-    
-        // Validator definition
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'user_name' => 'required',
@@ -147,15 +153,14 @@ class RegisterController extends BaseController
             'c_password' => 'required|same:password',
             'referral_code' => 'required',
             'last_name' => 'required',
-            'phone_1' => 'required',               // Required field
-            'phone2' => 'nullable',               // Optional field
-            'aadhar_number' => 'nullable',        // Optional field
+            'phone_1' => 'required',
+            'phone2' => 'nullable',
+            'aadhar_number' => 'nullable',
             'comission_id' => 'required',
             'user_type' => 'required',
             'pincode' => 'required',
         ]);
-    
-        // If validation fails, return error response
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -163,95 +168,92 @@ class RegisterController extends BaseController
                 'message' => 'Register Validation failed',
             ], 422);
         }
-    
-        // Use only validated data
+
         $validatedData = $validator->validated();
-    
-        // Create user data using validated fields
-        $userData = [
-            'name' => $validatedData['user_name'],
-            'email' => $validatedData['email'],
-            'user_name' => $validatedData['user_name'],
-            'password' => bcrypt($validatedData['password']), // Hashing the password
-            'referral_code' => $validatedData['referral_code'],
-            'last_name' => $validatedData['last_name'],
-            'user_type'  => $validatedData['user_type'],
-        ];
-    
-        $user = User::create($userData);
-        $commission = Comission::find($validatedData['comission_id']);
 
-        $configSetting = ConfigSetting::find(1);
-        $max_depth = $configSetting->max_level;
-        $earningData = [
-            'referral_incentive' => 0,
-            'sale_value_estimated' => $commission->minimum_order,
-            'sale_actual_value' => 0,
-            'wallet_amount' => 0,
-            'self_purchase_total' => 0,
-            'first_referral_purchase_total' => 0,
-            'second_referral_purchase_total' => 0,
-            'user_id' => $user->id,
-            
-        ];
-        Earning::create($earningData);
+        DB::beginTransaction();
 
-        // get user_details by referral code . here user_id is referral_id
-        $referrer = UserDetails::where('referral_code', $validatedData['referral_code'])->first();
-        $referrer_id = null;
+        try {
+            $userData = [
+                'name' => $validatedData['user_name'],
+                'email' => $validatedData['email'],
+                'user_name' => $validatedData['user_name'],
+                'password' => bcrypt($validatedData['password']),
+                'referral_code' => $validatedData['referral_code'],
+                'last_name' => $validatedData['last_name'],
+                'user_type'  => $validatedData['user_type'],
+            ];
 
-    
-        // Prepare details for UserDetails table
-        $details = [
-            'first_name' => $validatedData['user_name'], // Assuming user_name is first name
-            'last_name' => $validatedData['last_name'],
-            'phone_1' => $validatedData['phone_1'],
-            'email' => $validatedData['email'],
-            'user_id' => $user->id,
-            // Optional fields
-            'aadhar_number' => $validatedData['aadhar_number'] ?? null,
-            'referral_code' => $user->id,
-            'comission_id' => $validatedData['comission_id'] ,
-            'referred_by' => $referrer->user_id ,
-            'pincode' => $validatedData['pincode'],
-        ];
-    
-        $userDetails = UserDetails::create($details);
+            $user = User::create($userData);
 
-         //  auto asssigningg the vendor to customer
-         $customervendorcontroller  = new CustomerVendorController();
-         $vendorAssignment = $customervendorcontroller->autoAsssignCustomerVendor($user->id,$validatedData['pincode']);
-         Log::info("the auto assigned customer vendor $vendorAssignment ");
+            $commission = Comission::find($validatedData['comission_id']);
+            $configSetting = ConfigSetting::find(1);
+            $max_depth = $configSetting->max_level;
 
-        // get user->id => reg_user_id
-        $reg_user_id = $user->id;
+            $earningData = [
+                'referral_incentive' => 0,
+                'sale_value_estimated' => $commission->minimum_order,
+                'sale_actual_value' => 0,
+                'wallet_amount' => 0,
+                'self_purchase_total' => 0,
+                'first_referral_purchase_total' => 0,
+                'second_referral_purchase_total' => 0,
+                'user_id' => $user->id,
+            ];
+            Earning::create($earningData);
 
-        
-        if ($referrer) {
-            $earningController = new EarningController();
+            $referrer = UserDetails::where('referral_code', $validatedData['referral_code'])->first();
+            $referrer_id = $referrer ? $referrer->user_id : null;
 
-            $referrer_id = $referrer->user_id;
-            
-            for ($i = 1; $i <= $max_depth; $i++) {
-                if (!$referrer_id) {
-                    break;  // Exit the loop if no valid user ID is returned
+            $details = [
+                'first_name' => $validatedData['user_name'],
+                'last_name' => $validatedData['last_name'],
+                'phone_1' => $validatedData['phone_1'],
+                'email' => $validatedData['email'],
+                'user_id' => $user->id,
+                'aadhar_number' => $validatedData['aadhar_number'] ?? null,
+                'referral_code' => $user->id,
+                'comission_id' => $validatedData['comission_id'],
+                'referred_by' => $referrer_id,
+                'pincode' => $validatedData['pincode'],
+            ];
+            UserDetails::create($details);
+
+            $customervendorcontroller = new CustomerVendorController();
+            $vendorAssignment = $customervendorcontroller->autoAsssignCustomerVendor($user->id, $validatedData['pincode']);
+            Log::info("The auto-assigned customer vendor $vendorAssignment");
+
+            if ($referrer) {
+                $earningController = new EarningController();
+                for ($i = 1; $i <= $max_depth; $i++) {
+                    if (!$referrer_id) {
+                        break;
+                    }
+                    $referrer_id = $earningController->updateEstimatedsales($referrer_id, $commission->minimum_order, $i);
                 }
-                $referrer_id = $earningController->updateEstimatedsales($referrer_id, $commission->minimum_order, $i);
             }
-        } else {
-            // if referral code is not found then create new earning row
+
+            DB::commit();
+
+            $success['id'] = $user->id;
+            $success['name'] = $user->name;
+
+            return response()->json([
+                'success' => true,
+                'data' => $success,
+                'message' => 'User registered successfully.',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Registration with referral failed: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred during registration.',
+            ], 500);
         }
-
-       // $success['token'] = $user->createToken('MyApp')->plainTextToken;
-        $success['id'] = $user->id; // Directly use the user's ID
-        $success['name'] = $user->name;
-
-        return response()->json([
-            'success' => true,
-            'data' => $success,
-            'message' => 'User registered successfully.',
-        ], 200);
     }
+
 
     //  vendor registration 
     public function registerVendor(Request $request): JsonResponse
@@ -262,9 +264,9 @@ class RegisterController extends BaseController
             'password' => 'required',
             'c_password' => 'required|same:password',
             'last_name' => 'required',
-            'phone_1' => 'required',               // Required field
-            'phone_2' => 'nullable',               // Optional field
-            'aadhar_number' => 'nullable',        // Optional field
+            'phone_1' => 'required',
+            'phone_2' => 'nullable',
+            'aadhar_number' => 'nullable',
             'business_name' => 'required',
             'address' => 'nullable',
             'pincode' => 'required',
@@ -273,7 +275,6 @@ class RegisterController extends BaseController
             'user_type' => 'required',
         ]);
     
-        // If validation fails, return error response
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -282,51 +283,62 @@ class RegisterController extends BaseController
             ], 422);
         }
     
-        // Use only validated data
         $validatedData = $validator->validated();
     
-        // Create user data using validated fields
-        $userData = [
-            'name' => $validatedData['user_name'],
-            'email' => $validatedData['email'],
-            'user_name' => $validatedData['user_name'],
-            'password' => bcrypt($validatedData['password']), // Hashing the password
-            'last_name' => $validatedData['last_name'],
-            'user_type'  => $validatedData['user_type'],
-        ];
+        DB::beginTransaction();
     
-        $user = User::create($userData);
+        try {
+            // Create user data using validated fields
+            $userData = [
+                'name' => $validatedData['user_name'],
+                'email' => $validatedData['email'],
+                'user_name' => $validatedData['user_name'],
+                'password' => bcrypt($validatedData['password']),
+                'last_name' => $validatedData['last_name'],
+                'user_type'  => $validatedData['user_type'],
+            ];
     
-        // Prepare details for UserDetails table
-        $vendordata = [
-            'first_name' => $validatedData['user_name'], // Assuming user_name is first name
-            'last_name' => $validatedData['last_name'],
-            'phone_1' => $validatedData['phone_1'],
-            'phone_2' => $validatedData['phone_2'],
-            'email' => $validatedData['email'],
-            'business_name' => $validatedData['business_name'],
-            'pincode' => $validatedData['pincode'],
-            'address' => $validatedData['address'],
-            'latitude' => $validatedData['latitude'],
-            'longitude' => $validatedData['longitude'],
-            'user_id' => $user->id,
-            // Optional fields
-            'aadhar_number' => $validatedData['aadhar_number'] ?? null,
-            
-        ];
+            $user = User::create($userData);
     
-        $vendor = Vendor::create($vendordata);
-
-       // $success['token'] = $user->createToken('MyApp')->plainTextToken;
-        $success['id'] = $user->id; // Directly use the user's ID
-        $success['name'] = $user->name;
-
-        return response()->json([
-            'success' => true,
-            'data' => $success,
-            'message' => 'User registered successfully.',
-        ], 200);
+            // Prepare details for Vendor table
+            $vendordata = [
+                'first_name' => $validatedData['user_name'],
+                'last_name' => $validatedData['last_name'],
+                'phone_1' => $validatedData['phone_1'],
+                'phone_2' => $validatedData['phone_2'],
+                'email' => $validatedData['email'],
+                'business_name' => $validatedData['business_name'],
+                'pincode' => $validatedData['pincode'],
+                'address' => $validatedData['address'],
+                'latitude' => $validatedData['latitude'],
+                'longitude' => $validatedData['longitude'],
+                'user_id' => $user->id,
+                'aadhar_number' => $validatedData['aadhar_number'] ?? null,
+            ];
+    
+            Vendor::create($vendordata);
+    
+            DB::commit();
+    
+            $success['id'] = $user->id;
+            $success['name'] = $user->name;
+    
+            return response()->json([
+                'success' => true,
+                'data' => $success,
+                'message' => 'Vendor registered successfully.',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Vendor registration failed: " . $e->getMessage());
+    
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred during registration.',
+            ], 500);
+        }
     }
+    
 
     /**
      * @OA\Post(

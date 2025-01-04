@@ -41,7 +41,7 @@ class AdminController extends BaseController
         // Retrieve the user by email
         $user = User::where('email', $request->email)->first();
 
-        // If user not found, return error
+        // If user not found, return error0
         if (!$user) {
             return response()->json([
                 'success' => false,
