@@ -26,6 +26,7 @@ use App\Http\Controllers\CustomerVendorController;
 use App\Http\Controllers\API\UsersController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\API\AdminController;
+use App\Http\Controllers\API\ConfigSettingController;
 
 
 
@@ -312,6 +313,18 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('order-items/admin/{orderItem}', [OrderItemController::class, 'getOrderItemsByOrderId'])->name('order-items.getOrderItemsByOrderId');
 
   Route::put('/admin/update-user-password', [AdminController::class, 'updatePassword']);
+
+    // Route to fetch all ConfigSettings
+  Route::get('/config-settings', [ConfigSettingController::class, 'index']); 
+
+  // Route to fetch a single ConfigSetting by ID
+  Route::get('/config-settings/{id}', [ConfigSettingController::class, 'show']); 
+
+  // Route to create a new ConfigSetting
+  Route::post('/config-settings', [ConfigSettingController::class, 'store']); 
+
+  // Route to update an existing ConfigSetting by ID
+  Route::put('/config-settings/{id}', [ConfigSettingController::class, 'update']);
 
 });
 

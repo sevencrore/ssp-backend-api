@@ -15,5 +15,6 @@ class ConfigSetting extends Model
         'referal_incentive',
         'max_level',
         'vendor_comission',
+        'default_vendor_id',
     ];
 }
