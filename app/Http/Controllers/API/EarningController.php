@@ -130,7 +130,7 @@ class EarningController extends BaseController
             ->sum('grand_total');  // Sum of grand_total for the filtered orders
         
             // Get the sum of grand_total for orders matching the criteria
-        $orderTotal = Order::whereIn('user_id', $allUserIds)
+        $selfOrder = Order::where('user_id', $userId)
             ->whereIn('order_status', [0, 1, 2])  // Filter by order status 0 or 1
             ->where('created_at', '>=', $startOfMonth)  // Orders within the last month
             ->sum('grand_total');  // Sum of grand_total for the filtered orders
@@ -139,7 +139,8 @@ class EarningController extends BaseController
         return response()->json([
             'first_referal_Total' => $first_referal_Total,
             'second_referal_Total' => $second_referal_Total,
-            'real_sales_value' => $orderTotal,
+            'self_Total' => $selfOrder,
+            'real_sales_value' => $selfOrder+$first_referal_Total+$second_referal_Total ,
         ]);
     }
 
