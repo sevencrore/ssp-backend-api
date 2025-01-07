@@ -107,16 +107,18 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::put('orders/status/{order}', [OrderController::class, 'updateOrderStatus'])->name('orders.updateOrderStatus');
   // Route for deleting a specific order
   Route::delete('orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
-  Route::get('address', [AddressController::class, 'index'])->name('address.index');
-  Route::post('address', [AddressController::class, 'store'])->name('address.store');
+  // Route::get('address', [AddressController::class, 'index'])->name('address.index');
+  // Route::post('address', [AddressController::class, 'store'])->name('address.store');
   //Route::get('address-get-all-paginated', [AddressController::class, 'getAllPaginated']);
-  Route::get('address/{address}', [AddressController::class, 'show'])->name('address.show');
+  // Route::get('address/{address}', [AddressController::class, 'show'])->name('address.show');
   //Route::get('address/get-user-address', [AddressController::class, 'getAddressesByUserId'])->name('address.getAddressesByUserId');
-  Route::get('address/user-address', [AddressController::class, 'getUserAddressesById'])->name('address.getUserAddressesById');
+  // Route::get('address/user-address', [AddressController::class, 'getUserAddressesById'])->name('address.getUserAddressesById');
   Route::get('address/userAddress', [AddressController::class, 'GetUserAddresses'])->name('address.GetUserAddresses');
-  Route::put('address/{id}', [AddressController::class, 'update'])->name('address.update');
-  Route::delete('address/{address}', [AddressController::class, 'destroy'])->name('address.destroy');
+  // Route::delete('address/{address}', [AddressController::class, 'destroy'])->name('address.destroy');
   // Route for creating a new order item
+
+  Route::put('address/{id}', [AddressController::class, 'update'])->name('address.update');
+
   Route::post('order-items', [OrderItemController::class, 'store'])->name('order-items.store');
   // Route for retrieving all order items
   Route::get('order-items', [OrderItemController::class, 'index'])->name('order-items.index');
