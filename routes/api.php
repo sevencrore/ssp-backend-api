@@ -111,7 +111,9 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::post('address', [AddressController::class, 'store'])->name('address.store');
   //Route::get('address-get-all-paginated', [AddressController::class, 'getAllPaginated']);
   Route::get('address/{address}', [AddressController::class, 'show'])->name('address.show');
-  Route::get('address/get-user-address', [AddressController::class, 'getAddressesByUserId'])->name('address.getAddressesByUserId');
+  //Route::get('address/get-user-address', [AddressController::class, 'getAddressesByUserId'])->name('address.getAddressesByUserId');
+  Route::get('address/user-address', [AddressController::class, 'getUserAddressesById'])->name('address.getUserAddressesById');
+  Route::get('address/userAddress', [AddressController::class, 'GetUserAddresses'])->name('address.GetUserAddresses');
   Route::put('address/{id}', [AddressController::class, 'update'])->name('address.update');
   Route::delete('address/{address}', [AddressController::class, 'destroy'])->name('address.destroy');
   // Route for creating a new order item

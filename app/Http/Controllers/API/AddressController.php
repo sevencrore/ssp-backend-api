@@ -55,7 +55,12 @@ class AddressController extends BaseController
     public function update(Request $request, $id)
     {
         $address = Address::findOrFail($id);
-
+        if($address->user_id != $request->user_id){
+            return response()->json([
+                'success' => false,
+                'message' => 'failed to update the adress',
+            ], 404);
+        }
         $validatedData = $request->validate([
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
@@ -84,9 +89,20 @@ class AddressController extends BaseController
     /**
      * Get all addresses by a specific user ID.
      */
-    public function getAddressesByUserId($userId)
+    public function getAddressesByUserId(Request $request)
     {
-        $addresses = Address::where('user_id', $userId)->get();
+        $addresses = Address::where('user_id', $request->user_id)->get();
+        return response()->json($addresses);
+    }
+
+    public function getUserAddressesById(Request $request)
+    {
+        $addresses = Address::where('user_id', $request->user_id)->get();
+        return response()->json($addresses);
+    }
+    public function GetUserAddresses(Request $request)
+    {
+        $addresses = Address::where('user_id', $request->user_id)->get();
         return response()->json($addresses);
     }
 }
