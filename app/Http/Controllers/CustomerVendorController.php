@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CustomerVendor;
-use App\Http\Controllers\Api\UsersController;
+use App\Http\Controllers\API\UsersController;
 use App\Models\ConfigSetting;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
