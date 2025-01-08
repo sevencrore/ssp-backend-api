@@ -18,6 +18,7 @@ use App\Models\ConfigSetting;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -185,7 +186,7 @@ class OrderController extends BaseController
 
         $vendor = CustomerVendor::where('customer_id', $validated['user_id'])->first();
         $config_settings = ConfigSetting::find(1);
-
+        $otp = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
         try {
             // Store data into orders table
             $order = Order::create([
@@ -198,6 +199,7 @@ class OrderController extends BaseController
                 'supplied_by' => $vendor->vendor_id,
                 'vendor_comission_percentage' => $config_settings->vendor_comission,
                 'vendor_comission_total' => (($validated['grand_total'] / 100) * $config_settings->vendor_comission),
+                'delivery_otp' => $otp,
             ]);
 
             // Retrieve the created order ID

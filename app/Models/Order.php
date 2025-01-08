@@ -20,6 +20,7 @@ class Order extends Model
         'supplied_by',
         'vendor_comission_percentage',
         'vendor_comission_total',
+        'delivery_otp',
     
     ];
 
