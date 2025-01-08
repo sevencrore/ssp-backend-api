@@ -313,6 +313,8 @@ Route::middleware('auth:sanctum')->group( function () {
 // supplier routes 
   // to get the suplier wise orders
   Route::get('orders/supplier', [OrderController::class, 'getAllsupplierOrders'])->name('orders.getAllsupplierOrders');
+  
+  Route::Post('orders/supplier/delivery-otp/{order}', [OrderController::class, 'DeliveryOTP'])->name('orders.DeliveryOTP');
 
   //  Admin Routes 
   // Route for retrieving all orders off he user  by user_id

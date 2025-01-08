@@ -451,6 +451,7 @@ class OrderController extends BaseController
                 'total_amount' => $order->total_amount,
                 'discount' => $order->discount,
                 'grand_total' => $order->grand_total,
+                'delivery_otp' => $order->delivery_otp,
                 'tracking_number' => $order->tracking_number,
                 'OrderDate' => $order->created_at,
                 'order_items' => $orderItems->map(function ($item) {
@@ -599,7 +600,50 @@ class OrderController extends BaseController
         }
     }
 
+    public function DeliveryOTP(Request $request, Order $order){
+        $validated = $request->validate([
+            'delivery_otp' => 'required|integer',
+        ]);
+        if($order->order_status == 2){
+            return response()->json([
+                'success' => false,
+                'message' => 'Already Delivered!!!',
+            ], 500);
+        }
+        if( $order->delivery_otp !=  $validated['delivery_otp']){
+            $otp = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+            $order->delivery_otp = $otp;
+            $order->save();
+            return response()->json([
+                'success' => false,
+                'message' => 'Wrong OTP',
+            ], 500);
+        }
 
+        $vendorUser = User::find($request->user_id);
+        if( $vendorUser->user_type != 2){
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access',
+            ], 404);
+        }
+        $vendor = Vendor::where('user_id',$vendorUser->id)->first();
+        if( !$vendor){
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized vendor access',
+            ], 404);
+        }
+        $updateOrderStatus = $this->updateOrderStatus($request,$order);
+        return response()->json([
+            'message' => 'Order status updated successfully.',
+            'order' => [
+                'order_id' => $order->id,
+                'order_status' => $order->order_status,
+                'final'=> $updateOrderStatus,
+            ],
+        ], 200);
+    }
 
     public function getPaidWallet(Request $request)
     {
