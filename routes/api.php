@@ -310,6 +310,10 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::put('vendors/{id}', [VendorController::class, 'update']); // Update a specific vendor by ID
     Route::delete('vendors/{id}', [VendorController::class, 'destroy']); // Delete a specific vendor by ID
 
+// supplier routes 
+  // to get the suplier wise orders
+  Route::get('orders/supplier', [OrderController::class, 'getAllsupplierOrders'])->name('orders.getAllsupplierOrders');
+
   //  Admin Routes 
   // Route for retrieving all orders off he user  by user_id
   Route::get('orders/admin', [OrderController::class, 'getAllOrders'])->name('orders.getAllOrders');

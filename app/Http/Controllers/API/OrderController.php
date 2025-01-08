@@ -12,8 +12,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\API\EarningController;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\Address;
 use App\Models\CustomerVendor;
 use App\Models\ConfigSetting;
+use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
@@ -322,6 +324,80 @@ class OrderController extends BaseController
                 'grand_total' => $order->grand_total,
                 'tracking_number' => $order->tracking_number,
                 'OrderDate' => $order->created_at,
+            ];
+        });
+
+        // Return the paginated orders as a response
+        return response()->json([
+            'message' => 'All orders retrieved successfully.',
+            'orders' => $response,
+            'pagination' => [
+                'current_page' => $orders->currentPage(),
+                'total_pages' => $orders->lastPage(),
+                'per_page' => $orders->perPage(),
+                'total_orders' => $orders->total(),
+            ],
+        ], 200);
+    }
+
+    // vendor order list
+    // getting all the orders desc on date with pagination
+
+    public function getAllsupplierOrders(Request $request)
+    {   
+        $vendorUser = User::find($request->user_id);
+        if( $vendorUser->user_type != 2){
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access',
+            ], 404);
+        }
+        $vendor = Vendor::where('user_id',$vendorUser->id)->first();
+        if( !$vendor){
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized vendor access',
+            ], 404);
+        }
+        // Default order status filter
+        $orderStatusFilter = [0, 1];
+
+        // Override order status filter if provided in the query string
+        if ($request->has('order_status')) {
+            $orderStatusFilter = (array) $request->query('order_status');
+        }
+
+        // Retrieve orders with pagination and order them by created_at in descending order
+        $orders = Order::where('supplied_by',$vendor->id)
+            ->whereIn('order_status', $orderStatusFilter)
+            ->orderBy('created_at', 'desc')->paginate(10); // Adjust the number per page as needed
+
+        if ($orders->isEmpty()) {
+            return response()->json([
+                'message' => 'No orders found.',
+            ], 404);
+        }
+
+        // Map the orders to include their associated items and product image
+        $response = $orders->map(function ($order) {
+            // Retrieve the associated order items
+           // $orderItems = OrderItem::where('order_id', $order->id)->get();
+            $address = Address::where('user_id',$order->user_id)->first();
+            $userDetail = UserDetails::where('user_id',$order->user_id)->first();
+
+            return [
+                'order_id' => $order->id,
+                'user_id' => $order->user_id,
+                'user_name' => "$userDetail->first_name  $userDetail->last_name",
+                'order_status' => $order->order_status,
+                'total_amount' => $order->total_amount,
+                'discount' => $order->discount,
+                'grand_total' => $order->grand_total,
+                'tracking_number' => $order->tracking_number,
+                'OrderDate' => $order->created_at,
+                'phone_1' =>$userDetail->phone_1,
+                'phone_2' =>  $address ? $address->phone_number : null,
+                'address' =>  $address ? $address->address : null,
             ];
         });
 
