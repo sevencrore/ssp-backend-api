@@ -15,6 +15,7 @@ use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\Address;
 use App\Models\CustomerVendor;
 use App\Models\ConfigSetting;
+use App\Models\ProductVariant;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Support\Facades\Log;
@@ -608,7 +609,7 @@ class OrderController extends BaseController
             return response()->json([
                 'success' => false,
                 'message' => 'Already Delivered!!!',
-            ], 500);
+            ], 401);
         }
         if( $order->delivery_otp !=  $validated['delivery_otp']){
             $otp = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
@@ -727,6 +728,7 @@ class OrderController extends BaseController
                 'order_items.unit_quantity AS Unit_Quantity',
                 'orders.order_status',
                 'order_items.unit_title AS Unit_title',
+                
             ])
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
             ->where('orders.supplied_by', $supplierId)
@@ -753,7 +755,9 @@ class OrderController extends BaseController
         // Map the product details
         $results->each(function ($item) {
             $product = Product::find($item->Product_ID);
+            $productVariant = ProductVariant::find($item->product_variant_id);
             $item->product_title = $product->title ?? null;
+            $item->product_variant_title = $productVariant->title ?? null;
             $item->image_url = $product->image_url ?? null;
             $item->category_id = $product->category_id ?? null;
         });

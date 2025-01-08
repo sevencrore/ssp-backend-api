@@ -27,6 +27,7 @@ use App\Http\Controllers\API\UsersController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\API\AdminController;
 use App\Http\Controllers\API\ConfigSettingController;
+use App\Http\Controllers\API\SlideImageController;
 
 
 
@@ -335,6 +336,21 @@ Route::middleware('auth:sanctum')->group( function () {
 
   // Route to update an existing ConfigSetting by ID
   Route::put('/config-settings/{id}', [ConfigSettingController::class, 'update']);
+
+    // Route to display all images
+  Route::get('slideimages', [SlideImageController::class, 'index'])->name('slideimages.index');
+
+  // Route to store a new image
+  Route::post('slideimages', [SlideImageController::class, 'store'])->name('slideimages.store');
+
+  // Route to show a specific image
+  Route::get('slideimages/{slideImage}', [SlideImageController::class, 'show'])->name('slideimages.show');
+
+  // Route to update an existing image
+  Route::put('slideimages/{slideImage}', [SlideImageController::class, 'update'])->name('slideimages.update');
+
+  // Route to delete an image
+  Route::delete('slideimages/{slideImage}', [SlideImageController::class, 'destroy'])->name('slideimages.destroy');
 
 });
 
