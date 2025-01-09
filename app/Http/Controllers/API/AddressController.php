@@ -6,6 +6,7 @@ use App\Models\Address;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class AddressController extends BaseController
 {
@@ -101,8 +102,9 @@ class AddressController extends BaseController
         return response()->json($addresses);
     }
     public function GetUserAddresses(Request $request)
-    {
-        $addresses = Address::where('user_id', $request->user_id)->get();
+    {   Log::info("$request->user_id");
+        $addresses = Address::where('user_id', $request->user_id)->first();
+        Log::info($addresses);
         return response()->json($addresses);
     }
 }
