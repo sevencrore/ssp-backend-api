@@ -125,52 +125,79 @@ public function update(Request $request, $id): JsonResponse
     ], 201);
 
 }
-public function getProductsWithVariants(Request $request): JsonResponse
-{   
-    Log::info("user_id from the request toke $request->user_id");
-    Log::info("user_id from the request toke $request");
-    $perPage = $request->input('per_page', 10); 
-    $currentPage = $request->input('current_page', 1);
+    public function getProductsWithVariants(Request $request): JsonResponse
+    {
+        Log::info("user_id from the request token $request->user_id");
 
-    $products = Product::with('variants')->paginate($perPage, ['*'], 'page', $currentPage)
-        ->appends(['per_page' => $perPage, 'current_page' => $currentPage]);
+        // Retrieve query parameters
+        $perPage = $request->input('per_page', 10); 
+        $currentPage = $request->input('current_page', 1);
+        $categoryId = $request->input('category_id'); // Filter by category ID
+        $search = $request->input('search'); // Filter by title search pattern
 
-    $formattedProducts = $products->map(function ($product) {
-        return [
-            'product_id' => $product->id,
-            'image_url' => $product->image_url,
-            'title'=>$product->title,
-            'description'=>$product->description,
-            'product_variants' => $product->variants->map(function ($variant) {
-                return [
-                    'product_variant_id' => $variant->id,
-                    'title' => $variant->title,
-                    'description' => $variant->description,
-                    'price' => $variant->price,
-                    'discount' => $variant->discount,
-                    'unit_id' => $variant->unit_id,
-                    'unit_quantity' => $variant->unit_quantity,
-                    'unit_title' => $variant->unit ? $variant->unit->title : null, 
-                ];
-            })->toArray(), 
-        ];
-    })->toArray(); 
+        // Build the query
+        $query = Product::with('variants');
 
-    return response()->json([
-        'success' => true,
-        'data' => [
-            'data' => $formattedProducts,
-            'pagination' => [
-                'current_page' => $products->currentPage(),
-                'last_page' => $products->lastPage(),
-                'per_page' => $products->perPage(),
-                'total' => $products->total(),
-                'next_page_url' => $products->nextPageUrl(),
-                'prev_page_url' => $products->previousPageUrl(),
+        if ($search) {
+            $query->where('title', 'LIKE', "%$search%");
+        }
+        else { if($categoryId)
+                { 
+                    $query->where('category_id', $categoryId);
+                }
+            }
+
+        // Get paginated results
+        $products = $query->paginate($perPage, ['*'], 'page', $currentPage)
+            ->appends([
+                'per_page' => $perPage,
+                'current_page' => $currentPage,
+                'category_id' => $categoryId,
+                'search' => $search,
+            ]);
+
+        // Log the products for debugging
+        Log::info("Filtered products: " . json_encode($products));
+
+        // Format the products
+        $formattedProducts = $products->map(function ($product) {
+            return [
+                'product_id' => $product->id,
+                'image_url' => $product->image_url,
+                'title' => $product->title,
+                'category_id' => $product->category_id,
+                'description' => $product->description,
+                'product_variants' => $product->variants->map(function ($variant) {
+                    return [
+                        'product_variant_id' => $variant->id,
+                        'title' => $variant->title,
+                        'description' => $variant->description,
+                        'price' => $variant->price,
+                        'discount' => $variant->discount,
+                        'unit_id' => $variant->unit_id,
+                        'unit_quantity' => $variant->unit_quantity,
+                        'unit_title' => $variant->unit ? $variant->unit->title : null, 
+                    ];
+                })->toArray(), 
+            ];
+        })->toArray(); 
+
+        // Return the JSON response
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'data' => $formattedProducts,
+                'pagination' => [
+                    'current_page' => $products->currentPage(),
+                    'last_page' => $products->lastPage(),
+                    'per_page' => $products->perPage(),
+                    'total' => $products->total(),
+                    'next_page_url' => $products->nextPageUrl(),
+                    'prev_page_url' => $products->previousPageUrl(),
+                ],
             ],
-        ],
-    ]);
-}
+        ]);
+    }
 
 
 
