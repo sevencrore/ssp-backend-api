@@ -71,6 +71,7 @@ class UsersController extends BaseController
             'email' => 'required|email',
             'user_name' => 'required',
             'last_name' => 'required',
+            'middle_name' => 'required',
             'phone_1' => 'required',
             'phone_2' => 'nullable',
             'aadhar_number' => 'nullable',
@@ -102,6 +103,7 @@ class UsersController extends BaseController
                 'email' => $validatedData['email'],
                 'user_name' => $validatedData['user_name'],
                 'last_name' => $validatedData['last_name'],
+                'middle_name' => $validatedData['middle_name'],
             ];
 
             // Hash password if provided
@@ -116,6 +118,7 @@ class UsersController extends BaseController
             $detailsData = [
                 'first_name' => $validatedData['user_name'], // Assuming user_name is first name
                 'last_name' => $validatedData['last_name'],
+                'middle_name' => $validatedData['middle_name'],
                 'phone_1' => $validatedData['phone_1'],
                 'phone_2' => $validatedData['phone_2'],
                 'email' => $validatedData['email'],
