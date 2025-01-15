@@ -155,16 +155,24 @@ class CategoryController extends BaseController
      * )
      */
     public function store(Request $request): JsonResponse
-    {
-        $validatedData = $request->validate([
-            'title' => 'required|string',
-            'description' => 'nullable|string',
-            'image_url' => 'nullable|string',
-        ]);
+{
+    $validatedData = $request->validate([
+        'title' => 'required|string',
+        'description' => 'nullable|string',
+        'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Added image validation
+    ]);
 
-        $category = Category::create($validatedData);
-        return response()->json(['success' => true, 'data' => $category], 201);
+    // Handle file upload if present
+    if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('images', 'public');
+        $validatedData['image_url'] = $path;
     }
+
+    // Create the category with validated data
+    $category = Category::create($validatedData);
+
+    return response()->json(['success' => true, 'data' => $category], 201);
+}
 
     /**
      * @OA\Get(
