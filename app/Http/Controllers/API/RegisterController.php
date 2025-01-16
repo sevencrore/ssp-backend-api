@@ -263,6 +263,7 @@ class RegisterController extends BaseController
 
             return response()->json([
                 'success' => false,
+                'error' => $e->getMessage(),
                 'message' => 'An error occurred during registration.',
             ], 500);
         }
@@ -355,6 +356,7 @@ class RegisterController extends BaseController
 
             return response()->json([
                 'success' => false,
+                'error' => $e->getMessage(),
                 'message' => 'An error occurred during registration.',
             ], 500);
         }
