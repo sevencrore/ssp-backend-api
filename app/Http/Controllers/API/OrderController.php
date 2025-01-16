@@ -700,9 +700,26 @@ class OrderController extends BaseController
     public function getOrderItemsForSupplier(Request $request)
     {
         Log::info("hello this is getordersItems by supplier");
-        // Get the authenticated user's ID as the supplier
-        $supplier = Vendor::where('user_id', $request->user_id)->first();
-        $supplierId = $supplier->id;
+        $supplierId = null;
+        $user = User::find($request->user_id);
+        if ($user->user_type == 99) {
+            // Admin: Do not filter by a specific supplier
+            Log::info("Admin user: Fetching data for all suppliers.");
+            if ($request->has('vendorUser_id')) {
+                $vendorUser_id = $request->query('vendorUser_id');
+                $supplier = Vendor::where('user_id', $vendorUser_id)->first();
+                $supplierId = $supplier->id;
+            }
+        } else {
+            // For suppliers: Get the authenticated user's ID as the supplier
+            $supplier = Vendor::where('user_id', $request->user_id)->first();
+            if (!$supplier) {
+                return response()->json(['error' => 'Supplier not found.'], 404);
+            }
+            $supplierId = $supplier->id;
+            Log::info("Supplier user: Fetching data for supplier ID $supplierId.");
+        }
+
 
         // Default order status filter
         $orderStatusFilter = [0, 1];
@@ -723,24 +740,25 @@ class OrderController extends BaseController
             ->select([
                 'order_items.product_variant_id',
                 DB::raw('SUM(order_items.quantity) AS total_quantity'),
-                'orders.supplied_by AS supplier',
                 'order_items.product_id AS Product_ID',
                 'order_items.unit_quantity AS Unit_Quantity',
-                'orders.order_status',
                 'order_items.unit_title AS Unit_title',
                 
             ])
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
-            ->where('orders.supplied_by', $supplierId)
             ->whereIn('orders.order_status', $orderStatusFilter)
             ->groupBy(
                 'order_items.product_variant_id',
-                'orders.supplied_by',
-                'orders.order_status',
                 'order_items.product_id',
                 'order_items.unit_quantity',
                 'order_items.unit_title'
             );
+
+        // Apply supplier filter if not admin
+        if ($supplierId) {
+            $query->where('orders.supplied_by', $supplierId);
+        }
+
 
         // Apply category filter if specified
         if ($categoryFilter !== '*') {
