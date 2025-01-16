@@ -66,6 +66,13 @@ class RegisterController extends BaseController
 
         $validatedData = $validator->validated();
 
+        if (User::where('email', $validatedData['email'])->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email already exists.',
+            ], 400);
+        }
+
         DB::beginTransaction();
 
         try {
@@ -82,7 +89,7 @@ class RegisterController extends BaseController
             $user = User::create($userData);
 
             if (!$user) {
-                throw new \Exception('User registration failed');
+                throw new \Exception('Email already exist.');
             }
 
             // Prepare details for UserDetails table
@@ -137,6 +144,7 @@ class RegisterController extends BaseController
 
             return response()->json([
                 'success' => false,
+                'error' => $e->getMessage(),
                 'message' => 'An error occurred during registration.',
             ], 500);
         }
@@ -171,6 +179,12 @@ class RegisterController extends BaseController
 
         $validatedData = $validator->validated();
 
+        if (User::where('email', $validatedData['email'])->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email already exists.',
+            ], 400);
+        }
         DB::beginTransaction();
 
         try {
@@ -284,6 +298,13 @@ class RegisterController extends BaseController
         }
 
         $validatedData = $validator->validated();
+
+        if (User::where('email', $validatedData['email'])->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email already exists.',
+            ], 400);
+        }
 
         DB::beginTransaction();
 
