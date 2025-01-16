@@ -612,9 +612,9 @@ class OrderController extends BaseController
             ], 401);
         }
         if( $order->delivery_otp !=  $validated['delivery_otp']){
-            $otp = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
-            $order->delivery_otp = $otp;
-            $order->save();
+            // $otp = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+            // $order->delivery_otp = $otp;
+            // $order->save();
             return response()->json([
                 'success' => false,
                 'message' => 'Wrong OTP',
