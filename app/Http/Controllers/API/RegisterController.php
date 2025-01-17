@@ -48,6 +48,7 @@ class RegisterController extends BaseController
             'c_password' => 'required|same:password',
             'referral_code' => 'nullable',
             'last_name' => 'required',
+            'middle_name' => 'nullable',
             'phone_1' => 'required',
             'phone2' => 'nullable',
             'aadhar_number' => 'nullable',
@@ -96,6 +97,7 @@ class RegisterController extends BaseController
             $details = [
                 'first_name' => $validatedData['user_name'],
                 'last_name' => $validatedData['last_name'],
+                'middle_name' => $validatedData['middle_name'],
                 'phone_1' => $validatedData['phone_1'],
                 'email' => $validatedData['email'],
                 'user_id' => $user->id,
@@ -161,6 +163,7 @@ class RegisterController extends BaseController
             'c_password' => 'required|same:password',
             'referral_code' => 'required',
             'last_name' => 'required',
+            'middle_name' => 'nullable',
             'phone_1' => 'required',
             'phone2' => 'nullable',
             'aadhar_number' => 'nullable',
@@ -222,6 +225,7 @@ class RegisterController extends BaseController
             $details = [
                 'first_name' => $validatedData['user_name'],
                 'last_name' => $validatedData['last_name'],
+                'middle_name' => $validatedData['middle_name'],
                 'phone_1' => $validatedData['phone_1'],
                 'email' => $validatedData['email'],
                 'user_id' => $user->id,
