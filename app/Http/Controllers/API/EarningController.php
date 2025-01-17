@@ -135,12 +135,32 @@ class EarningController extends BaseController
             ->where('created_at', '>=', $startOfMonth)  // Orders within the last month
             ->sum('grand_total');  // Sum of grand_total for the filtered orders
 
+        $userDetail = UserDetails::where('user_id',$userId)->first();
+
+        $comission_id = $userDetail->comission_id;
+    
+        // Fetch the commission details using comission_id and level
+        $level_one_comissionDetail = ComissionDetail::where('comission_id', $comission_id)
+                                            ->where('level', 1)
+                                            ->first();
+        $level_one_percentage = $level_one_comissionDetail->commission;     
+        $level_two_comissionDetail = ComissionDetail::where('comission_id', $comission_id)
+                                            ->where('level', 2)
+                                            ->first();
+        
+        $level_two_percentage = $level_two_comissionDetail->commission;
+        
+        $self_estimated_comission = $selfOrder * ($level_one_percentage / 100);
+        $firstReferal_estimated_comission = $first_referal_Total * ($level_one_percentage / 100);
+        $secondReferal_estimated_comission = $second_referal_Total * ($level_one_percentage / 100);
+        $estimated_comission =  $self_estimated_comission + $firstReferal_estimated_comission + $secondReferal_estimated_comission;
         // Return the calculated sales value (grand_total)
         return response()->json([
             'first_referal_Total' => $first_referal_Total,
             'second_referal_Total' => $second_referal_Total,
             'self_Total' => $selfOrder,
             'real_sales_value' => $selfOrder+$first_referal_Total+$second_referal_Total ,
+            'estimated_comission' => $estimated_comission ,
         ]);
     }
 
