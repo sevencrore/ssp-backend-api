@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ComissionDetail;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ComissionDetailController extends Controller
@@ -28,12 +29,19 @@ class ComissionDetailController extends Controller
 
     // Store a new commission detail
     public function store(Request $request)
-    {
+    {  
         $validatedData = $request->validate([
             'comission_id' => 'required|exists:comission,id',
             'level' => 'required|integer',
             'commission' => 'required|numeric',
         ]);
+        $admin = User::find($request->user_id);
+        if( $admin->user_type != 99){
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access',
+            ], 404);
+        }
 
         $detail = ComissionDetail::create($validatedData);
         return response()->json($detail, 201);
@@ -41,7 +49,15 @@ class ComissionDetailController extends Controller
 
     // Update an existing commission detail
     public function update(Request $request, $id)
-    {
+    {  
+          $admin = User::find($request->user_id);
+        if( $admin->user_type != 99){
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access',
+            ], 404);
+        }
+
         $detail = ComissionDetail::find($id);
 
         if ($detail) {
@@ -59,8 +75,15 @@ class ComissionDetailController extends Controller
     }
 
     // Delete a commission detail
-    public function destroy($id)
-    {
+    public function destroy(Request $request,$id)
+    {    $admin = User::find($request->user_id);
+        if( $admin->user_type != 99){
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access',
+            ], 404);
+        }
+
         $detail = ComissionDetail::find($id);
 
         if ($detail) {
