@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Http\Resources\CategoryResource;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends BaseController
 {
@@ -161,7 +163,7 @@ class CategoryController extends BaseController
         'description' => 'nullable|string',
         'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Added image validation
     ]);
-
+    Log::info( $request->input());
     // Handle file upload if present
     if ($request->hasFile('image')) {
         $path = $request->file('image')->store('images', 'public');
@@ -236,16 +238,79 @@ class CategoryController extends BaseController
      */
     public function update(Request $request, int $id): JsonResponse
     {
+        // Log the complete request data
+        Log::info('Request Data:', $request->all()); // Logs all form data
+        Log::info('Files:', $request->file());       // Logs file data
+
+        // Check if the request has a file
+        if ($request->hasFile('image')) {
+            // Log the uploaded image
+            Log::info('Uploaded Image:', $request->file('image')->getClientOriginalName());
+        }
+
         $validatedData = $request->validate([
             'title' => 'sometimes|required|string',
             'description' => 'sometimes|nullable|string',
-            'image_url' => 'sometimes|nullable|string',
+            'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $category = Category::findOrFail($id);
+
+        // Handle file upload if present
+        if ($request->hasFile('image')) {
+            // Delete the old image if it exists
+            if ($category->image_url && Storage::disk('public')->exists($category->image_url)) {
+                Storage::disk('public')->delete($category->image_url);
+            }
+
+            // Store the new image
+            $path = $request->file('image')->store('images', 'public');
+            $validatedData['image_url'] = $path;
+        }
+
+        // Update the category with validated data
         $category->update($validatedData);
+
         return response()->json(['success' => true, 'data' => $category]);
     }
+    public function updatecategory(Request $request, int $id): JsonResponse
+    {
+        // Log the complete request data
+        Log::info('Request Data:', $request->all()); // Logs all form data
+        Log::info('Files:', $request->file());       // Logs file data
+
+        // Check if the request has a file
+        if ($request->hasFile('image')) {
+            // Log the uploaded image
+            // Log::info('Uploaded Image:', $request->file('image')->getClientOriginalName());
+        }
+
+        $validatedData = $request->validate([
+            'title' => 'sometimes|required|string',
+            'description' => 'sometimes|nullable|string',
+            'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $category = Category::findOrFail($id);
+
+        // Handle file upload if present
+        if ($request->hasFile('image')) {
+            // Delete the old image if it exists
+            if ($category->image_url && Storage::disk('public')->exists($category->image_url)) {
+                Storage::disk('public')->delete($category->image_url);
+            }
+
+            // Store the new image
+            $path = $request->file('image')->store('images', 'public');
+            $validatedData['image_url'] = $path;
+        }
+
+        // Update the category with validated data
+        $category->update($validatedData);
+
+        return response()->json(['success' => true, 'data' => $category]);
+    }
+
 
     /**
      * @OA\Delete(

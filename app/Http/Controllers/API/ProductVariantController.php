@@ -127,7 +127,6 @@ public function update(Request $request, $id): JsonResponse
 }
     public function getProductsWithVariants(Request $request): JsonResponse
     {
-        Log::info("user_id from the request token $request->user_id");
 
         // Retrieve query parameters
         $perPage = $request->input('per_page', 10); 

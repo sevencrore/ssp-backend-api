@@ -77,6 +77,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('category-get-all-paginated', [CategoryController::class, 'getAllPaginated']);
   Route::get('category/{category}', [CategoryController::class, 'show'])->name('category.show');
   Route::put('category/{id}', [CategoryController::class, 'update'])->name('category.update');
+  Route::post('categoryupdate/{id}', [CategoryController::class, 'updatecategory'])->name('category.updatecategory');
   Route::delete('category/{category}', [CategoryController::class, 'destroy'])->name('category.destroy');
   Route::get('unit', [UnitController::class, 'index'])->name('unit.index');
   Route::post('unit', [UnitController::class, 'store'])->name('unit.store');
