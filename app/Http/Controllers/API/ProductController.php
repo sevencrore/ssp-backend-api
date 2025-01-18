@@ -167,22 +167,40 @@ class ProductController extends BaseController
     // Update a product
     public function update(Request $request, $id)
     {
+        // Validate the incoming request data
         $validatedData = $request->validate([
             'title' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|required|string',
-            'image_url' => 'sometimes|required|string',
-            // 'price' => 'sometimes|required|numeric',
+            'description' => 'sometimes|nullable|string',
+            'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Updated to handle actual image uploads
             'priority' => 'nullable|integer',
         ]);
-
+    
+        // Find the product or throw a 404 error if not found
         $product = Product::findOrFail($id);
+    
+        // Handle image upload if a file is provided
+        if ($request->hasFile('image')) {
+            // Delete the old image if it exists
+            if ($product->image_url && Storage::disk('public')->exists($product->image_url)) {
+                Storage::disk('public')->delete($product->image_url);
+            }
+    
+            // Store the new image
+            $path = $request->file('image')->store('products', 'public');
+            $validatedData['image_url'] = $path; // Update the image URL field
+        }
+    
+        // Update the product with the validated data
         $product->update($validatedData);
-
+    
+        // Return a success response with the updated product data
         return response()->json([
             'success' => true,
-            'data' => $product
-        ], 201);
+            'message' => 'Product updated successfully.',
+            'data' => $product,
+        ], 200); // Use HTTP 200 for successful updates
     }
+    
     
     // delete multiple product
     public function deleteMultiple(Request $request)
