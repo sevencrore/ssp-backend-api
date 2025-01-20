@@ -286,6 +286,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::delete('customer-vendors/{id}', [CustomerVendorController::class, 'destroy']);
 
   // Route::get('/users', [UsersController::class, 'index'])->name('users.index');
+   Route::get('/get-users', [UsersController::class, 'getUsersBySearch'])->name('users.getUsersBySearch');
 
    Route::get('/users/details', [UsersController::class, 'show'])->name('users.show');
 

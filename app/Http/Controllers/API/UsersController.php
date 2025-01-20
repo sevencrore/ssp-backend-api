@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Arr;
 
 class UsersController extends BaseController
 {
@@ -19,6 +20,51 @@ class UsersController extends BaseController
     {
         // Logic to list all users
     }
+
+    //get user based on the search 
+    public function getUsersBySearch(Request $request)
+    {
+        // Base query with left join
+        $query = UserDetails::leftJoin('address', 'user_details.user_id', '=', 'address.user_id')
+            ->select(
+                'user_details.id',
+                'user_details.first_name',
+                'user_details.middle_name',
+                'user_details.last_name',
+                'user_details.phone_1',
+                'user_details.phone_2',
+                'user_details.email',
+                'user_details.user_id',
+                'user_details.comission_id',
+                'user_details.pincode',
+                'user_details.referred_by',
+                'address.address as user_address'
+            )
+            ->orderBy('user_details.created_at', 'desc'); // Order by created_at in descending order
+
+        // Apply search filter if 'search' parameter is present
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('user_details.pincode', 'LIKE', "%$search%")
+                ->orWhere('address.address', 'LIKE', "%$search%");
+            });
+        }
+
+        if ($request->filled('refernull')) {
+            $refernull = $request->refernull;
+            $query->where('user_details.referred_by', null);
+            }
+        
+        // Remove a specific query parameter, e.g., 'user_id'
+        $queryParameters = Arr::except($request->query(), ['user_id']);
+
+        // Paginate the results
+        $users = $query->paginate(30)->appends($queryParameters); // Adjust the number 10 to set items per page
+
+        return response()->json($users);
+    }
+
 
     public function show(Request $request)
     {
