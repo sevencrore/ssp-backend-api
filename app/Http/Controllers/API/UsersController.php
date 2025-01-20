@@ -45,10 +45,8 @@ class UsersController extends BaseController
         // Apply search filter if 'search' parameter is present
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('user_details.pincode', 'LIKE', "%$search%")
-                ->orWhere('address.address', 'LIKE', "%$search%");
-            });
+            $query->where('user_details.pincode', 'LIKE', "%$search%")
+                  ->orWhere('address.address', 'LIKE', "%$search%");
         }
 
         if ($request->filled('refernull')) {
