@@ -9,6 +9,8 @@ use App\Http\Resources\ProductResource;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends BaseController
 {
@@ -171,22 +173,23 @@ class ProductController extends BaseController
         $validatedData = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|nullable|string',
-            'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Updated to handle actual image uploads
-            'priority' => 'nullable|integer',
+            'image_url' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Updated to handle actual image uploads
+            
         ]);
     
         // Find the product or throw a 404 error if not found
         $product = Product::findOrFail($id);
-    
+        Log::info("$product");
         // Handle image upload if a file is provided
-        if ($request->hasFile('image')) {
+        if ($request->hasFile('image_url')) {
             // Delete the old image if it exists
+            Log::info("inside the hasimage");
             if ($product->image_url && Storage::disk('public')->exists($product->image_url)) {
                 Storage::disk('public')->delete($product->image_url);
             }
     
             // Store the new image
-            $path = $request->file('image')->store('products', 'public');
+            $path = $request->file('image_url')->store('images', 'public');
             $validatedData['image_url'] = $path; // Update the image URL field
         }
     
