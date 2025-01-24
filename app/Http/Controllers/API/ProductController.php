@@ -11,6 +11,7 @@ use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Arr;
 
 class ProductController extends BaseController
 {
@@ -23,24 +24,21 @@ class ProductController extends BaseController
 
     public function getAllPaginated(Request $request): JsonResponse
     {
+
+        $query = Product::orderBy('created_at', 'desc');
         
-        // $items = Product::paginate($request->per_page)->appends(['sort' => $request->title]);
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('title', 'LIKE', "%$search%")
+                  ->orWhere('description', 'LIKE', "%$search%");
+            }
+         // Remove a specific query parameter, e.g., 'user_id'
+         $queryParameters = Arr::except($request->query(), ['user_id']);
 
-        // Get the per_page value from the request or set a default value
-        $perPage = $request->input('per_page', 10); // Default to 10 if not provided
-
-        // Get the sort field from the request, defaulting to 'title'
-        $sortField = $request->input('sort', 'title');
-
-        // Get the current_page from the request, defaulting to 1
-        $currentPage = $request->input('current_page', 1);
-
-        // Paginate products with sorting
-        $items = Product::orderBy($sortField)
-        ->paginate($perPage, ['*'], 'page', $currentPage)
-        ->appends(['sort' => $sortField, 'current_page' => $currentPage]);
-
-
+         // Paginate the results
+         $query = $query->paginate(30)->appends($queryParameters); // Adjust the number 10 to set items per page
+ 
+        $items = $query;
         $data = [
             'data' => ProductResource::collection($items->items()),
             'pagination' => [
@@ -174,9 +172,9 @@ class ProductController extends BaseController
             'title' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|nullable|string',
             'image_url' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Updated to handle actual image uploads
-            
+            'category_id' => 'sometimes|nullable',
         ]);
-    
+        Log::info($validatedData);
         // Find the product or throw a 404 error if not found
         $product = Product::findOrFail($id);
         Log::info("$product");
