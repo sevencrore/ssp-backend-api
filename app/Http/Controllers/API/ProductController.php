@@ -174,10 +174,8 @@ class ProductController extends BaseController
             'image_url' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Updated to handle actual image uploads
             'category_id' => 'sometimes|nullable',
         ]);
-        Log::info($validatedData);
         // Find the product or throw a 404 error if not found
         $product = Product::findOrFail($id);
-        Log::info("$product");
         // Handle image upload if a file is provided
         if ($request->hasFile('image_url')) {
             // Delete the old image if it exists
