@@ -138,10 +138,9 @@ public function update(Request $request, $id): JsonResponse
 }
     public function getProductsWithVariants(Request $request): JsonResponse
     {
-
         // Retrieve query parameters
-        $perPage = $request->input('per_page', 10); 
-        $currentPage = $request->input('current_page', 1);
+        $limit = $request->input('limit', 12); // Number of records per load
+        $offset = $request->input('offset', 0); // Offset for records
         $categoryId = $request->input('category_id'); // Filter by category ID
         $search = $request->input('search'); // Filter by title search pattern
 
@@ -149,7 +148,8 @@ public function update(Request $request, $id): JsonResponse
         $query = Product::with('variants');
 
         if ($search) {
-            $query->where('title', 'LIKE', "%$search%");
+            $query->where('title', 'LIKE', "%$search%")
+            ->orWhere('description', 'LIKE', "%$search%");
         }
         else { if($categoryId)
                 { 
@@ -157,17 +157,8 @@ public function update(Request $request, $id): JsonResponse
                 }
             }
 
-        // Get paginated results
-        $products = $query->paginate($perPage, ['*'], 'page', $currentPage)
-            ->appends([
-                'per_page' => $perPage,
-                'current_page' => $currentPage,
-                'category_id' => $categoryId,
-                'search' => $search,
-            ]);
-
-        // Log the products for debugging
-        Log::info("Filtered products: " . json_encode($products));
+        // Apply limit and offset for "load more" functionality
+        $products = $query->skip($offset)->take($limit)->get();
 
         // Format the products
         $formattedProducts = $products->map(function ($product) {
@@ -186,28 +177,31 @@ public function update(Request $request, $id): JsonResponse
                         'discount' => $variant->discount,
                         'unit_id' => $variant->unit_id,
                         'unit_quantity' => $variant->unit_quantity,
-                        'unit_title' => $variant->unit ? $variant->unit->title : null, 
+                        'unit_title' => $variant->unit ? $variant->unit->title : null,
                     ];
-                })->toArray(), 
+                })->toArray(),
             ];
-        })->toArray(); 
+        })->toArray();
+
+        // Check if there are more records to load
+        $hasMore = $query->skip($offset + $limit)->exists();
 
         // Return the JSON response
         return response()->json([
             'success' => true,
             'data' => [
-                'data' => $formattedProducts,
+                'products' => $formattedProducts,
                 'pagination' => [
-                    'current_page' => $products->currentPage(),
-                    'last_page' => $products->lastPage(),
-                    'per_page' => $products->perPage(),
-                    'total' => $products->total(),
-                    'next_page_url' => $products->nextPageUrl(),
-                    'prev_page_url' => $products->previousPageUrl(),
+                    'offset' => $offset,
+                    'limit' => $limit,
+                    'has_more' => $hasMore,
+                    'search'=> $search,
+                    'category' =>  $categoryId,
                 ],
             ],
         ]);
     }
+
 
 
 
