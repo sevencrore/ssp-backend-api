@@ -9,6 +9,8 @@ use App\Http\Resources\CategoryResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Arr;
+
 
 class CategoryController extends BaseController
 {
@@ -102,15 +104,21 @@ class CategoryController extends BaseController
      * )
      */
     public function getAllPaginated(Request $request): JsonResponse
-    {
-        $perPage = $request->input('per_page', 10);
-        $sortField = $request->input('sort', 'title');
-        $currentPage = $request->input('current_page', 1);
+    { $query = Category::orderBy('created_at', 'desc');
+        
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('title', 'LIKE', "%$search%")
+                  ->orWhere('description', 'LIKE', "%$search%");
+            }
+         // Remove a specific query parameter, e.g., 'user_id'
+         $queryParameters = Arr::except($request->query(), ['user_id']);
 
-        $items = Category::orderBy($sortField)
-            ->paginate($perPage, ['*'], 'page', $currentPage)
-            ->appends(['sort' => $sortField, 'current_page' => $currentPage]);
-
+         // Paginate the results
+         $query = $query->paginate(30)->appends($queryParameters); // Adjust the number 10 to set items per page
+ 
+        $items = $query;
+    
         $data = [
             'data' => CategoryResource::collection($items->items()),
             'pagination' => [
@@ -119,12 +127,13 @@ class CategoryController extends BaseController
                 'per_page' => $items->perPage(),
                 'total' => $items->total(),
                 'next_page_url' => $items->nextPageUrl(),
-                'prev_page_url' => $items->previousPageUrl()
+                'prev_page_url' => $items->previousPageUrl(),
             ]
         ];
-
+    
         return response()->json(['success' => true, 'data' => $data], 200);
     }
+    
 
     /**
      * @OA\Post(

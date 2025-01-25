@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Resources\UnitResource;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Arr;
+
 
 class UnitController extends BaseController
 {
@@ -101,29 +103,37 @@ class UnitController extends BaseController
 
     // Get paginated Units with sorting
     public function getAllPaginated(Request $request): JsonResponse
-    {
-        $perPage = $request->input('per_page', 10);
-        $sortField = $request->input('sort', 'title');
-        $currentPage = $request->input('current_page', 1);
+{
+    $query = Unit::orderBy('created_at', 'desc');
+        
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('title', 'LIKE', "%$search%")
+                  ->orWhere('description', 'LIKE', "%$search%");
+            }
+         // Remove a specific query parameter, e.g., 'user_id'
+         $queryParameters = Arr::except($request->query(), ['user_id']);
 
-        $items = Unit::orderBy($sortField)
-            ->paginate($perPage, ['*'], 'page', $currentPage)
-            ->appends(['sort' => $sortField, 'current_page' => $currentPage]);
+         // Paginate the results
+         $query = $query->paginate(30)->appends($queryParameters); // Adjust the number 10 to set items per page
+ 
+        $items = $query;
 
-        $data = [
-            'data' => UnitResource::collection($items->items()),
-            'pagination' => [
-                'current_page' => $items->currentPage(),
-                'last_page' => $items->lastPage(),
-                'per_page' => $items->perPage(),
-                'total' => $items->total(),
-                'next_page_url' => $items->nextPageUrl(),
-                'prev_page_url' => $items->previousPageUrl(),
-            ]
-        ];
+    $data = [
+        'data' => UnitResource::collection($items->items()),
+        'pagination' => [
+            'current_page' => $items->currentPage(),
+            'last_page' => $items->lastPage(),
+            'per_page' => $items->perPage(),
+            'total' => $items->total(),
+            'next_page_url' => $items->nextPageUrl(),
+            'prev_page_url' => $items->previousPageUrl(),
+        ]
+    ];
 
-        return response()->json(['success' => true, 'data' => $data], 200);
-    }
+    return response()->json(['success' => true, 'data' => $data], 200);
+}
+
 
     
     /**
