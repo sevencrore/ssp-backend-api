@@ -326,6 +326,9 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('order-items/admin/{orderItem}', [OrderItemController::class, 'getOrderItemsByOrderId'])->name('order-items.getOrderItemsByOrderId');
 
   Route::put('/admin/update-user-password', [AdminController::class, 'updatePassword']);
+  
+  //to activate or deactive the user
+  Route::put('/admin/update-user-state/{id}', [AdminController::class, 'setStatus']);
 
     // Route to fetch all ConfigSettings
   Route::get('/config-settings', [ConfigSettingController::class, 'index']); 

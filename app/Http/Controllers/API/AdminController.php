@@ -58,4 +58,35 @@ class AdminController extends BaseController
             'message' => 'Password updated successfully',
         ], 200);
     }
+
+    // to make the active or deactive the user
+    public function setStatus(Request $request, $id)
+    {
+        $request->validate([
+            'is_active' => 'required|boolean' // Ensure it is 0 or 1
+        ]);
+
+        $admin = User::find($request->user_id);
+        if( $admin->user_type != 99){
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access',
+            ], 404);
+        }
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $user->is_active = $request->is_active; // Set the passed value (0 or 1)
+        $user->save();
+
+        return response()->json([
+            'message' => $user->is_active ? 'User activated successfully' : 'User deactivated successfully',
+            'user' => ['id'=>$user->id,'name'=>$user->name],
+            'status' => $user->is_active
+        ]);
+    }
+
 }
