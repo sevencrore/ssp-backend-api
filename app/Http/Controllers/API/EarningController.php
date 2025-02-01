@@ -94,7 +94,7 @@ class EarningController extends BaseController
             ],
         ]);
     }
-    
+
 
     public function getReferralSales(Request $request)
     {
@@ -104,52 +104,52 @@ class EarningController extends BaseController
         // ]);
 
         $userId = $request->user_id;
-        
+
         // Get direct referrals of the given user
         $directReferrals = UserDetails::where('referred_by', $userId)->pluck('user_id')->toArray();
-        
+
         // Get referrals of the direct referrals (2nd level depth)
         $secondLevelReferrals = UserDetails::whereIn('referred_by', $directReferrals)->pluck('user_id')->toArray();
-        
+
         // Combine all user IDs (the given user, direct referrals, and second-level referrals)
         $allUserIds = array_merge([$userId], $directReferrals, $secondLevelReferrals);
-       
-         // Define the date range (start of the current month to now)
+
+        // Define the date range (start of the current month to now)
         $startOfMonth = Carbon::now()->startOfMonth();
-       
+
         // Get the sum of grand_total for orders matching the criteria
         $first_referal_Total = Order::whereIn('user_id', $directReferrals)
             ->whereIn('order_status', [0, 1, 2])  // Filter by order status 0 or 1
             ->where('created_at', '>=', $startOfMonth)  // Orders within the last month
             ->sum('grand_total');  // Sum of grand_total for the filtered orders
-        
-            // Get the sum of grand_total for orders matching the criteria
+
+        // Get the sum of grand_total for orders matching the criteria
         $second_referal_Total = Order::whereIn('user_id', $secondLevelReferrals)
             ->whereIn('order_status', [0, 1, 2])  // Filter by order status 0 or 1
             ->where('created_at', '>=', $startOfMonth)  // Orders within the last month
             ->sum('grand_total');  // Sum of grand_total for the filtered orders
-        
-            // Get the sum of grand_total for orders matching the criteria
+
+        // Get the sum of grand_total for orders matching the criteria
         $selfOrder = Order::where('user_id', $userId)
             ->whereIn('order_status', [0, 1, 2])  // Filter by order status 0 or 1
             ->where('created_at', '>=', $startOfMonth)  // Orders within the last month
             ->sum('grand_total');  // Sum of grand_total for the filtered orders
 
-        $userDetail = UserDetails::where('user_id',$userId)->first();
+        $userDetail = UserDetails::where('user_id', $userId)->first();
 
         $comission_id = $userDetail->comission_id;
-    
+
         // Fetch the commission details using comission_id and level
         $level_one_comissionDetail = ComissionDetail::where('comission_id', $comission_id)
-                                            ->where('level', 1)
-                                            ->first();
-        $level_one_percentage = $level_one_comissionDetail->commission;     
+            ->where('level', 1)
+            ->first();
+        $level_one_percentage = $level_one_comissionDetail->commission;
         $level_two_comissionDetail = ComissionDetail::where('comission_id', $comission_id)
-                                            ->where('level', 2)
-                                            ->first();
-        
+            ->where('level', 2)
+            ->first();
+
         $level_two_percentage = $level_two_comissionDetail->commission;
-        
+
         $self_estimated_comission = $selfOrder * ($level_one_percentage / 100);
         $firstReferal_estimated_comission = $first_referal_Total * ($level_one_percentage / 100);
         $secondReferal_estimated_comission = $second_referal_Total * ($level_one_percentage / 100);
@@ -159,8 +159,8 @@ class EarningController extends BaseController
             'first_referal_Total' => $first_referal_Total,
             'second_referal_Total' => $second_referal_Total,
             'self_Total' => $selfOrder,
-            'real_sales_value' => $selfOrder+$first_referal_Total+$second_referal_Total ,
-            'estimated_comission' => $estimated_comission ,
+            'real_sales_value' => $selfOrder + $first_referal_Total + $second_referal_Total,
+            'estimated_comission' => $estimated_comission,
         ]);
     }
 
@@ -259,7 +259,7 @@ class EarningController extends BaseController
     public function getEarningsByUser(Request $request): JsonResponse
     {
         $user = User::find($request->user_id);
-    
+
         if ($user) {
             $earnings = Earning::where('user_id', $request->user_id)->get();
             return response()->json([
@@ -274,7 +274,7 @@ class EarningController extends BaseController
             ], 404);
         }
     }
-    
+
 
 
 
@@ -395,7 +395,7 @@ class EarningController extends BaseController
 
 
 
-    public function updateEarningsWithReferralIncentive($id , $ordered_user_id)
+    public function updateEarningsWithReferralIncentive($id, $ordered_user_id)
     {
         try {
             // Validate the input
@@ -403,7 +403,13 @@ class EarningController extends BaseController
                 return response()->json(['error' => 'User ID is required.'], 400);
             }
 
-            // Start a database transaction
+            $user = User::find($id);
+            if ($user && !$user->is_active) {
+                return 'not success';
+            }
+
+
+            // Start a database transaction 
             DB::beginTransaction();
 
             // Fetch the matching earnings record
@@ -421,19 +427,18 @@ class EarningController extends BaseController
 
             $referralIncentive = $configSetting->referal_incentive;
             Log::info($configSetting);
-           
-            if ($earning->referral_incentive <= $referralIncentive){
+
+            if ($earning->referral_incentive <= $referralIncentive) {
 
                 $referralIncentive = $earning->referral_incentive; // holding the value for comissiontable adding amount
                 $earning->wallet_amount += $earning->referral_incentive; // Add referral incentive to wallet
-                $earning->referral_incentive=0;
-            }
-            else {
-                 // Update wallet_amount and adjust the previous amount
+                $earning->referral_incentive = 0;
+            } else {
+                // Update wallet_amount and adjust the previous amount
                 $earning->wallet_amount += $referralIncentive; // Add referral incentive to wallet
                 $earning->referral_incentive -= $referralIncentive; // Deduct referral incentive from the previous amount
             }
-            
+
             // Save the updated earnings record
             $earning->save();
 
@@ -443,14 +448,13 @@ class EarningController extends BaseController
             $orderd_userDetail = UserDetails::where('user_id', $ordered_user_id)->first();
             $desc = "$referralIncentive credited from the $orderd_userDetail->first_name $orderd_userDetail->last_name as the referal incentive";
 
-            $success = $comissionhistorycontroller->addCommissionRecord($id ,1, $ordered_user_id ,$referralIncentive , $desc);
+            $success = $comissionhistorycontroller->addCommissionRecord($id, 1, $ordered_user_id, $referralIncentive, $desc);
 
 
             // Commit the transaction
             DB::commit();
 
             return 'success';
-
         } catch (\Exception $e) {
             // Rollback the transaction in case of error
             DB::rollBack();
@@ -468,109 +472,109 @@ class EarningController extends BaseController
         if (!$userDetail) {
             return response()->json(['error' => 'User details not found'], 404);
         }
-    
+
         $comission_id = $userDetail->comission_id;
-    
+
         // Fetch the commission details using comission_id and level
         $comissionDetail = ComissionDetail::where('comission_id', $comission_id)
-                                            ->where('level', $level)
-                                            ->first();
+            ->where('level', $level)
+            ->first();
         if (!$comissionDetail) {
             return response()->json(['error' => 'Commission details not found'], 404);
         }
-    
+
         $comissionPercentage = $comissionDetail->commission;
-    
+
         // Calculate the commission
         $commissionAmount = $grandTotal * ($comissionPercentage / 100);
-    
+
         // Check if an earnings record exists for the user_id
         $earning = Earning::where('user_id', $userId)->first();
-    
-        if ($earning) {
-            // Update the wallet amount if the record exists
-            $earning->wallet_amount += $commissionAmount;
-            if($level == 1){
-                if($userId == $ordered_user_id){
-                    $earning->self_purchase_total += $grandTotal;
-                }else{
-                    $earning->first_referral_purchase_total += $grandTotal;
+        $user = User::find($userId);
+        if ($user && $user->is_active) {
+            if ($earning) {
+                // Update the wallet amount if the record exists
+                $earning->wallet_amount += $commissionAmount;
+                if ($level == 1) {
+                    if ($userId == $ordered_user_id) {
+                        $earning->self_purchase_total += $grandTotal;
+                    } else {
+                        $earning->first_referral_purchase_total += $grandTotal;
+                    }
                 }
-            }
-            if($level == 2){
-                $earning->second_referral_purchase_total += $grandTotal;
-            }
+                if ($level == 2) {
+                    $earning->second_referral_purchase_total += $grandTotal;
+                }
 
-            $earning->save();
-        } else {
-            // Create a new earnings record if it doesn't exist
-            $earningData = [
-                'referral_incentive' => 0,
-                'sale_value_estimated' => 0,
-                'sale_actual_value' => 0,
-                'wallet_amount' => $commissionAmount,
-                'self_purchase_total' => 0,
-                'first_referral_purchase_total' => 0,
-                'second_referral_purchase_total' => 0,
-                'user_id' => $userId,
-            ];
-            Earning::create($earningData);
+                $earning->save();
+            } else {
+                // Create a new earnings record if it doesn't exist
+                $earningData = [
+                    'referral_incentive' => 0,
+                    'sale_value_estimated' => 0,
+                    'sale_actual_value' => 0,
+                    'wallet_amount' => $commissionAmount,
+                    'self_purchase_total' => 0,
+                    'first_referral_purchase_total' => 0,
+                    'second_referral_purchase_total' => 0,
+                    'user_id' => $userId,
+                ];
+                Earning::create($earningData);
+            }
         }
+        // after saving the data to the earnings add the comission-history
+        $comissionhistorycontroller = new ComissionHistoryController();
 
-         // after saving the data to the earnings add the comission-history
-         $comissionhistorycontroller = new ComissionHistoryController();
-
-        if($userId == $ordered_user_id){
+        if ($userId == $ordered_user_id) {
             $comissiodesc = "self orderd comission";
-        }
-        else{
+        } else {
             $comissiodesc = "$level referal comission";
         }
-         // to get the name and last name of the orderd_user_id to add in the comission-history
-         $orderd_userDetail = UserDetails::where('user_id', $ordered_user_id)->first();
-         $desc = "$commissionAmount credited from the $orderd_userDetail->first_name $orderd_userDetail->last_name as the $comissiodesc.";
+        // to get the name and last name of the orderd_user_id to add in the comission-history
+        $orderd_userDetail = UserDetails::where('user_id', $ordered_user_id)->first();
+        $desc = "$commissionAmount credited from the $orderd_userDetail->first_name $orderd_userDetail->last_name as the $comissiodesc.";
 
-         $success = $comissionhistorycontroller->addCommissionRecord($userId ,$level+2, $ordered_user_id , $commissionAmount , $desc);
+        $success = $comissionhistorycontroller->addCommissionRecord($userId, $level + 2, $ordered_user_id, $commissionAmount, $desc);
 
-    
+
         return $userDetail->referred_by;  // Return the user that referred the current user
     }
-    
+
     // Main function
     public function addComission($id)
     {
         // Retrieve the order ID from the request
         $orderId = $id;
-    
+
         // Fetch the order details using the order ID
         $order = Order::find($orderId);
         if (!$order) {
             return response()->json(['error' => 'Order not found'], 404);
         }
-    
+
         $userId = $order->user_id;
         // orderd_user_id holding it as the main referance for the comission table reference of comission
         $orderd_user_id = $order->user_id;
         $grandTotal = $order->grand_total;
-    
+
         // Call the reusable function for level 1
         $currentUserId = $this->calculateCommission($userId, $grandTotal, 1, $orderd_user_id);
-        
+
         $max_depth = ConfigSetting::find(1)->max_level;
         // Ensure $currentUserId is valid and continue for levels 2 and 3
         for ($i = 1; $i <= $max_depth; $i++) {
             if (!$currentUserId) {
                 break;  // Exit the loop if no valid user ID is returned
             }
-    
+
             // Update userId to the referred user's ID for the next level commission
             $currentUserId = $this->calculateCommission($currentUserId, $grandTotal, $i, $orderd_user_id);
         }
-    
+
         // Return the response from the reusable function
         return response()->json(['message' => 'Commission calculated successfully'], 200);
     }
-    
+
 
     // update the sales_value-estimated field on new registration
     public function updateEstimatedsales($userId, $amount, $level)
@@ -584,9 +588,12 @@ class EarningController extends BaseController
 
         // Update the sale_value_estimated
         $earning->sale_value_estimated += $amount;
-        if ($level == 1){
-            $configSetting = ConfigSetting::find(1);
-            $earning->referral_incentive += $configSetting->referal_incentive;
+        if ($level == 1) {
+            $user = User::find($userId);
+            if ($user && $user->is_active) {
+                $configSetting = ConfigSetting::find(1);
+                $earning->referral_incentive += $configSetting->referal_incentive;
+            }
         }
         $earning->save();
 
@@ -602,7 +609,4 @@ class EarningController extends BaseController
         // Return the result
         return $referredBy;
     }
-
-
-
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\ComissionHistory;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -24,7 +25,12 @@ class ComissionHistoryController extends Controller
 
 
     public function addCommissionRecord($user_id, $comission_type, $referal_id, $amount, $description)
-    {
+    {  
+        $user = User::find($user_id);
+        if ($user && !$user->is_active) {
+        
+            return 'succes the uesr is inactive';
+        }
         try {
 
             Log::info("$user_id and the $amount in the add comissionrecord");
