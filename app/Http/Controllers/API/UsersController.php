@@ -23,11 +23,20 @@ class UsersController extends BaseController
 
     //get user based on the search 
     public function getUsersBySearch(Request $request)
-    {
+    {   
+        $admin = User::find($request->user_id);
+        if( $admin->user_type != 99){
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access',
+            ], 404);
+        }
+        Log::info("user _id is $request->user_id");
         // Base query with left join
         $query = UserDetails::leftJoin('address', 'user_details.user_id', '=', 'address.user_id')
+            ->leftJoin('users', 'user_details.user_id', '=', 'users.id')
             ->select(
-                'user_details.id',
+                'users.id',
                 'user_details.first_name',
                 'user_details.middle_name',
                 'user_details.last_name',
@@ -38,7 +47,8 @@ class UsersController extends BaseController
                 'user_details.comission_id',
                 'user_details.pincode',
                 'user_details.referred_by',
-                'address.address as user_address'
+                'address.address as user_address',
+                'users.is_active as is_active',
             )
             ->orderBy('user_details.created_at', 'desc'); // Order by created_at in descending order
 
