@@ -132,7 +132,25 @@ class OrderController extends BaseController
      * )
      */
 
-
+     function generateTrackingNumber(): string
+     {
+         $currentYearMonth = now()->format('Ym');
+     
+         $lastOrder = Order::where('tracking_number', 'like', 'SSP' . $currentYearMonth . '%')
+             ->orderBy('id', 'desc')
+             ->first();
+     
+         $incrementalNumber = 1;
+     
+         if ($lastOrder) {
+             $lastTrackingNumber = $lastOrder->tracking_number;
+             $lastIncremental = (int) substr($lastTrackingNumber, 9); // 'SSPyyyymm' is 9 chars
+             $incrementalNumber = $lastIncremental + 1;
+         }
+     
+         $uniqueNumber = str_pad($incrementalNumber, 7, '0', STR_PAD_LEFT);
+         return 'SSP' . $currentYearMonth . $uniqueNumber;
+     }
     /**
      * Store order and order items.
      */
@@ -158,33 +176,11 @@ class OrderController extends BaseController
             ], 500);
         }
 
-        // Generate the current year and month (yyyymm)
-        $currentYearMonth = now()->format('Ym');
-
-        // Find the last order's tracking number for the current month
-        $lastOrder = Order::where('tracking_number', 'like', 'SSP' . $currentYearMonth . '%')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        // Generate the unique incremental number
-        $incrementalNumber = 1; // Default if no orders exist for this month
-        if ($lastOrder) {
-            // Extract the last incremental number from the tracking number and increment
-            $lastTrackingNumber = $lastOrder->tracking_number;
-            $lastIncremental = (int) substr($lastTrackingNumber, 9); // Extract numeric part after 'yyyymm_'
-            $incrementalNumber = $lastIncremental + 1;
-        }
-
-        // Pad the incremental number to ensure it's 6 digits long
-        $uniqueNumber = str_pad($incrementalNumber, 7, '0', STR_PAD_LEFT);
-
         // Generate the full tracking number
-        $trackingNumber = 'SSP' . $currentYearMonth . $uniqueNumber;
+        $trackingNumber = $this->generateTrackingNumber();
 
         // Use DB transaction for atomicity
         DB::beginTransaction();
-
-
         $vendor = CustomerVendor::where('customer_id', $validated['user_id'])->first();
         $config_settings = ConfigSetting::find(1);
         $otp = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
