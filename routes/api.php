@@ -29,11 +29,9 @@ use App\Http\Controllers\API\AdminController;
 use App\Http\Controllers\API\ConfigSettingController;
 use App\Http\Controllers\API\SlideImageController;
 
-
-
-
 use App\Http\Controllers\API\AddressController;
-   
+use App\Http\Controllers\API\RazorpayPaymentController;
+
 Route::controller(RegisterController::class)->group(function() {
   Route::post('register', 'register');
   Route::post('register-referral', 'registerWthReferral'); // Correct the method name here
@@ -141,6 +139,8 @@ Route::middleware('auth:sanctum')->group( function () {
 
   // Route for updating a specific cart item
   Route::put('cart/{cart}', [CartController::class, 'update'])->name('cart.update');
+
+  Route::post('cart/user/update-cartdata', [CartController::class, 'updateCartItems'])->name('cart.updateCartItems');
 
   // Route for deleting a specific cart item
   Route::delete('cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
@@ -356,6 +356,9 @@ Route::middleware('auth:sanctum')->group( function () {
 
   // Route to delete an image
   Route::delete('slideimages/{slideImage}', [SlideImageController::class, 'destroy'])->name('slideimages.destroy');
+
+   // razorpay routes
+   Route::post('payment/create-order', [RazorpayPaymentController::class, 'createOrder'])->name('razorpay.createOrder');
 
 });
 

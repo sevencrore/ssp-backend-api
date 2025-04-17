@@ -5,73 +5,20 @@ namespace App\Http\Controllers\API;
 use App\Models\Cart;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
 class CartController extends BaseController
 {
-    /**
-     * @OA\Get(
-     *     path="/api/cart",
-     *     tags={"Cart"},
-     *     summary="Get all cart items",
-     *     description="Fetches all items in the cart.",
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful response",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="array",
-     *                 @OA\Items(
-     *                     type="object",
-     *                     @OA\Property(property="id", type="integer", example=1),
-     *                     @OA\Property(property="user_id", type="integer", example=1),
-     *                     @OA\Property(property="product_id", type="integer", example=2),
-     *                     @OA\Property(property="product_variants_id", type="integer", example=5),
-     *                     @OA\Property(property="discount", type="integer", example=10),
-     *                     @OA\Property(property="created_at", type="string", example="2024-10-15T12:00:00Z")
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
-     */
+
     public function index(): JsonResponse
     {
         $data = Cart::all();
         return response()->json(['success' => true, 'data' => $data]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/cart/{id}",
-     *     tags={"Cart"},
-     *     summary="Get a specific cart item",
-     *     description="Returns a single cart item by ID.",
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the cart item",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful response",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Cart item not found"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
-     */
+
     public function show(int $id): JsonResponse
     {
         $cart = Cart::findOrFail($id);
@@ -127,35 +74,6 @@ class CartController extends BaseController
     }
 
 
-    /**
-     * @OA\Post(
-     *     path="/api/cart",
-     *     tags={"Cart"},
-     *     summary="Create a new cart item",
-     *     description="Stores a new cart item with user_id, product_id, product_variants_id, and discount.",
-     *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"user_id", "product_id", "product_variants_id", "discount"},
-     *             @OA\Property(property="user_id", type="integer", example=1),
-     *             @OA\Property(property="product_id", type="integer", example=2),
-     *             @OA\Property(property="product_variants_id", type="integer", example=5),
-     *             @OA\Property(property="discount", type="integer", example=10)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Cart item created",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Validation error"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
-     */
     public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
@@ -169,41 +87,7 @@ class CartController extends BaseController
         return response()->json(['success' => true, 'data' => $cartItem], 201);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/cart/{id}",
-     *     tags={"Cart"},
-     *     summary="Update an existing cart item",
-     *     description="Updates a cart item with new data, including product_variants_id and discount.",
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the cart item to update",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="user_id", type="integer", example=1),
-     *             @OA\Property(property="product_id", type="integer", example=2),
-     *             @OA\Property(property="product_variants_id", type="integer", example=5),
-     *             @OA\Property(property="discount", type="integer", example=10)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Cart item updated",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Cart item not found"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
-     */
+
     public function update(Request $request, int $id): JsonResponse
     {
         $validatedData = $request->validate([
@@ -218,33 +102,6 @@ class CartController extends BaseController
         return response()->json(['success' => true, 'data' => $cart]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/cart/{id}",
-     *     tags={"Cart"},
-     *     summary="Delete a cart item",
-     *     description="Removes a cart item by ID.",
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID of the cart item to delete",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Cart item deleted successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Cart deleted successfully"),
-     *             @OA\Property(property="data", type="null", example=null)
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Cart item not found"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
-     */
     public function destroy(int $id): JsonResponse
     {
         $cart = Cart::findOrFail($id);
@@ -255,5 +112,69 @@ class CartController extends BaseController
             'message' => 'Cart deleted successfully',
             'data' => null
         ], 200);
+    }
+
+    function updateCartItems(Request $request): JsonResponse
+    {
+        $cartData = $request->cartdata;
+        try {
+            foreach ($cartData as $item) {
+                if (!isset($item['id'])) {
+                    continue; // or handle as needed
+                }
+
+                Cart::where('id', $item['id'])->update([
+                    'product_id' => $item['product_id'] ?? null,
+                    'product_variants_id' => $item['product_variant_id'] ?? null,
+                    'quantity' => $item['quantity'] ?? 1,
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cart items updated successfully.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating cart items.',
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    function calculateFinalCartPrice($userId)
+    {
+        try {
+            $cartItems = Cart::where('user_id', $userId)->get();
+            $grand_total = 0;
+
+            foreach ($cartItems as $item) {
+                $variant = ProductVariant::find($item->product_variants_id);
+
+                if (!$variant) {
+                    continue; // skip if the variant doesn't exist
+                }
+
+                $price = $variant->price;
+                $discount = $variant->discount ?? 0;
+
+                $discountedPrice = $price - ($price * $discount / 100);
+                $totalForItem = $discountedPrice * $item->quantity;
+
+                $grand_total += $totalForItem;
+            }
+
+            return[
+                'success' => true,
+                'grand_total' => round($grand_total, 2)
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Something went wrong while calculating grand total.',
+                'error' => $e->getMessage()
+            ];
+        }
     }
 }
