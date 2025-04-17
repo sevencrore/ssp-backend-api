@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 
 class RegisterController extends BaseController
 {
@@ -92,6 +93,10 @@ class RegisterController extends BaseController
             if (!$user) {
                 throw new \Exception('Email already exist.');
             }
+
+            $userRole = Role::where('name', 'user')->first();
+            $user->assignRole($userRole);
+
 
             // Prepare details for UserDetails table
             $details = [
@@ -203,6 +208,9 @@ class RegisterController extends BaseController
             ];
 
             $user = User::create($userData);
+
+            $userRole = Role::where('name', 'user')->first();
+            $user->assignRole($userRole);
 
             $commission = Comission::find($validatedData['comission_id']);
             $configSetting = ConfigSetting::find(1);
