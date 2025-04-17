@@ -100,24 +100,19 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('city/{city}', [CityController::class, 'show'])->name('city.show');
   Route::put('city/{id}', action: [CityController::class, 'update'])->name('city.update');
   Route::delete('city/{city}', [CityController::class, 'destroy'])->name('city.destroy');
+  
   Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
   Route::post('orders/create', [OrderController::class, 'storeOrder'])->name('orders.storeOrder');
-  // Route for retrieving all orders
   Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
-  // Route for retrieving all orders off he user  by user_id
   Route::get('orders/user-orders', [OrderController::class, 'getOrdersByUserId'])->name('orders.getOrdersByUserId');
-  // Route for retrieving a specific tracking number
   Route::get('orders/track/{tracking_number}', [OrderController::class, 'getOrderByTrackingNumber'])->name('orders.getOrderByTrackingNumber');
   // Route for retrieving user paid walletamount for orders which are in orderd or dispatched state showing pending amount goods is coming 
   Route::get('orders/get-paid-wallet', [OrderController::class, 'getPaidWallet'])->name('orders.getPaidWallet');
-  // Route for retrieving vendors wise order items details 
   Route::get('orders/get-supplier-orders', [OrderController::class, 'getOrderItemsForSupplier'])->name('orders.getOrderItemsForSupplier');
-  // Route for updating a specific order
   Route::put('orders/{order}', [OrderController::class, 'update'])->name('orders.update');
-  // Route for updating a specific order
   Route::put('orders/status/{order}', [OrderController::class, 'updateOrderStatus'])->name('orders.updateOrderStatus');
-  // Route for deleting a specific order
   Route::delete('orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+
   // Route::get('address', [AddressController::class, 'index'])->name('address.index');
   Route::post('address', [AddressController::class, 'store'])->name('address.store');
   //Route::get('address-get-all-paginated', [AddressController::class, 'getAllPaginated']);
@@ -127,51 +122,26 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('address/userAddress', [AddressController::class, 'GetUserAddresses'])->name('address.GetUserAddresses');
   // Route::delete('address/{address}', [AddressController::class, 'destroy'])->name('address.destroy');
   // Route for creating a new order item
-
   Route::put('address/{id}', [AddressController::class, 'update'])->name('address.update');
 
   Route::post('order-items', [OrderItemController::class, 'store'])->name('order-items.store');
-  // Route for retrieving all order items
   Route::get('order-items', [OrderItemController::class, 'index'])->name('order-items.index');
-  // Route for retrieving a specific order item
   Route::get('order-items/{orderItem}', [OrderItemController::class, 'show'])->name('order-items.show');
-  // Route for updating a specific order item
   Route::put('order-items/{orderItem}', [OrderItemController::class, 'update'])->name('order-items.update');
-  // Route for deleting a specific order item
   Route::delete('order-items/{orderItem}', [OrderItemController::class, 'destroy'])->name('order-items.destroy');
-  // Route for creating a new cart item
+
   Route::post('cart', [CartController::class, 'store'])->name('cart.store');
-
-  // Route for retrieving all cart items
   Route::get('cart', [CartController::class, 'index'])->name('cart.index');
-
-  // Route for retrieving a specific cart item
   Route::get('cart/{cart}', [CartController::class, 'show'])->name('cart.show');
-
-  // Route for updating a specific cart item
   Route::put('cart/{cart}', [CartController::class, 'update'])->name('cart.update');
-
   Route::post('cart/user/update-cartdata', [CartController::class, 'updateCartItems'])->name('cart.updateCartItems');
-
-  // Route for deleting a specific cart item
   Route::delete('cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
-
-  // Route for getting cart details by user id
   Route::get('cart/user/{userId}', [CartController::class, 'getCartByUserId'])->name('cart.getCartByUserId');
-
-  // Route to get all user details
+  
   Route::get('user-details', [UserDetailsController::class, 'index'])->name('user-details.index');
-
-  // Route to store new user details
   Route::post('user-details', [UserDetailsController::class, 'store'])->name('user-details.store');
-
-  // Route to get a specific user detail
   Route::get('user-details/{userDetail}', [UserDetailsController::class, 'show'])->name('user-details.show');
-
-  // Route to update a specific user detail
   Route::put('user-details/{userDetail}', [UserDetailsController::class, 'update'])->name('user-details.update');
-
-  // Route to delete a specific user detail
   Route::delete('user-details/{userDetail}', [UserDetailsController::class, 'destroy'])->name('user-details.destroy');
 
   Route::get('product-variant', [ProductVariantController::class, 'index'])->name('product_variant.index');
@@ -182,50 +152,20 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::put('product-variant/{id}', [ProductVariantController::class, 'update'])->name('product_variant.update');
   Route::delete('product-variant/{product_variant}', [ProductVariantController::class, 'destroy'])->name('product_variant.destroy');
 
-
-  // Route for creating a new user referral
   Route::post('user-referrals', [UserReferralController::class, 'store'])->name('user-referrals.store');
-
-  // Route for retrieving all user referrals
   Route::get('user-referrals', [UserReferralController::class, 'index'])->name('user-referrals.index');
-
-  // Route for retrieving a specific user referral
   Route::get('user-referrals/{userReferral}', [UserReferralController::class, 'show'])->name('user-referrals.show');
-
-  // Route for updating a specific user referral
   Route::put('user-referrals/{userReferral}', [UserReferralController::class, 'update'])->name('user-referrals.update');
-
-  // Route for deleting a specific user referral
   Route::delete('user-referrals/{userReferral}', [UserReferralController::class, 'destroy'])->name('user-referrals.destroy');
 
-
-
-  // Route for creating a new earning
   Route::post('earnings', [EarningController::class, 'store'])->name('earnings.store');
-
-  // Route for retrieving all earnings
   Route::get('earnings', [EarningController::class, 'index'])->name('earnings.index');
- 
-  // Route for retrieving the real sales value
   Route::get('earnings/realsales', [EarningController::class, 'getReferralSales'])->name('earnings.getReferralSales');
-
-  // Route for retrieving paginated earnings
   Route::get('earnings/paginated', [EarningController::class, 'getAllPaginated'])->name('earnings.paginated');
-
-  //Route for retreiving earning by referral
   Route::get('earnings/referral/{user_id}', [EarningController::class, 'getEarningsByUser'])->name('earnings.getEarningsByUser');
-
-  // Route for retrieving a specific earning
   Route::get('earnings/{earning}', [EarningController::class, 'show'])->name('earnings.show');
-
-  // Route for updating a specific earning
   Route::put('earnings/{earning}', [EarningController::class, 'update'])->name('earnings.update');
-
-  // Route for deleting a specific earning
   Route::delete('earnings/{earning}', [EarningController::class, 'destroy'])->name('earnings.destroy');
-
-
-  // Route updatting the wallet amountt whhen the purchase occcurs
   Route::post('earnings/comission/{id}', [EarningController::class, 'addcomission'])->name('earnings.addcomission');
 
 
@@ -242,69 +182,36 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::post('brand/{id}', [BrandController::class, 'update'])->name('brand.update');
   Route::delete('brand/{brand}', [BrandController::class, 'destroy'])->name('brand.destroy');
 
-  // Route to get a single record
   Route::get('comissions/{id}', [ComissionController::class, 'show'])->name('comissions.show');
-
   Route::get('/get-minimum-order', [ComissionController::class, 'getMinimumOrder']);
-
-  // Route to update an existing record
   Route::put('comissions/{id}', [ComissionController::class, 'update'])->name('comissions.update');
-
-  // Route to delete a record
   Route::delete('comissions/{id}', [ComissionController::class, 'destroy'])->name('comissions.destroy');
 
-  // Route to get a single record
   Route::get('comission-details/{id}', [ComissionDetailController::class, 'show'])->name('comission_details.show');
-
-  // Route to create a new record
   Route::post('comission-details', [ComissionDetailController::class, 'store'])->name('comission_details.store');
-
-  // Route to update an existing record
   Route::put('comission-details/{id}', [ComissionDetailController::class, 'update'])->name('comission_details.update');
-
-  // Route to delete a record
   Route::delete('comission-details/{id}', [ComissionDetailController::class, 'destroy'])->name('comission_details.destroy');
-
-  // Route to get a single record by ID
+  
   Route::get('comission-history/{comissionHistory}', [ComissionHistoryController::class, 'show'])->name('comission_history.show');
-
-  // Route to get all records
   Route::get('comission-history', [ComissionHistoryController::class, 'index'])->name('comission_history.index');
-
-  // Route to get all the records based on the userId
   Route::get('comission-history/user/{user_id}', [ComissionHistoryController::class, 'getCommissionHistory'])->name('comission_history.getCommissionHistory');
-
-   // Route to get all the records based on the userId
-   Route::get('prabhu', [ComissionHistoryController::class, 'name'])->name('comission_history.name');
-
-  // Route to create a new record
   Route::post('comission-history', [ComissionHistoryController::class, 'store'])->name('comission_history.store');
-
-  // Route to update an existing record by ID
   Route::put('comission-history/{comissionHistory}', [ComissionHistoryController::class, 'update'])->name('comission_history.update');
-
-  // Route to delete a record by ID
   Route::delete('comission-history/{comissionHistory}', [ComissionHistoryController::class, 'destroy'])->name('comission_history.destroy');
 
 
   // Store a new customer-vendor relationship
   Route::post('customer-vendors', [CustomerVendorController::class, 'store']);
-
   // Get all customer-vendor relationships
   Route::get('customer-vendors', [CustomerVendorController::class, 'index']);
-
   // Delete a specific customer-vendor relationship
   Route::delete('customer-vendors/{id}', [CustomerVendorController::class, 'destroy']);
 
   // Route::get('/users', [UsersController::class, 'index'])->name('users.index');
    Route::get('/get-users', [UsersController::class, 'getUsersBySearch'])->name('users.getUsersBySearch');
-
    Route::get('/users/details', [UsersController::class, 'show'])->name('users.show');
-
   // Route::post('/users', [UsersController::class, 'store'])->name('users.store');
-
    Route::put('/users/edit', [UsersController::class, 'update'])->name('users.update');
-   
    Route::put('/users/change-password', [UsersController::class, 'updatePasswordWithOldPassword'])->name('users.updatePasswordWithOldPassword');
 
   // Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
@@ -312,13 +219,10 @@ Route::middleware('auth:sanctum')->group( function () {
   // Change user state
   //Route::put('/users/change-state/{user_id}/{state}', [UsersController::class, 'changeUserState'])->name('users.changeState');
 
-  // Get users with cold_state = 1 and filters
-  Route::get('users/cold-state', [UsersController::class, 'getAllColdStateUsers'])->name('users.getAllColdStateUsers');
-  // Route::get('/users/cold-state', [UsersController::class, 'getAllColdStateUsers']);
-
-
-  Route::get('vendors', [VendorController::class, 'index']); // Get all vendors                                                                                                                     
-  
+    // Get users with cold_state = 1 and filters
+    Route::get('users/cold-state', [UsersController::class, 'getAllColdStateUsers'])->name('users.getAllColdStateUsers');
+    // Route::get('/users/cold-state', [UsersController::class, 'getAllColdStateUsers']);
+    Route::get('vendors', [VendorController::class, 'index']); // Get all vendors
     Route::post('vendors', [VendorController::class, 'store']); // Create a new vendor
     Route::get('vendors/{id}', [VendorController::class, 'show']); // Get a specific vendor by ID
     Route::put('vendors/{id}', [VendorController::class, 'update']); // Update a specific vendor by ID
@@ -327,45 +231,23 @@ Route::middleware('auth:sanctum')->group( function () {
 // supplier routes 
   // to get the suplier wise orders
   Route::get('orders/supplier', [OrderController::class, 'getAllsupplierOrders'])->name('orders.getAllsupplierOrders');
-  
   Route::Post('orders/supplier/delivery-otp/{order}', [OrderController::class, 'DeliveryOTP'])->name('orders.DeliveryOTP');
 
   //  Admin Routes 
-  // Route for retrieving all orders off he user  by user_id
   Route::get('orders/admin', [OrderController::class, 'getAllOrders'])->name('orders.getAllOrders');
-  // Route for retrieving a specific order item
   Route::get('order-items/admin/{orderItem}', [OrderItemController::class, 'getOrderItemsByOrderId'])->name('order-items.getOrderItemsByOrderId');
-
   Route::put('/admin/update-user-password', [AdminController::class, 'updatePassword']);
-  
-  //to activate or deactive the user
   Route::put('/admin/update-user-state/{id}', [AdminController::class, 'setStatus']);
 
-    // Route to fetch all ConfigSettings
   Route::get('/config-settings', [ConfigSettingController::class, 'index']); 
-
-  // Route to fetch a single ConfigSetting by ID
   Route::get('/config-settings/{id}', [ConfigSettingController::class, 'show']); 
-
-  // Route to create a new ConfigSetting
   Route::post('/config-settings', [ConfigSettingController::class, 'store']); 
-
-  // Route to update an existing ConfigSetting by ID
   Route::put('/config-settings/{id}', [ConfigSettingController::class, 'update']);
 
-    // Route to display all images
   Route::get('slideimages', [SlideImageController::class, 'index'])->name('slideimages.index');
-
-  // Route to store a new image
   Route::post('slideimages', [SlideImageController::class, 'store'])->name('slideimages.store');
-
-  // Route to show a specific image
   Route::get('slideimages/{slideImage}', [SlideImageController::class, 'show'])->name('slideimages.show');
-
-  // Route to update an existing image
   Route::put('slideimages/{slideImage}', [SlideImageController::class, 'update'])->name('slideimages.update');
-
-  // Route to delete an image
   Route::delete('slideimages/{slideImage}', [SlideImageController::class, 'destroy'])->name('slideimages.destroy');
 
    // razorpay routes
