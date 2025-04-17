@@ -50,6 +50,9 @@ Route::get('images', [ImageController::class, 'index'])->name('image.index');
          
 Route::middleware('auth:sanctum')->group( function () {
   Route::post('logout', [RegisterController::class, 'logout']);
+
+
+  Route::middleware(['role:admin'])->group(function () {
   Route::get('business', [BusinessController::class, 'index'])->name('business.index');
   Route::get('business/create', [BusinessController::class, 'create'])->name('business.create');
   Route::post('business', [BusinessController::class, 'store'])->name('business.store');
@@ -61,6 +64,9 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::post('business/restore-multiple', [BusinessController::class, 'restoreMultiple']);
   Route::post('business/force-delete-multiple', [BusinessController::class, 'forceDeleteMultiple']);
   Route::post('business/trashed-multiple', [BusinessController::class, 'trashedMultiple']);
+  });
+
+
   Route::get('products', [ProductController::class, 'index']);
   Route::get('products-get-all-paginated', [ProductController::class, 'getAllPaginated']);
   Route::get('products-Custom-Product-Get-All-Paginated', [ProductController::class, 'CustomProductGetAllPaginated']);
@@ -70,6 +76,9 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::post('products/update/{id}', [ProductController::class, 'update']);
   Route::delete('products/{id}', [ProductController::class, 'destroy']);
   Route::delete('Product/force-delete-multiple', [ProductController::class, 'forceDeleteMultiple']);
+
+
+  Route::middleware(['role:admin'])->group(function () {
   Route::get('category', [CategoryController::class, 'index'])->name('category.index');
   Route::post('category', [CategoryController::class, 'store'])->name('category.store');
   Route::get('category-get-all-paginated', [CategoryController::class, 'getAllPaginated']);
@@ -83,6 +92,8 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('unit/{unit}', [UnitController::class, 'show'])->name('unit.show');
   Route::put('unit/{id}', [UnitController::class, 'update'])->name('unit.update');
   Route::delete('unit/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
+});
+
   Route::get('city', [CityController::class, 'index'])->name('city.index');
   Route::post('city', [CityController::class, 'store'])->name('city.store');
   Route::get('city-get-all-paginated', [CityController::class, 'getAllPaginated']);
