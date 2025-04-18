@@ -106,7 +106,9 @@ class ResetPasswordEmailController extends Controller
         // Clean up
         $record->delete();
 
-        return response()->json(['message' => 'Password reset successfully']);
+        return response()->json([
+            'success'=> true,
+            'message' => 'Password reset successfully']);
     }
 
 }
