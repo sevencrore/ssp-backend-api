@@ -336,6 +336,9 @@ class RegisterController extends BaseController
 
             $user = User::create($userData);
 
+            $vendorRole = Role::where('name', 'vendor')->first();
+            $user->assignRole($vendorRole);
+
             // Prepare details for Vendor table
             $vendordata = [
                 'first_name' => $validatedData['user_name'],

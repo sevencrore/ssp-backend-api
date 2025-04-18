@@ -2,7 +2,8 @@
   
   use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\CityController;
-  use Illuminate\Http\Request;
+  use App\Http\Controllers\API\EMailController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
   
 use App\Http\Controllers\API\RegisterController;
@@ -38,6 +39,9 @@ Route::controller(RegisterController::class)->group(function() {
   Route::post('register-vendor', 'registerVendor'); // Correct the method name here
   Route::post('login', 'login');
 });
+
+
+Route::post('/send-email', [EMailController::class, 'sendEmailAPI']);
 
 // Route to upload an image
 Route::post('upload', [ImageController::class, 'upload'])->name('image.upload');
