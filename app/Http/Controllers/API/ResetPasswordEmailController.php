@@ -96,7 +96,9 @@ class ResetPasswordEmailController extends Controller
             ->first();
 
         if (!$record || Carbon::now()->greaterThan($record->expires_at)) {
-            return response()->json(['message' => 'Invalid or expired OTP'], 400);
+            return response()->json([
+                'success'=> true,
+                'message' => 'Invalid or expired OTP'], 400);
         }
 
         $user = User::where('email', $validatedData['email'])->first();
