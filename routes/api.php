@@ -30,6 +30,7 @@ use App\Http\Controllers\API\ConfigSettingController;
 use App\Http\Controllers\API\SlideImageController;
 
 use App\Http\Controllers\API\AddressController;
+use App\Http\Controllers\API\BuyProductController;
 use App\Http\Controllers\API\RazorpayPaymentController;
 
 Route::controller(RegisterController::class)->group(function() {
@@ -252,6 +253,7 @@ Route::middleware('auth:sanctum')->group( function () {
 
    // razorpay routes
    Route::post('payment/create-order', [RazorpayPaymentController::class, 'createOrder'])->name('razorpay.createOrder');
+   Route::post('user/BuyProduct', [BuyProductController::class, 'BuyProduct'])->name('buyproduct.BuyProduct');
 
 });
 

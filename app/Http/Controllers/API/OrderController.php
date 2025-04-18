@@ -132,25 +132,65 @@ class OrderController extends BaseController
      * )
      */
 
-     function generateTrackingNumber(): string
-     {
-         $currentYearMonth = now()->format('Ym');
-     
-         $lastOrder = Order::where('tracking_number', 'like', 'SSP' . $currentYearMonth . '%')
-             ->orderBy('id', 'desc')
-             ->first();
-     
-         $incrementalNumber = 1;
-     
-         if ($lastOrder) {
-             $lastTrackingNumber = $lastOrder->tracking_number;
-             $lastIncremental = (int) substr($lastTrackingNumber, 9); // 'SSPyyyymm' is 9 chars
-             $incrementalNumber = $lastIncremental + 1;
-         }
-     
-         $uniqueNumber = str_pad($incrementalNumber, 7, '0', STR_PAD_LEFT);
-         return 'SSP' . $currentYearMonth . $uniqueNumber;
-     }
+    function generateTrackingNumber(): string
+    {
+        $currentYearMonth = now()->format('Ym');
+
+        $lastOrder = Order::where('tracking_number', 'like', 'SSP' . $currentYearMonth . '%')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $incrementalNumber = 1;
+
+        if ($lastOrder) {
+            $lastTrackingNumber = $lastOrder->tracking_number;
+            $lastIncremental = (int) substr($lastTrackingNumber, 9); // 'SSPyyyymm' is 9 chars
+            $incrementalNumber = $lastIncremental + 1;
+        }
+
+        $uniqueNumber = str_pad($incrementalNumber, 7, '0', STR_PAD_LEFT);
+        return 'SSP' . $currentYearMonth . $uniqueNumber;
+    }
+
+    // create order
+    public function createOrder(array $validated)
+    {
+        try {
+            // Generate the full tracking number
+            $trackingNumber = $this->generateTrackingNumber();
+
+            $vendor = CustomerVendor::where('customer_id', $validated['user_id'])->first();
+            $config_settings = ConfigSetting::find(1);
+            $otp = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+            // Store data into orders table
+            $order = Order::create([
+                'user_id' => $validated['user_id'],
+                'order_status' => 0, // Default status
+                'total_amount' => $validated['subtotal'],
+                'discount' => $validated['savings'],
+                'grand_total' => $validated['grand_total'],
+                'tracking_number' => $trackingNumber,
+                'supplied_by' => $vendor->vendor_id,
+                'vendor_comission_percentage' => $config_settings->vendor_comission,
+                'vendor_comission_total' => (($validated['grand_total'] / 100) * $config_settings->vendor_comission),
+                'delivery_otp' => $otp,
+            ]);
+            return [
+                'success' => true,
+                'message' => 'Order stored successfully.',
+                'order' => $order,
+                'order_id' => $order->id,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to store the Order.',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+
     /**
      * Store order and order items.
      */
@@ -343,16 +383,16 @@ class OrderController extends BaseController
     // getting all the orders desc on date with pagination
 
     public function getAllsupplierOrders(Request $request)
-    {   
+    {
         $vendorUser = User::find($request->user_id);
-        if( $vendorUser->user_type != 2){
+        if ($vendorUser->user_type != 2) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access',
             ], 404);
         }
-        $vendor = Vendor::where('user_id',$vendorUser->id)->first();
-        if( !$vendor){
+        $vendor = Vendor::where('user_id', $vendorUser->id)->first();
+        if (!$vendor) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized vendor access',
@@ -367,7 +407,7 @@ class OrderController extends BaseController
         }
 
         // Retrieve orders with pagination and order them by created_at in descending order
-        $orders = Order::where('supplied_by',$vendor->id)
+        $orders = Order::where('supplied_by', $vendor->id)
             ->whereIn('order_status', $orderStatusFilter)
             ->orderBy('created_at', 'desc')->paginate(10); // Adjust the number per page as needed
 
@@ -380,9 +420,9 @@ class OrderController extends BaseController
         // Map the orders to include their associated items and product image
         $response = $orders->map(function ($order) {
             // Retrieve the associated order items
-           // $orderItems = OrderItem::where('order_id', $order->id)->get();
-            $address = Address::where('user_id',$order->user_id)->first();
-            $userDetail = UserDetails::where('user_id',$order->user_id)->first();
+            // $orderItems = OrderItem::where('order_id', $order->id)->get();
+            $address = Address::where('user_id', $order->user_id)->first();
+            $userDetail = UserDetails::where('user_id', $order->user_id)->first();
 
             return [
                 'order_id' => $order->id,
@@ -394,7 +434,7 @@ class OrderController extends BaseController
                 'grand_total' => $order->grand_total,
                 'tracking_number' => $order->tracking_number,
                 'OrderDate' => $order->created_at,
-                'phone_1' =>$userDetail->phone_1,
+                'phone_1' => $userDetail->phone_1,
                 'phone_2' =>  $address ? $address->phone_number : null,
                 'address' =>  $address ? $address->address : null,
             ];
@@ -428,8 +468,8 @@ class OrderController extends BaseController
 
         // Retrieve all orders for the specified user
         $orders = Order::where('user_id', $userId)
-                    ->orderBy('created_at', 'desc') // Sorting in descending order    
-                    ->get();
+            ->orderBy('created_at', 'desc') // Sorting in descending order    
+            ->get();
 
         if ($orders->isEmpty()) {
             return response()->json([
@@ -597,17 +637,18 @@ class OrderController extends BaseController
         }
     }
 
-    public function DeliveryOTP(Request $request, Order $order){
+    public function DeliveryOTP(Request $request, Order $order)
+    {
         $validated = $request->validate([
             'delivery_otp' => 'required|integer',
         ]);
-        if($order->order_status == 2){
+        if ($order->order_status == 2) {
             return response()->json([
                 'success' => false,
                 'message' => 'Already Delivered!!!',
             ], 401);
         }
-        if( $order->delivery_otp !=  $validated['delivery_otp']){
+        if ($order->delivery_otp !=  $validated['delivery_otp']) {
             // $otp = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
             // $order->delivery_otp = $otp;
             // $order->save();
@@ -618,26 +659,26 @@ class OrderController extends BaseController
         }
 
         $vendorUser = User::find($request->user_id);
-        if( $vendorUser->user_type != 2){
+        if ($vendorUser->user_type != 2) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access',
             ], 404);
         }
-        $vendor = Vendor::where('user_id',$vendorUser->id)->first();
-        if( !$vendor){
+        $vendor = Vendor::where('user_id', $vendorUser->id)->first();
+        if (!$vendor) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized vendor access',
             ], 404);
         }
-        $updateOrderStatus = $this->updateOrderStatus($request,$order);
+        $updateOrderStatus = $this->updateOrderStatus($request, $order);
         return response()->json([
             'message' => 'Order status updated successfully.',
             'order' => [
                 'order_id' => $order->id,
                 'order_status' => $order->order_status,
-                'final'=> $updateOrderStatus,
+                'final' => $updateOrderStatus,
             ],
         ], 200);
     }
@@ -739,7 +780,7 @@ class OrderController extends BaseController
                 'order_items.product_id AS Product_ID',
                 'order_items.unit_quantity AS Unit_Quantity',
                 'order_items.unit_title AS Unit_title',
-                
+
             ])
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
             ->whereIn('orders.order_status', $orderStatusFilter)

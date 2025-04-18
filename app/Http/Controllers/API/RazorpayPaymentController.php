@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Razorpay\Api\Api;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
+use App\Models\UserPayment;
 
 class RazorpayPaymentController extends BaseController
 {
@@ -80,6 +81,49 @@ class RazorpayPaymentController extends BaseController
             ]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Failed to create order.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function refundfullPayment($paymentID)
+    {
+        try {
+            // Fetch the payment record from the database
+            $payment = UserPayment::where('razorpay_payment_id', $paymentID)->first();
+
+            if (!$payment) {
+                throw new \Exception("Payment record not found");
+            }
+
+            // Initialize Razorpay API
+            $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+
+            // Fetch payment from Razorpay
+            $razorpayPayment = $api->payment->fetch($paymentID);
+
+            if (!$razorpayPayment) {
+                throw new \Exception("Invalid Razorpay Payment ID");
+            }
+
+            // Process refund
+            $refund = $razorpayPayment->refund([
+                'amount' => $razorpayPayment->amount, // Razorpay stores amounts in paise
+            ]);
+
+            // Update the payment record in the database
+            $payment->status = 2;
+            $updated = $payment->save();
+
+            return [
+                'success' => true,
+                'message' => 'Refund successful',
+                'refund_id' => $refund['id']
+            ];
+        } catch (\Razorpay\Api\Errors\BadRequestError $e) {
+            return ['success' => false, 'message' => 'Bad request: ' . $e->getMessage()];
+        } catch (\Razorpay\Api\Errors\ServerError $e) {
+            return ['success' => false, 'message' => 'Razorpay server error: ' . $e->getMessage()];
+        } catch (\Exception $e) {
+            return ['success' => false, 'message' => 'Something went wrong: ' . $e->getMessage()];
         }
     }
 }

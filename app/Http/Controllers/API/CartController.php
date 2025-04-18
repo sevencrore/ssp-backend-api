@@ -147,7 +147,8 @@ class CartController extends BaseController
     {
         try {
             $cartItems = Cart::where('user_id', $userId)->get();
-            $grand_total = 0;
+            $total_price = 0;
+            $total_discount = 0;
 
             foreach ($cartItems as $item) {
                 $variant = ProductVariant::find($item->product_variants_id);
@@ -159,20 +160,25 @@ class CartController extends BaseController
                 $price = $variant->price;
                 $discount = $variant->discount ?? 0;
 
-                $discountedPrice = $price - ($price * $discount / 100);
-                $totalForItem = $discountedPrice * $item->quantity;
+                $itemTotal = $price * $item->quantity;
+                $itemDiscountAmount = ($price * $discount / 100) * $item->quantity;
 
-                $grand_total += $totalForItem;
+                $total_price += $itemTotal;
+                $total_discount += $itemDiscountAmount;
             }
 
-            return[
+            $grand_total = $total_price - $total_discount;
+
+            return [
                 'success' => true,
+                'total_price' => round($total_price, 2),
+                'total_discount' => round($total_discount, 2),
                 'grand_total' => round($grand_total, 2)
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Something went wrong while calculating grand total.',
+                'message' => 'Something went wrong while calculating the cart price.',
                 'error' => $e->getMessage()
             ];
         }
