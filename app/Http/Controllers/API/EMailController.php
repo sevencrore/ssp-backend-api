@@ -62,4 +62,22 @@ class EMailController extends BaseController
             return response()->json(['error' => 'Unexpected error occurred', 'details' => $e->getMessage()], 500);
         }
     }
+
+    public function sendOtp($to_emailId,$otp,$subject){
+        $data=[
+           'otp' =>$otp,
+        ];
+        try {
+            Mail::to($to_emailId)->send(new MarkdownMail($subject,$data));
+            return [
+                'success' => true,
+                'message' => 'Email OTP sent succesfully',
+                ];
+        }  catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Email OTP sending failed',
+                'error' => 'Email sending failed', ];
+        }
+    }
 }

@@ -33,12 +33,17 @@ use App\Http\Controllers\API\SlideImageController;
 use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\BuyProductController;
 use App\Http\Controllers\API\RazorpayPaymentController;
+use App\Http\Controllers\API\ResetPasswordEmailController;
 
 Route::controller(RegisterController::class)->group(function() {
   Route::post('register', 'register');
   Route::post('register-referral', 'registerWthReferral'); // Correct the method name here
   Route::post('register-vendor', 'registerVendor'); // Correct the method name here
   Route::post('login', 'login');
+
+  // Password reset routes
+  Route::post('password/email/send-otp', [ResetPasswordEmailController::class, 'sendOtp']);
+  Route::post('password/email/verify-otp', [ResetPasswordEmailController::class, 'verifyOtp']);
 });
 
 
