@@ -22,7 +22,7 @@ class User extends Authenticatable
         'user_name',
         'email',
         'password',
-        'user_type',
+        'user_type', // 99 => admin   2 => vendor 3 => operator 1=>user
     ];
   
     /**
