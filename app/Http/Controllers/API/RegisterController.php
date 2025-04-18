@@ -85,7 +85,7 @@ class RegisterController extends BaseController
                 'user_name' => $validatedData['user_name'],
                 'password' => bcrypt($validatedData['password']),
                 'last_name' => $validatedData['last_name'],
-                'user_type'  => $validatedData['user_type'],
+                'user_type'  => 1,
             ];
 
             $user = User::create($userData);
@@ -204,7 +204,7 @@ class RegisterController extends BaseController
                 'password' => bcrypt($validatedData['password']),
                 'referral_code' => $validatedData['referral_code'],
                 'last_name' => $validatedData['last_name'],
-                'user_type'  => $validatedData['user_type'],
+                'user_type'  =>1,
             ];
 
             $user = User::create($userData);
@@ -331,10 +331,13 @@ class RegisterController extends BaseController
                 'user_name' => $validatedData['user_name'],
                 'password' => bcrypt($validatedData['password']),
                 'last_name' => $validatedData['last_name'],
-                'user_type'  => $validatedData['user_type'],
+                'user_type'  =>2,
             ];
 
             $user = User::create($userData);
+
+            $vendorRole = Role::where('name', 'vendor')->first();
+            $user->assignRole($vendorRole);
 
             // Prepare details for Vendor table
             $vendordata = [

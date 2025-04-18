@@ -313,5 +313,20 @@ class UsersController extends BaseController
             'data' => $results
         ]);
     }
+
+
+    
+
+    public function getUserTypeByRole($roleName) {
+        if ($roleName == 'admin') {
+            return 99;
+        } elseif ($roleName == 'vendor') {
+            return 2;
+        } elseif ($roleName == 'operator') {
+            return 3;
+        } 
+            
+        return false; // Explicitly return false if no match is found
+    }
     
 }
