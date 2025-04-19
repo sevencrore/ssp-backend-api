@@ -34,6 +34,7 @@ use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\BuyProductController;
 use App\Http\Controllers\API\RazorpayPaymentController;
 use App\Http\Controllers\API\ResetPasswordEmailController;
+use App\Http\Controllers\API\UserPaymentController;
 
 Route::controller(RegisterController::class)->group(function() {
   Route::post('register', 'register');
@@ -248,6 +249,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('order-items/admin/{orderItem}', [OrderItemController::class, 'getOrderItemsByOrderId'])->name('order-items.getOrderItemsByOrderId');
   Route::put('/admin/update-user-password', [AdminController::class, 'updatePassword']);
   Route::put('/admin/update-user-state/{id}', [AdminController::class, 'setStatus']);
+  Route::get('admin/Ordertransactions', [UserPaymentController::class, 'getAdminproduct_transactions'])->name('userPayment.getAdminproduct_transactions');
 
   Route::get('/config-settings', [ConfigSettingController::class, 'index']); 
   Route::get('/config-settings/{id}', [ConfigSettingController::class, 'show']); 
