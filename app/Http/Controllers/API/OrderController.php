@@ -21,6 +21,7 @@ use App\Models\Vendor;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 
 /**
  * @OA\Schema(
@@ -186,6 +187,26 @@ class OrderController extends BaseController
                 'success' => false,
                 'message' => 'Failed to store the Order.',
                 'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function checkUserHasOrderThisMonth($userId)
+    {
+        $hasOrder = Order::where('user_id', $userId)
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->exists();
+
+        if ($hasOrder) {
+            return[
+                'success' => true,
+                'message' => 'User has already purchased a product this month.',
+            ];
+        } else {
+            return[
+                'success' => false,
+                'message' => 'No purchases found for this user in the current month.',
             ];
         }
     }

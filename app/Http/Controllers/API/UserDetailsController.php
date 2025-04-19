@@ -6,6 +6,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Comission;
+use App\Models\ConfigSetting;
 use App\Models\UserDetails;
 use Illuminate\Http\JsonResponse;
 
@@ -96,6 +97,28 @@ class UserDetailsController extends Controller
 
     public function CheckUser_minimum_order($UserId, $grand_total)
     {
+       // first check whether the user has already orderd any order in this month 
+       $ordercontroller = new OrderController();
+       $hasOrders = $ordercontroller->checkUserHasOrderThisMonth($UserId);
+       if($hasOrders['success']){
+            // if he already has the orders purchaseds in this mothn the apply the minimum amount to basepay amount
+            $configsetting = ConfigSetting::first();
+            $minimum_base_pay = $configsetting->minimum_basepay_amount;
+            if ($grand_total < $minimum_base_pay) {
+                return [
+                    'success' => false,
+                    'message' => "The minimum amount to place the order is $minimum_base_pay",
+                ];
+            }
+            else{
+                return [
+                    'success' => true,
+                    'message' => 'Grand Total is above the minimum_base_pay order amount.'
+                ];
+            }
+
+       }
+       
         $userDetail = UserDetails::where('user_id', $UserId)->first();
         $comission_id = $userDetail->comission_id;
 
