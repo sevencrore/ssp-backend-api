@@ -37,6 +37,10 @@ class UserPaymentController extends Controller
             // Fetch all payouts without filtering by user_id
             $query = UserPayment::orderBy('created_at', 'desc');
 
+            if ($request->has('status')) {
+                $query->where('status', $request->status); // 1=> credited 2 = refunfded
+            }
+
             // Apply date filters
             if (!is_null($dateFilter['start_date']) && !is_null($dateFilter['end_date'])) {
                 $query->whereBetween('created_at', [$dateFilter['start_date'], $dateFilter['end_date']]);
