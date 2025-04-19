@@ -16,5 +16,6 @@ class ConfigSetting extends Model
         'max_level',
         'vendor_comission',
         'default_vendor_id',
+        'minimum_basepay_amount',
     ];
 }

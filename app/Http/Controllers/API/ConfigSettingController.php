@@ -53,7 +53,8 @@ class ConfigSettingController extends BaseController
             'referal_incentive' => 'required|integer|min:0',
             'max_level' => 'required|integer|min:0',
             'default_vendor_id' => 'nullable|integer',
-            'vendor_comission' => 'nullable|numeric',
+            'vendor_comission' => 'required|numeric',
+            'minimum_basepay_amount' => 'required|numeric',
         ]);
 
         $setting = ConfigSetting::create($request->all());
@@ -80,6 +81,7 @@ class ConfigSettingController extends BaseController
             'max_level' => 'sometimes|integer|min:0',
             'default_vendor_id' => 'nullable|integer',
             'vendor_comission' => 'nullable|numeric',
+            'minimum_basepay_amount' => 'nullable|numeric',
         ]);
 
         $setting->update($request->all());
