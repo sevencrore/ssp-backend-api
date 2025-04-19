@@ -9,20 +9,6 @@ use App\Models\Comission;
 use App\Models\UserDetails;
 use Illuminate\Http\JsonResponse;
 
-/**
- * @OA\Schema(
- *     schema="UserDetailsResource",
- *     @OA\Property(property="id", type="integer"),
- *     @OA\Property(property="first_name", type="string"),
- *     @OA\Property(property="middle_name", type="string"),
- *     @OA\Property(property="last_name", type="string"),
- *     @OA\Property(property="phone_1", type="string"),
- *     @OA\Property(property="phone_2", type="string"),
- *     @OA\Property(property="email", type="string"),
- *     @OA\Property(property="created_at", type="string", format="date-time"),
- *     @OA\Property(property="updated_at", type="string", format="date-time")
- * )
- */
 
 class UserDetailsController extends Controller
 {
@@ -46,9 +32,9 @@ class UserDetailsController extends Controller
             'phone_1' => 'required|string|max:15',
             'phone_2' => 'nullable|string|max:15',
             'email' => 'required|string|email|max:255|unique:user_details,email',
-            'user_id'=>'required|integer',
-            'aadhar_number'=>'required|integer',
-            'referral_code'=>'required|string',
+            'user_id' => 'required|integer',
+            'aadhar_number' => 'required|integer',
+            'referral_code' => 'required|string',
         ]);
 
         $userDetail = UserDetails::create($validatedData); // Create a new user detail
@@ -83,9 +69,9 @@ class UserDetailsController extends Controller
             'phone_1' => 'sometimes|required|string|max:15',
             'phone_2' => 'sometimes|nullable|string|max:15',
             'email' => 'sometimes|required|string|email|max:255|unique:user_details,email,' . $userDetail->id,
-            'user_id'=>'required|integer',
-            'aadhar_number'=>'required|integer',
-            'referral_code'=>'required|string',
+            'user_id' => 'required|integer',
+            'aadhar_number' => 'required|integer',
+            'referral_code' => 'required|string',
         ]);
 
         $userDetail->update($validatedData); // Update the user detail
@@ -108,7 +94,8 @@ class UserDetailsController extends Controller
         return response()->json(['success' => true, 'message' => 'User detail deleted successfully']);
     }
 
-    public function CheckUser_minimum_order($UserId ,$grand_total){
+    public function CheckUser_minimum_order($UserId, $grand_total)
+    {
         $userDetail = UserDetails::where('user_id', $UserId)->first();
         $comission_id = $userDetail->comission_id;
 
@@ -124,5 +111,38 @@ class UserDetailsController extends Controller
             'success' => true,
             'message' => 'Grand Total is above the minimum order amount.'
         ];
+    }
+
+    public function getDirectReferralsDetails(Request $request)
+    {
+        $userId = $request->user_id;
+
+        // Step 1: Fetch all commissions and index by id
+        $comissions = Comission::all()->keyBy('id');
+
+        // Step 2: Fetch direct referrals with commission_id
+        $directReferrals = UserDetails::where('referred_by', $userId)
+            ->select('user_id', 'first_name', 'last_name', 'phone_1','email', 'comission_id')
+            ->get();
+
+        // Step 3: Map each referral with their commission's minimum_order
+        $result = $directReferrals->map(function ($referral) use ($comissions) {
+            $comission = $comissions->get($referral->comission_id);
+
+            return [
+                'user_id' => $referral->user_id,
+                'first_name' => $referral->first_name,
+                'last_name' => $referral->last_name,
+                'phone_1' => $referral->phone_1,
+                'email' => $referral->email,
+                'comission_id' => $referral->comission_id,
+                'minimum_order' => $comission ? $comission->minimum_order : null,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $result
+        ]);
     }
 }

@@ -259,12 +259,13 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('slideimages', [SlideImageController::class, 'index'])->name('slideimages.index');
   Route::post('slideimages', [SlideImageController::class, 'store'])->name('slideimages.store');
   Route::get('slideimages/{slideImage}', [SlideImageController::class, 'show'])->name('slideimages.show');
-  Route::put('slideimages/{slideImage}', [SlideImageController::class, 'update'])->name('slideimages.update');
+  Route::post('slideimages/{slideImage}', [SlideImageController::class, 'update'])->name('slideimages.update');
   Route::delete('slideimages/{slideImage}', [SlideImageController::class, 'destroy'])->name('slideimages.destroy');
 
    // razorpay routes
    Route::post('payment/create-order', [RazorpayPaymentController::class, 'createOrder'])->name('razorpay.createOrder');
    Route::post('user/BuyProduct', [BuyProductController::class, 'BuyProduct'])->name('buyproduct.BuyProduct');
+   Route::get('user/get-directReferals', [UserDetailsController::class, 'getDirectReferralsDetails'])->name('userDetails.getDirectReferralsDetails');
 
 });
 
