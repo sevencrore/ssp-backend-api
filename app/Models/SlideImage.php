@@ -12,5 +12,7 @@ class SlideImage extends Model
     protected $fillable = [
         'title',
         'image_path',
+        'navigate_url',
+        'image_text',
     ];
 }
