@@ -257,6 +257,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::put('/config-settings/{id}', [ConfigSettingController::class, 'update']);
 
   Route::get('slideimages', [SlideImageController::class, 'index'])->name('slideimages.index');
+  Route::get('slideimages-ByFilter', [SlideImageController::class, 'getALLPaginated'])->name('slideimages.getALLPaginated');
   Route::post('slideimages', [SlideImageController::class, 'store'])->name('slideimages.store');
   Route::get('slideimages/{slideImage}', [SlideImageController::class, 'show'])->name('slideimages.show');
   Route::post('slideimages/{slideImage}', [SlideImageController::class, 'update'])->name('slideimages.update');

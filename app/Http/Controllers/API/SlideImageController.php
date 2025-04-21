@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\API\BaseController as BaseController;
+use Exception;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\JsonResponse;
 
 class SlideImageController extends BaseController
 {
@@ -16,6 +18,37 @@ class SlideImageController extends BaseController
     {
         $images = SlideImage::all();
         return response()->json($images);
+    }
+
+    public function getALLPaginated(Request $request): JsonResponse
+    {
+        try {
+            // Get query parameters
+            $title = $request->query('title');
+            $perPage = $request->query('per_page', 1); // Default to 10 items per page
+
+            // Query builder
+            $query = SlideImage::query();
+
+            // Apply filters if provided
+            if (!empty($title)) {
+                $query->where('title', 'LIKE', "%$title%");
+            }
+
+            // Paginate results and append query parameters
+            $data = $query->paginate($perPage)->appends([
+                'title' => $title,
+                'per_page' => $perPage
+            ]);
+
+            return response()->json(['success' => true, 'data' => $data]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to retrieve slide Images',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     // Store a new image
