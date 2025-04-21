@@ -14,5 +14,6 @@ class SlideImage extends Model
         'image_path',
         'navigate_url',
         'image_text',
+        'order_number',
     ];
 }
