@@ -21,7 +21,7 @@ class SlideImageController extends BaseController
         return response()->json($images);
     }
 
-    public function getforntpageIamges()
+    public function getforntpageImages()
     {
         try {
             $configSetting = ConfigSetting::first();

@@ -269,7 +269,7 @@ Route::middleware('auth:sanctum')->group( function () {
    Route::post('user/BuyProduct', [BuyProductController::class, 'BuyProduct'])->name('buyproduct.BuyProduct');
    Route::get('user/get-directReferals', [UserDetailsController::class, 'getDirectReferralsDetails'])->name('userDetails.getDirectReferralsDetails');
 
-   Route::get('getforntpage-Iamges', [SlideImageController::class, 'getforntpageIamges'])->name('slideimages.getforntpageIamges');
+   Route::get('getforntpage-Images', [SlideImageController::class, 'getforntpageImages'])->name('slideimages.getforntpageImages');
 });
 
 
