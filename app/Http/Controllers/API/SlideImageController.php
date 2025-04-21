@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\ConfigSetting;
 use Exception;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\JsonResponse;
@@ -19,6 +20,33 @@ class SlideImageController extends BaseController
         $images = SlideImage::all();
         return response()->json($images);
     }
+
+    public function getforntpageIamges()
+    {
+        try {
+            $configSetting = ConfigSetting::first();
+
+            // If configSetting is null, use default limit
+            $limit = $configSetting->slideImage_displayCount ?? 5;
+
+            $images = SlideImage::orderBy('order_number', 'asc')
+                ->limit($limit)
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Front page images fetched successfully.',
+                'data' => $images
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch front page images.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
     public function getALLPaginated(Request $request): JsonResponse
     {
@@ -104,34 +132,33 @@ class SlideImageController extends BaseController
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'order_number' => 'nullable|integer',
             ]);
-    
+
             // Handle new image upload if present
             if ($request->hasFile('image')) {
                 $newImage = $request->file('image');
-    
+
                 if (!$newImage) {
                     return response()->json(['success' => false, 'message' => 'No image uploaded.'], 400);
                 }
-    
+
                 $imagePath = $newImage->store('slideimages', 'public');
-    
+
                 if (!Storage::disk('public')->exists($imagePath)) {
                     return response()->json(['success' => false, 'message' => 'Image not saved.'], 500);
                 }
-    
+
                 $slideImage->image_path = $imagePath;
             }
-    
+
             // Update other fields if present
             $slideImage->title = $validated['title'] ?? $slideImage->title;
             $slideImage->navigate_url = $validated['navigate_url'] ?? $slideImage->navigate_url;
             $slideImage->image_text = $validated['image_text'] ?? $slideImage->image_text;
             $slideImage->order_number = $validated['order_number'] ?? $slideImage->order_number;
-    
+
             $slideImage->save();
-    
+
             return response()->json(['success' => true, 'data' => $slideImage]);
-    
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
