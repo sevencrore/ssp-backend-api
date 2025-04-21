@@ -99,7 +99,7 @@ class SlideImageController extends BaseController
                 'title' => 'nullable|string|max:255',
                 'navigate_url' => 'nullable|string|max:255',
                 'image_text' => 'nullable|string|max:255',
-                'navigate_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
     
             // Handle new image upload if present
