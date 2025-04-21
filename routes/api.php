@@ -250,6 +250,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::put('/admin/update-user-password', [AdminController::class, 'updatePassword']);
   Route::put('/admin/update-user-state/{id}', [AdminController::class, 'setStatus']);
   Route::get('admin/Ordertransactions', [UserPaymentController::class, 'getAdminproduct_transactions'])->name('userPayment.getAdminproduct_transactions');
+  Route::get('/admin/getTopReferrers', [AdminController::class, 'getTopReferrers']);
 
   Route::get('/config-settings', [ConfigSettingController::class, 'index']); 
   Route::get('/config-settings/{id}', [ConfigSettingController::class, 'show']); 

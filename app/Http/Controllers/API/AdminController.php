@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\UserDetails;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -31,7 +32,7 @@ class AdminController extends BaseController
             ], 422);
         }
         $admin = User::find($request->user_id);
-        if( $admin->user_type != 99){
+        if ($admin->user_type != 99) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access',
@@ -67,7 +68,7 @@ class AdminController extends BaseController
         ]);
 
         $admin = User::find($request->user_id);
-        if( $admin->user_type != 99){
+        if ($admin->user_type != 99) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access',
@@ -84,9 +85,62 @@ class AdminController extends BaseController
 
         return response()->json([
             'message' => $user->is_active ? 'User activated successfully' : 'User deactivated successfully',
-            'user' => ['id'=>$user->id,'name'=>$user->name],
+            'user' => ['id' => $user->id, 'name' => $user->name],
             'status' => $user->is_active
         ]);
     }
 
+    //admin reports
+    public function getTopReferrers(Request $request)
+    {
+        $perPage = $request->get('per_page', 20); // Default to 20
+
+        // Step 1: Count how many users each user has referred
+        $topReferrers = UserDetails::whereNotNull('referred_by')
+        ->groupBy('referred_by')
+        ->selectRaw('referred_by, COUNT(*) as referral_count')
+        ->orderByDesc('referral_count');
+        
+
+        // Step 2: Paginate the top referrers
+        $paginated = $topReferrers->paginate($perPage);
+
+        // Step 3: Get user details of referrers in one query
+        $referrerIds = $paginated->pluck('referred_by')->toArray();
+        $referrerDetails = UserDetails::whereIn('user_id', $referrerIds)
+            ->get()
+            ->keyBy('user_id');
+
+        // Step 4: Combine user info with referral count
+        $transformed = $paginated->getCollection()->transform(function ($item) use ($referrerDetails) {
+            $user = $referrerDetails->get($item->referred_by);
+
+            return [
+                'user_id' => $item->referred_by,
+                'first_name' => $user->first_name ?? null,
+                'last_name' => $user->last_name ?? null,
+                'phone_1' => $user->phone_1 ?? null,
+                'email' => $user->email ?? null,
+                'referral_count' => $item->referral_count,
+            ];
+        });
+
+        // Step 5: Return the response
+        return response()->json([
+            'success' => true,
+            'data' => $transformed,
+            'pagination' => [
+                'current_page' => $paginated->currentPage(),
+                'last_page' => $paginated->lastPage(),
+                'per_page' => $paginated->perPage(),
+                'total' => $paginated->total(),
+                'from' => $paginated->firstItem(),
+                'to' => $paginated->lastItem(),
+                'first_page_url' => $paginated->url(1),
+                'last_page_url' => $paginated->url($paginated->lastPage()),
+                'next_page_url' => $paginated->nextPageUrl(),
+                'prev_page_url' => $paginated->previousPageUrl(),
+            ],
+        ]);
+    }
 }

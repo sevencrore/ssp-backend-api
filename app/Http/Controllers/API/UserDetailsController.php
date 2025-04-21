@@ -97,10 +97,10 @@ class UserDetailsController extends Controller
 
     public function CheckUser_minimum_order($UserId, $grand_total)
     {
-       // first check whether the user has already orderd any order in this month 
-       $ordercontroller = new OrderController();
-       $hasOrders = $ordercontroller->checkUserHasOrderThisMonth($UserId);
-       if($hasOrders['success']){
+        // first check whether the user has already orderd any order in this month 
+        $ordercontroller = new OrderController();
+        $hasOrders = $ordercontroller->checkUserHasOrderThisMonth($UserId);
+        if ($hasOrders['success']) {
             // if he already has the orders purchaseds in this mothn the apply the minimum amount to basepay amount
             $configsetting = ConfigSetting::first();
             $minimum_base_pay = $configsetting->minimum_basepay_amount;
@@ -109,16 +109,14 @@ class UserDetailsController extends Controller
                     'success' => false,
                     'message' => "The minimum amount to place the order is $minimum_base_pay",
                 ];
-            }
-            else{
+            } else {
                 return [
                     'success' => true,
                     'message' => 'Grand Total is above the minimum_base_pay order amount.'
                 ];
             }
+        }
 
-       }
-       
         $userDetail = UserDetails::where('user_id', $UserId)->first();
         $comission_id = $userDetail->comission_id;
 
@@ -139,17 +137,18 @@ class UserDetailsController extends Controller
     public function getDirectReferralsDetails(Request $request)
     {
         $userId = $request->user_id;
+        $perPage = $request->get('per_page', 10); // Default to 10
 
         // Step 1: Fetch all commissions and index by id
         $comissions = Comission::all()->keyBy('id');
 
-        // Step 2: Fetch direct referrals with commission_id
+        // Step 2: Paginate direct referrals
         $directReferrals = UserDetails::where('referred_by', $userId)
-            ->select('user_id', 'first_name', 'last_name', 'phone_1','email', 'comission_id')
-            ->get();
+            ->select('user_id', 'first_name', 'last_name', 'phone_1', 'email', 'comission_id')
+            ->paginate($perPage);
 
-        // Step 3: Map each referral with their commission's minimum_order
-        $result = $directReferrals->map(function ($referral) use ($comissions) {
+        // Step 3: Transform paginated data
+        $transformedData = $directReferrals->getCollection()->transform(function ($referral) use ($comissions) {
             $comission = $comissions->get($referral->comission_id);
 
             return [
@@ -163,9 +162,22 @@ class UserDetailsController extends Controller
             ];
         });
 
+        // Step 4: Send paginated response
         return response()->json([
             'success' => true,
-            'data' => $result
+            'data' => $transformedData,
+            'pagination' => [
+                'current_page' => $directReferrals->currentPage(),
+                'last_page' => $directReferrals->lastPage(),
+                'per_page' => $directReferrals->perPage(),
+                'total' => $directReferrals->total(),
+                'from' => $directReferrals->firstItem(),
+                'to' => $directReferrals->lastItem(),
+                'first_page_url' => $directReferrals->url(1),
+                'last_page_url' => $directReferrals->url($directReferrals->lastPage()),
+                'next_page_url' => $directReferrals->nextPageUrl(),
+                'prev_page_url' => $directReferrals->previousPageUrl(),
+            ],
         ]);
     }
 }
