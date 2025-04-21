@@ -9,7 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('slideimages', function (Blueprint $table) {
-            $table->integer('order_number')->length(10)->nullable()->after('image_text');
+            $table->integer('order_number')
+                ->default(1) // Set default value
+                ->after('image_text');
         });
     }
 
