@@ -60,6 +60,7 @@ class SlideImageController extends BaseController
                 'navigate_url' => 'required|string|max:255',
                 'image_text' => 'nullable|string|max:255',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'order_number' => 'nullable|integer',
             ]);
 
             if ($request->hasFile('image')) {
@@ -70,6 +71,7 @@ class SlideImageController extends BaseController
                     'navigate_url' => $validated['navigate_url'],
                     'image_text' => $validated['image_text'] ?? null,
                     'image_path' => $imagePath,
+                    'order_number' => $validated['order_number'] ?? null,
                 ]);
 
                 return response()->json(['success' => true, 'data' => $slideImage], 201);
@@ -99,7 +101,8 @@ class SlideImageController extends BaseController
                 'title' => 'nullable|string|max:255',
                 'navigate_url' => 'nullable|string|max:255',
                 'image_text' => 'nullable|string|max:255',
-                'navigate_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'order_number' => 'nullable|integer',
             ]);
     
             // Handle new image upload if present
@@ -123,6 +126,7 @@ class SlideImageController extends BaseController
             $slideImage->title = $validated['title'] ?? $slideImage->title;
             $slideImage->navigate_url = $validated['navigate_url'] ?? $slideImage->navigate_url;
             $slideImage->image_text = $validated['image_text'] ?? $slideImage->image_text;
+            $slideImage->order_number = $validated['order_number'] ?? $slideImage->order_number;
     
             $slideImage->save();
     
