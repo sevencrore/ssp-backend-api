@@ -55,6 +55,7 @@ class ConfigSettingController extends BaseController
             'default_vendor_id' => 'nullable|integer',
             'vendor_comission' => 'required|numeric',
             'minimum_basepay_amount' => 'required|numeric',
+            'slideImage_displayCount' => 'required|integer|min:5',
         ]);
 
         $setting = ConfigSetting::create($request->all());
@@ -82,6 +83,7 @@ class ConfigSettingController extends BaseController
             'default_vendor_id' => 'nullable|integer',
             'vendor_comission' => 'nullable|numeric',
             'minimum_basepay_amount' => 'nullable|numeric',
+            'slideImage_displayCount' => 'required|integer|min:5',
         ]);
 
         $setting->update($request->all());
