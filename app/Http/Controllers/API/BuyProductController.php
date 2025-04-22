@@ -101,6 +101,8 @@ class BuyProductController extends Controller
             // now delete the cart data 
             Cart::whereIn('id', $cartIds)->delete();
             // Commit transaction if all operations are successful
+            $savePayment->order_id = $order['order_id'];
+            $updated = $savePayment->save();
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Order Created successfully.', 'user_id' => $user->id, 'user_name' => $user->user_name, 'order' => $order['order']], 200);
         } catch (\Exception $e) {

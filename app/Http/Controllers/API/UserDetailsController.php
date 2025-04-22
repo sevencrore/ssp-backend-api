@@ -95,6 +95,45 @@ class UserDetailsController extends Controller
         return response()->json(['success' => true, 'message' => 'User detail deleted successfully']);
     }
 
+    public function getUser_minimum_order(Request $request)
+    {
+        try {
+            $UserId = $request->user_id;
+
+            // First check whether the user has already ordered any order in this month 
+            $ordercontroller = new OrderController();
+            $hasOrders = $ordercontroller->checkUserHasOrderThisMonth($UserId);
+
+            if ($hasOrders['success']) {
+                // If user already has orders in this month, apply the minimum amount from config
+                $configsetting = ConfigSetting::first();
+                $minimum_base_pay = $configsetting->minimum_basepay_amount;
+
+                return response()->json([
+                    'success' => true,
+                    'message' => "The minimum base pay order amount is ₹$minimum_base_pay.",
+                    'minimum_order' => $minimum_base_pay,
+                ]);
+            }
+
+            $userDetail = UserDetails::where('user_id', $UserId)->first();
+            $comission = Comission::find($userDetail->comission_id);
+            
+            return response()->json([
+                'success' => true,
+                'message' => "The minimum order amount is ₹$comission->minimum_order.",
+                'minimum_order' => $comission->minimum_order,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
     public function CheckUser_minimum_order($UserId, $grand_total)
     {
         // first check whether the user has already orderd any order in this month 

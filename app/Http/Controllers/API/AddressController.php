@@ -92,13 +92,13 @@ class AddressController extends BaseController
      */
     public function getAddressesByUserId(Request $request)
     {
-        $addresses = Address::where('user_id', $request->user_id)->get();
+        $addresses = Address::where('user_id', $request->user_id)->first();
         return response()->json($addresses);
     }
 
     public function getUserAddressesById(Request $request)
     {
-        $addresses = Address::where('user_id', $request->user_id)->get();
+        $addresses = Address::where('user_id', $request->user_id)->first();
         return response()->json($addresses);
     }
     public function GetUserAddresses(Request $request)
@@ -107,4 +107,23 @@ class AddressController extends BaseController
         Log::info($addresses);
         return response()->json($addresses);
     }
+
+    public function getUserAddressByUserID($userID)
+    {
+        try {
+            $address = Address::where('user_id', $userID)->first();
+    
+            return [
+                'success' => true,
+                'address' => $address,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to fetch address.',
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+    
 }

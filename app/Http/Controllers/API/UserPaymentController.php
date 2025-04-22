@@ -90,4 +90,24 @@ class UserPaymentController extends Controller
         }
     }
 
+    public function getPaymentDetailsBY_order_id($order_id)
+    {
+        try {
+            $payment = UserPayment::where('order_id', $order_id)
+                                  ->where('status', 1) // 1 means ordered created  2 means refunded
+                                  ->first(); // Assuming you want a single result
+    
+            return [
+                'success' => true,
+                'payment' => $payment,
+            ];
+        } catch (\Exception $e) { 
+            return [
+                'success' => false,
+                'message' => 'Failed to fetch payment details.',
+            ];
+        }
+    }
+    
+
 }

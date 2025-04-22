@@ -251,6 +251,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::put('/admin/update-user-state/{id}', [AdminController::class, 'setStatus']);
   Route::get('admin/Ordertransactions', [UserPaymentController::class, 'getAdminproduct_transactions'])->name('userPayment.getAdminproduct_transactions');
   Route::get('/admin/getTopReferrers', [AdminController::class, 'getTopReferrers']);
+  Route::get('/admin/getOrderDetails', [OrderController::class, 'getOrderDetails']);
 
   Route::get('/config-settings', [ConfigSettingController::class, 'index']); 
   Route::get('/config-settings/{id}', [ConfigSettingController::class, 'show']); 
@@ -268,6 +269,7 @@ Route::middleware('auth:sanctum')->group( function () {
    Route::post('payment/create-order', [RazorpayPaymentController::class, 'createOrder'])->name('razorpay.createOrder');
    Route::post('user/BuyProduct', [BuyProductController::class, 'BuyProduct'])->name('buyproduct.BuyProduct');
    Route::get('user/get-directReferals', [UserDetailsController::class, 'getDirectReferralsDetails'])->name('userDetails.getDirectReferralsDetails');
+   Route::get('user/getUser_minimum_order', [UserDetailsController::class, 'getUser_minimum_order'])->name('userDetails.getUser_minimum_order');
 
    Route::get('getforntpage-Images', [SlideImageController::class, 'getforntpageImages'])->name('slideimages.getforntpageImages');
 });

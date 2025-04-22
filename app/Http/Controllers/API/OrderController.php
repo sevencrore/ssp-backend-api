@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * @OA\Schema(
@@ -725,27 +726,7 @@ class OrderController extends BaseController
         ]);
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/orders/{order}",
-     *     tags={"Orders"},
-     *     summary="Delete a specific Order",
-     *     @OA\Parameter(
-     *         name="order",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Order deleted successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean"),
-     *             @OA\Property(property="message", type="string")
-     *         )
-     *     )
-     * )
-     */
+    
     public function destroy(Order $order)
     {
         $order->delete();
@@ -840,4 +821,55 @@ class OrderController extends BaseController
 
         return response()->json($results);
     }
+
+    public function getOrderDetails(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'order_id' => 'required|exists:orders,id',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors'  => $validator->errors()
+                ], 422);
+            }
+    
+            $validatedData = $validator->validated();
+
+            // get the order record
+            $order = Order::find($validatedData['order_id']);
+    
+            // First get the address for that user by user_id
+            $addressController = new AddressController();
+            $address = $addressController->getUserAddressByUserID($order->user_id);
+            if (!$address['success']) {
+                throw new \Exception("Failed to fetch the user address.");
+            }
+    
+            // Get the payment details by order_id
+            $userPaymentController = new UserPaymentController();
+            $payment = $userPaymentController->getPaymentDetailsBY_order_id($validatedData['order_id']);
+            if (!$payment['success']) {
+                throw new \Exception("Failed to fetch the payment details.");
+            }
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Order Details fetched successfully.',
+                'address' => $address['address'],
+                'payment' => $payment['payment'],
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong while fetching order details.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    
 }
