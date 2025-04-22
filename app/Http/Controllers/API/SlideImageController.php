@@ -53,7 +53,7 @@ class SlideImageController extends BaseController
         try {
             // Get query parameters
             $title = $request->query('title');
-            $perPage = $request->query('per_page', 1); // Default to 10 items per page
+            $perPage = $request->query('per_page', 10); // Default to 10 items per page
 
             // Query builder
             $query = SlideImage::query();
