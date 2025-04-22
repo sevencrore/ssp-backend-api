@@ -16,7 +16,7 @@ class BuyProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'transaction_id' => 'required|string',
-            'amount' => 'required|integer',
+            'amount' => 'required|numeric',
             'razorpay_order_id' => 'required|string',
             'razorpay_payment_id' => 'required|string',
             'razorpay_signature' => 'required|string',
