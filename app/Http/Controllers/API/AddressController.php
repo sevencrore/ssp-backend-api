@@ -102,10 +102,37 @@ class AddressController extends BaseController
         return response()->json($addresses);
     }
     public function GetUserAddresses(Request $request)
-    {   Log::info("$request->user_id");
-        $addresses = Address::where('user_id', $request->user_id)->first();
-        Log::info($addresses);
-        return response()->json($addresses);
+    {
+        try {
+            Log::info("$request->user_id");
+            
+            // Attempt to get the first address for the given user
+            $addresses = Address::where('user_id', $request->user_id)->first();
+            
+            // Check if addresses were found
+            if ($addresses) {
+                Log::info($addresses);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Address found',
+                    'data' => $addresses
+                ]);
+            } else {
+                // If no address found, return a no address found message
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No address found for this user'
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Log the error and return a response indicating failure
+            Log::error('Error retrieving address: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while fetching the address'
+            ]);
+        }
     }
 
     public function getUserAddressByUserID($userID)

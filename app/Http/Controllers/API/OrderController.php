@@ -362,20 +362,18 @@ class OrderController extends BaseController
 
     public function getAllOrders(Request $request)
     {
-        // Retrieve orders with pagination and order them by created_at in descending order
-        $orders = Order::orderBy('created_at', 'desc')->paginate(10); // Adjust the number per page as needed
-
+        $perPage = $request->input('per_page', 10); // Default to 10 if not specified
+        
+        $orders = Order::orderBy('created_at', 'desc')->paginate($perPage);
+    
         if ($orders->isEmpty()) {
             return response()->json([
                 'message' => 'No orders found.',
             ], 404);
         }
-
-        // Map the orders to include their associated items and product image
-        $response = $orders->map(function ($order) {
-            // Retrieve the associated order items
-            $orderItems = OrderItem::where('order_id', $order->id)->get();
-
+    
+        // Transform the orders
+        $transformedOrders = $orders->map(function ($order) {
             return [
                 'order_id' => $order->id,
                 'user_id' => $order->user_id,
@@ -387,17 +385,16 @@ class OrderController extends BaseController
                 'OrderDate' => $order->created_at,
             ];
         });
-
-        // Return the paginated orders as a response
+    
         return response()->json([
             'message' => 'All orders retrieved successfully.',
-            'orders' => $response,
-            'pagination' => [
-                'current_page' => $orders->currentPage(),
-                'total_pages' => $orders->lastPage(),
-                'per_page' => $orders->perPage(),
-                'total_orders' => $orders->total(),
-            ],
+            'orders' => $transformedOrders,
+            'total' => $orders->total(),
+            'current_page' => $orders->currentPage(),
+            'per_page' => $orders->perPage(),
+            'last_page' => $orders->lastPage(),
+            'has_next_page' => $orders->hasMorePages(),
+            'has_previous_page' => $orders->currentPage() > 1,
         ], 200);
     }
 
