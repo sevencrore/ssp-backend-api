@@ -24,24 +24,40 @@ class AddressController extends BaseController
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'first_name' => 'nullable|string|max:255',
-            'last_name' => 'nullable|string|max:255',
-            'district_name' => 'required|string|max:255',
-            'city_name' => 'required|string|max:255',
-            'city_id' => 'nullable|integer',
-            'address' => 'required|string',
-            'pin_code' => 'required|string|max:10',
-            'phone_number' => 'required|string|max:15',
-            'user_id' => 'required|exists:users,id',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-        ]);
-        $validatedData['user_id'] = $request->user_id;
+        try {
+            $validatedData = $request->validate([
+                'first_name'     => 'nullable|string|max:255',
+                'last_name'      => 'nullable|string|max:255',
+                'district_name'  => 'required|string|max:255',
+                'city_name'      => 'required|string|max:255',
+                'city_id'        => 'nullable|integer',
+                'address'        => 'required|string',
+                'pin_code'       => 'required|string|max:10',
+                'phone_number'   => 'required|string|max:15',
+                'user_id'        => 'required|exists:users,id',
+                'latitude'       => 'nullable|numeric',
+                'longitude'      => 'nullable|numeric',
+            ]);
 
-        $address = Address::create($validatedData);
-        return response()->json($address, 201);
+            $validatedData['user_id'] = $request->user_id;
+
+            $address = Address::create($validatedData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Address created successfully',
+                'data' => $address
+            ], 201); // 201 = Created
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create address',
+                'error' => $e->getMessage()
+            ], 500); // 500 = Internal Server Error
+        }
     }
+
 
     /**
      * Display the specified resource.
@@ -57,29 +73,45 @@ class AddressController extends BaseController
      */
     public function update(Request $request, $id)
     {
-        $address = Address::findOrFail($id);
-        if($address->user_id != $request->user_id){
+        try {
+            $address = Address::findOrFail($id);
+
+            if ($address->user_id != $request->user_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized: failed to update the address',
+                ], 403); // 403 = Forbidden
+            }
+
+            $validatedData = $request->validate([
+                'first_name'     => 'nullable|string|max:255',
+                'last_name'      => 'nullable|string|max:255',
+                'district_name'  => 'required|string|max:255',
+                'city_name'      => 'required|string|max:255',
+                'city_id'        => 'nullable|integer',
+                'address'        => 'required|string',
+                'pin_code'       => 'required|string|max:10',
+                'phone_number'   => 'required|string|max:15',
+                'latitude'       => 'nullable|numeric',
+                'longitude'      => 'nullable|numeric',
+            ]);
+
+            $address->update($validatedData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Address updated successfully',
+                'data' => $address
+            ], 200);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'failed to update the adress',
-            ], 404);
+                'message' => 'Failed to update address',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        $validatedData = $request->validate([
-            'first_name' => 'nullable|string|max:255',
-            'last_name' => 'nullable|string|max:255',
-            'district_name' => 'required|string|max:255',
-            'city_name' => 'required|string|max:255',
-            'city_id' => 'nullable|integer',
-            'address' => 'required|string',
-            'pin_code' => 'required|string|max:10',
-            'phone_number' => 'required|string|max:15',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-        ]);
-
-        $address->update($validatedData);
-        return response()->json($address);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -108,34 +140,32 @@ class AddressController extends BaseController
     public function GetUserAddresses(Request $request)
     {
         try {
-            Log::info("$request->user_id");
-            
+            Log::info("User ID: $request->user_id");
+
             // Attempt to get the first address for the given user
             $addresses = Address::where('user_id', $request->user_id)->first();
-            
-            // Check if addresses were found
+
+            // If address found
             if ($addresses) {
                 Log::info($addresses);
                 return response()->json([
                     'success' => true,
                     'message' => 'Address found',
                     'data' => $addresses
-                ]);
+                ], 200); // Status 200 for success
             } else {
-                // If no address found, return a no address found message
                 return response()->json([
                     'success' => false,
                     'message' => 'No address found for this user'
-                ]);
+                ], 500); // Status 500 when no address is found
             }
         } catch (\Exception $e) {
-            // Log the error and return a response indicating failure
             Log::error('Error retrieving address: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while fetching the address'
-            ]);
+            ], 500); // Status 500 on exception
         }
     }
 
@@ -143,7 +173,7 @@ class AddressController extends BaseController
     {
         try {
             $address = Address::where('user_id', $userID)->first();
-    
+
             return [
                 'success' => true,
                 'address' => $address,
@@ -156,5 +186,4 @@ class AddressController extends BaseController
             ];
         }
     }
-    
 }
