@@ -89,7 +89,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::delete('Product/force-delete-multiple', [ProductController::class, 'forceDeleteMultiple']);
 
 
-  Route::middleware(['role:admin'])->group(function () {
+  // Route::middleware(['role:admin'])->group(function () {
   Route::get('category', [CategoryController::class, 'index'])->name('category.index');
   Route::post('category', [CategoryController::class, 'store'])->name('category.store');
   Route::get('category-get-all-paginated', [CategoryController::class, 'getAllPaginated']);
@@ -103,7 +103,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('unit/{unit}', [UnitController::class, 'show'])->name('unit.show');
   Route::put('unit/{id}', [UnitController::class, 'update'])->name('unit.update');
   Route::delete('unit/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
-});
+// });
 
   Route::get('city', [CityController::class, 'index'])->name('city.index');
   Route::post('city', [CityController::class, 'store'])->name('city.store');
