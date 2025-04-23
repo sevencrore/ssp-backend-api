@@ -27,6 +27,8 @@ class AddressController extends BaseController
         $validatedData = $request->validate([
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
+            'district_name' => 'required|string|max:255',
+            'city_name' => 'required|string|max:255',
             'city_id' => 'nullable|integer',
             'address' => 'required|string',
             'pin_code' => 'required|string|max:10',
@@ -65,6 +67,8 @@ class AddressController extends BaseController
         $validatedData = $request->validate([
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
+            'district_name' => 'required|string|max:255',
+            'city_name' => 'required|string|max:255',
             'city_id' => 'nullable|integer',
             'address' => 'required|string',
             'pin_code' => 'required|string|max:10',
