@@ -17,7 +17,7 @@ class OrderItemController extends BaseController
     }
 
     public function storeOrderItems($orderId, $cartdata, $UserId)
-    {   
+    {
         try {
             $orderItems = [];
             foreach ($cartdata as $cartItem) {
@@ -39,7 +39,7 @@ class OrderItemController extends BaseController
                 $cartIds[] = $cartItem['id'];
             }
             // Insert data into order_items table
-            $orderitems =OrderItem::insert($orderItems);
+            $orderitems = OrderItem::insert($orderItems);
             return [
                 'success' => true,
                 'message' => 'OrderItems stored successfully.',
@@ -77,21 +77,17 @@ class OrderItemController extends BaseController
         return response()->json(['success' => true, 'data' => $orderItem]);
     }
 
-
-    public function getOrderItemsByOrderId($orderId)
+    public function fetchOrderItemsWithProductData($orderId)
     {
         // Retrieve all order items for the given order_id
         $orderItems = OrderItem::where('order_id', $orderId)->get();
 
         if ($orderItems->isEmpty()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No items found for this order.',
-            ], 404);
+            return null;
         }
-        Log::info("ordeitems $orderItems");
-        // Prepare the response with order item details and product data
-        $response = $orderItems->map(function ($item) {
+
+        // Prepare the data with order item details and product data
+        return $orderItems->map(function ($item) {
             $product = Product::find($item->product_id);
 
             return [
@@ -106,7 +102,20 @@ class OrderItemController extends BaseController
                 'total_amount' => $item->total_amount,
             ];
         });
+    }
 
+
+    public function getOrderItemsByOrderId($orderId)
+    {
+        $response = $this->fetchOrderItemsWithProductData($orderId);
+
+        if (is_null($response)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No items found for this order.',
+            ], 404);
+        }
+    
         return response()->json([
             'success' => true,
             'data' => $response,

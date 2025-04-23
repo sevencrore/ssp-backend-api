@@ -871,5 +871,64 @@ class OrderController extends BaseController
             ], 500);
         }
     }
+
+    public function getSpecificOrderDetails(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'order_id' => 'required|exists:orders,id',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors'  => $validator->errors()
+                ], 422);
+            }
+    
+            $validatedData = $validator->validated();
+
+            // get the order record
+            $order = Order::find($validatedData['order_id']);
+
+            //get order items 
+            $orderitemcontroller = new OrderItemController();
+            $orderItem = $orderitemcontroller->fetchOrderItemsWithProductData($order->id);
+            if(!$orderItem){
+                $orderItem =[];
+            }
+            
+            // First get the address for that user by user_id
+            $addressController = new AddressController();
+            $address = $addressController->getUserAddressByUserID($order->user_id);
+            if (!$address['success']) {
+                throw new \Exception("Failed to fetch the user address.");
+            }
+    
+            // Get the payment details by order_id
+            $userPaymentController = new UserPaymentController();
+            $payment = $userPaymentController->getPaymentDetailsBY_order_id($validatedData['order_id']);
+            if (!$payment['success']) {
+                throw new \Exception("Failed to fetch the payment details.");
+            }
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Order Details fetched successfully.',
+                'order' => $order,
+                'order_items' => $orderItem,
+                'address' => $address['address'],
+                'payment' => $payment['payment'],
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong while fetching order details.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
     
 }

@@ -252,6 +252,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('admin/Ordertransactions', [UserPaymentController::class, 'getAdminproduct_transactions'])->name('userPayment.getAdminproduct_transactions');
   Route::get('/admin/getTopReferrers', [AdminController::class, 'getTopReferrers']);
   Route::get('/admin/getOrderDetails', [OrderController::class, 'getOrderDetails']);
+  Route::get('/admin/getSpecificOrderDetails', [OrderController::class, 'getSpecificOrderDetails']);
 
   Route::get('/config-settings', [ConfigSettingController::class, 'index']); 
   Route::get('/config-settings/{id}', [ConfigSettingController::class, 'show']); 
