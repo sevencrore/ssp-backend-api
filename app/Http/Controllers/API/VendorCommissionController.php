@@ -23,7 +23,7 @@ class VendorCommissionController extends Controller
                 'vendor_id' => $vendor_id,
                 'order_id' => $order_id,
                 'amount' => $amount,
-                'status' => 1, // Default status: 1 (pending/unpaid)
+                'status' => 1, // 1 for unpaid 2 for paid 3 refunded and 4 for pending
             ];
 
             // Create the vendor commission record
