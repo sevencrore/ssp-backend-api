@@ -162,7 +162,6 @@ class OrderController extends BaseController
             $trackingNumber = $this->generateTrackingNumber();
 
             $vendor = CustomerVendor::where('customer_id', $validated['user_id'])->first();
-            $config_settings = ConfigSetting::find(1);
             $otp = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
             // Store data into orders table
             $order = Order::create([
@@ -616,6 +615,15 @@ class OrderController extends BaseController
             $order->update(['order_status' => $request->order_status]);
 
             if ($request->order_status == 2) {
+
+                // add the vendor comission because he delivered the products 
+                $vendorcomissionController = new VendorCommissionController();
+                $vendorComission = $vendorcomissionController->InsertVendor_Commission_Record($order->vendor_id,$order->id);
+                if(![$vendorComission['success']]){
+                    throw new \Exception("failed to store the Venodr comission record" . $vendorComission['error']);
+                }
+
+
                 $userDetail = UserDetails::where('user_id', $order->user_id)->first();
                 $earningController = new EarningController();
 
