@@ -14,7 +14,7 @@ class VendorCommission extends Model
         'vendor_id',
         'order_id',
         'amount',
-        'status',
+        'status', //1 for unpaid 2 for paid 3 refunded and 4 for pending
     ];
 
     public function vendor()

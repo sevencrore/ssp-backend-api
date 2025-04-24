@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('vendor_id')->nullable();
             $table->unsignedBigInteger('order_id')->nullable();
             $table->float('amount');
-            $table->integer('status');
+            $table->integer('status');  //1 for unpaid 2 for paid 3 refunded and 4 for pending
             $table->timestamps();
 
             $table->foreign('vendor_id')
