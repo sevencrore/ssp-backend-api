@@ -172,7 +172,7 @@ class OrderController extends BaseController
                 'discount' => $validated['savings'],
                 'grand_total' => $validated['grand_total'],
                 'tracking_number' => $trackingNumber,
-                'supplied_by' => $vendor->vendor_id,
+                'vendor_id' => $vendor->vendor_id,
                 'vendor_comission_percentage' => $config_settings->vendor_comission,
                 'vendor_comission_total' => (($validated['grand_total'] / 100) * $config_settings->vendor_comission),
                 'delivery_otp' => $otp,
@@ -255,7 +255,7 @@ class OrderController extends BaseController
                 'discount' => $validated['savings'],
                 'grand_total' => $validated['grand_total'],
                 'tracking_number' => $trackingNumber,
-                'supplied_by' => $vendor->vendor_id,
+                'vendor_id' => $vendor->vendor_id,
                 'vendor_comission_percentage' => $config_settings->vendor_comission,
                 'vendor_comission_total' => (($validated['grand_total'] / 100) * $config_settings->vendor_comission),
                 'delivery_otp' => $otp,
@@ -426,7 +426,7 @@ class OrderController extends BaseController
         }
 
         // Retrieve orders with pagination and order them by created_at in descending order
-        $orders = Order::where('supplied_by', $vendor->id)
+        $orders = Order::where('vendor_id', $vendor->id)
             ->whereIn('order_status', $orderStatusFilter)
             ->orderBy('created_at', 'desc')->paginate(10); // Adjust the number per page as needed
 
@@ -792,7 +792,7 @@ class OrderController extends BaseController
 
         // Apply supplier filter if not admin
         if ($supplierId) {
-            $query->where('orders.supplied_by', $supplierId);
+            $query->where('orders.vendor_id', $supplierId);
         }
 
 

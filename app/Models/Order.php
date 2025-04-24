@@ -17,7 +17,7 @@ class Order extends Model
         'total_amount',
         'grand_total',
         'discount',
-        'supplied_by',
+        'vendor_id',
         'vendor_comission_percentage',
         'vendor_comission_total',
         'delivery_otp',
