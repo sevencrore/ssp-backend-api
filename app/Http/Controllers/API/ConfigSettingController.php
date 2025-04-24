@@ -55,6 +55,8 @@ class ConfigSettingController extends BaseController
             'default_vendor_id' => 'nullable|integer',
             'vendor_comission' => 'required|numeric',
             'minimum_basepay_amount' => 'required|numeric',
+            'admin_comission_percentage' => 'required|numeric',
+            'tds_charges_percentage' => 'required|numeric',
             'slideImage_displayCount' => 'required|integer|min:5',
         ]);
 
@@ -83,6 +85,8 @@ class ConfigSettingController extends BaseController
             'default_vendor_id' => 'nullable|integer',
             'vendor_comission' => 'nullable|numeric',
             'minimum_basepay_amount' => 'nullable|numeric',
+            'admin_comission_percentage' => 'nullable|numeric',
+            'tds_charges_percentage' => 'nullable|numeric',
             'slideImage_displayCount' => 'required|integer|min:5',
         ]);
 

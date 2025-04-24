@@ -243,7 +243,7 @@ class OrderController extends BaseController
         // Use DB transaction for atomicity
         DB::beginTransaction();
         $vendor = CustomerVendor::where('customer_id', $validated['user_id'])->first();
-        $config_settings = ConfigSetting::find(1);
+        // $config_settings = ConfigSetting::find(1);
         $otp = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
         try {
             // Store data into orders table

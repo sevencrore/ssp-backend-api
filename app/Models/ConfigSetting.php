@@ -15,6 +15,8 @@ class ConfigSetting extends Model
         'referal_incentive',
         'max_level',
         'vendor_comission',
+        'admin_comission_percentage',
+        'tds_charges_percentage',
         'default_vendor_id',
         'minimum_basepay_amount',
         'slideImage_displayCount',
