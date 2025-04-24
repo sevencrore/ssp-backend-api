@@ -236,6 +236,7 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::get('users/cold-state', [UsersController::class, 'getAllColdStateUsers'])->name('users.getAllColdStateUsers');
     // Route::get('/users/cold-state', [UsersController::class, 'getAllColdStateUsers']);
     Route::get('vendors', [VendorController::class, 'index']); // Get all vendors
+    Route::get('admin/vendors', [VendorController::class, 'getAllPaginated']); // Get all vendors
     Route::post('vendors', [VendorController::class, 'store']); // Create a new vendor
     Route::get('vendors/{id}', [VendorController::class, 'show']); // Get a specific vendor by ID
     Route::put('vendors/{id}', [VendorController::class, 'update']); // Update a specific vendor by ID
@@ -255,6 +256,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('/admin/getTopReferrers', [AdminController::class, 'getTopReferrers']);
   Route::get('/admin/getOrderDetails', [OrderController::class, 'getOrderDetails']);
   Route::get('/admin/getSpecificOrderDetails', [OrderController::class, 'getSpecificOrderDetails']);
+  Route::get('/admin/getspecific/VendorComission', [VendorCommissionController::class, 'getVendorCommission_Admin']);
 
   Route::get('/config-settings', [ConfigSettingController::class, 'index']); 
   Route::get('/config-settings/{id}', [ConfigSettingController::class, 'show']); 
