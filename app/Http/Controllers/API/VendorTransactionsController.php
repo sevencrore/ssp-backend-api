@@ -19,10 +19,19 @@ class VendorTransactionsController extends Controller
                 'tds_charges_amount' => 'required|numeric',
                 'amount_paid' => 'required|integer',
                 'transaction_id' => 'required|string|unique:vendor_transactions,transaction_id',
-                'status' => 'required|integer', // 1 for unpaid 2 for paid 3 refunded and 4 for pending
-                'attachment' => 'nullable|string',
+                'status' => 'required|integer', // 1 for unpaid, 2 for paid, 3 refunded, 4 pending
+                'attachment' => 'nullable|file|mimes:jpeg,jpg,png,gif,pdf|max:20480',
             ]);
+    
             $validated['paid_by_user_id'] = $request->user_id;
+    
+            if ($request->hasFile('attachment')) {
+                $file = $request->file('attachment');
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('attachments', $filename, 'public');
+                $validated['attachment'] = $path;
+            }
+    
     
             $transaction = VendorTransaction::create($validated);
             
