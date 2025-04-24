@@ -17,7 +17,7 @@ class VendorTransactionsController extends Controller
                 'total_amount' => 'required|numeric',
                 'admin_commission_amount' => 'required|numeric',
                 'tds_charges_amount' => 'required|numeric',
-                'amount_paid' => 'required|integer',
+                'amount_paid' => 'required|numeric',
                 'transaction_id' => 'required|string|unique:vendor_transactions,transaction_id',
                 'status' => 'required|integer', // 1 for unpaid, 2 for paid, 3 refunded, 4 pending
                 'attachment' => 'nullable|file|mimes:jpeg,jpg,png,gif,pdf|max:20480',
