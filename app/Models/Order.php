@@ -18,8 +18,8 @@ class Order extends Model
         'grand_total',
         'discount',
         'vendor_id',
-        'vendor_comission_percentage',
-        'vendor_comission_total',
+        // 'vendor_comission_percentage',
+        // 'vendor_comission_total',
         'delivery_otp',
     
     ];

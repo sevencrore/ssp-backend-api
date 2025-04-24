@@ -173,8 +173,8 @@ class OrderController extends BaseController
                 'grand_total' => $validated['grand_total'],
                 'tracking_number' => $trackingNumber,
                 'vendor_id' => $vendor->vendor_id,
-                'vendor_comission_percentage' => $config_settings->vendor_comission,
-                'vendor_comission_total' => (($validated['grand_total'] / 100) * $config_settings->vendor_comission),
+                // 'vendor_comission_percentage' => $config_settings->vendor_comission,
+                // 'vendor_comission_total' => (($validated['grand_total'] / 100) * $config_settings->vendor_comission),
                 'delivery_otp' => $otp,
             ]);
             return [
@@ -256,8 +256,8 @@ class OrderController extends BaseController
                 'grand_total' => $validated['grand_total'],
                 'tracking_number' => $trackingNumber,
                 'vendor_id' => $vendor->vendor_id,
-                'vendor_comission_percentage' => $config_settings->vendor_comission,
-                'vendor_comission_total' => (($validated['grand_total'] / 100) * $config_settings->vendor_comission),
+                // 'vendor_comission_percentage' => $config_settings->vendor_comission,
+                // 'vendor_comission_total' => (($validated['grand_total'] / 100) * $config_settings->vendor_comission),
                 'delivery_otp' => $otp,
             ]);
 
