@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Vendor;
 use App\Models\VendorCommission;
 use Illuminate\Http\Request;
 
@@ -43,28 +44,76 @@ class VendorCommissionController extends Controller
     }
 
     public function getUnpaid_VendorCommission_list(Request $request)
-{
-    $request->validate([
-        'vendor_id' => 'required|exists:vendors,id',
-    ]);
-
-    try {
-        $commissions = VendorCommission::where('vendor_id', $request->vendor_id)
-                                        ->where('status', 1)
-                                        ->get();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Vendor commission records fetched successfully.',
-            'data' => $commissions,
+    {
+        $request->validate([
+            'vendor_id' => 'required|exists:vendors,id',
         ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to fetch vendor commissions.',
-            'error' => $e->getMessage(),
-        ], 500);
+
+        try {
+            $commissions = VendorCommission::where('vendor_id', $request->vendor_id)
+                ->where('status', 1)
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Vendor commission records fetched successfully.',
+                'data' => $commissions,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch vendor commissions.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
-}
+
+    public function getVendorCommission_WithPagination(Request $request)
+    {
+        $userID = $request->user_id;
+        $status = $request->has('status') ? (array) $request->status : [1, 2, 3];
+        $perPage = $request->get('per_page', 10);
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+
+        try {
+            $vendor = Vendor::where('user_id', $userID)->first();
+
+            if (!$vendor) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Vendor not found.',
+                ], 404);
+            }
+
+            $query = VendorCommission::where('vendor_id', $vendor->id)
+                ->whereIn('status', $status);
+
+            // Date filters
+            if ($startDate && $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            } elseif ($startDate) {
+                $query->whereDate('created_at', '>=', $startDate);
+            } elseif ($endDate) {
+                $query->whereDate('created_at', '<=', $endDate);
+            }
+
+            $commissions = $query->paginate($perPage);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Vendor commissions fetched successfully.',
+                'data' => $commissions,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch vendor commissions.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
 
 }
