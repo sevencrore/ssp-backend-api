@@ -118,7 +118,7 @@ class VendorCommissionController extends Controller
     {
         try {
             $updatedCount = VendorCommission::whereIn('id', $ids)
-                                ->update(['status' => $status]);
+                    ->update(['status' => $status]);
     
             return [
                 'success' => true,
