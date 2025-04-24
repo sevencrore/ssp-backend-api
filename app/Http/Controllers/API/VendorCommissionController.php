@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\ConfigSetting;
 use App\Models\Order;
 use App\Models\Vendor;
 use App\Models\VendorCommission;
@@ -53,11 +54,15 @@ class VendorCommissionController extends Controller
             $commissions = VendorCommission::where('vendor_id', $request->vendor_id)
                 ->where('status', 1)
                 ->get();
+            
+                $configsettings = ConfigSetting::first();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Vendor commission records fetched successfully.',
                 'data' => $commissions,
+                'admin_comission_percentage' => $configsettings->admin_comission_percentage,
+                'tds_charges_percentage' => $configsettings->tds_charges_percentage,
             ]);
         } catch (\Exception $e) {
             return response()->json([
