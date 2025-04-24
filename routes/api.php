@@ -280,7 +280,7 @@ Route::middleware('auth:sanctum')->group( function () {
 
    Route::post('vendor-transactions', [VendorTransactionsController::class, 'store']);
 
-   Route::get('vendor-commissions/by-vendor-status', [VendorCommissionController::class, 'getUnpaid_VendorCommission_list']);
+   Route::get('vendor-unpaid-commissions', [VendorCommissionController::class, 'getUnpaid_VendorCommission_list']);
    Route::get('vendor-commissions/user', [VendorCommissionController::class, 'getVendorCommission_WithPagination']);
    Route::post('vendor-commissions/status-update', [VendorCommissionController::class, 'update_status']);
 
