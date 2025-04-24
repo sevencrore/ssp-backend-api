@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Vendor;
 use App\Models\VendorCommission;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class VendorCommissionController extends Controller
@@ -40,7 +41,6 @@ class VendorCommissionController extends Controller
                 'error' => $e->getMessage(),
             ];
         }
-
     }
 
     public function getUnpaid_VendorCommission_list(Request $request)
@@ -68,16 +68,15 @@ class VendorCommissionController extends Controller
         }
     }
 
-    public function getVendorCommission_WithPagination(Request $request)
+    private function fetchVendorCommissions(Request $request, $vendorID)
     {
-        $userID = $request->user_id;
         $status = $request->has('status') ? (array) $request->status : [1, 2, 3];
         $perPage = $request->get('per_page', 10);
         $startDate = $request->start_date;
         $endDate = $request->end_date;
 
         try {
-            $vendor = Vendor::where('user_id', $userID)->first();
+            $vendor = Vendor::find($vendorID);
 
             if (!$vendor) {
                 return response()->json([
@@ -89,7 +88,7 @@ class VendorCommissionController extends Controller
             $query = VendorCommission::where('vendor_id', $vendor->id)
                 ->whereIn('status', $status);
 
-            // Date filters
+            // Apply date filters
             if ($startDate && $endDate) {
                 $query->whereBetween('created_at', [$startDate, $endDate]);
             } elseif ($startDate) {
@@ -115,5 +114,35 @@ class VendorCommissionController extends Controller
     }
 
 
+    public function getVendorCommission_WithPagination(Request $request)
+    {
+        $userID = $request->user_id; // or Auth::id()
+        $vendor = Vendor::where('user_id', $userID)->first();
+        if (!$vendor) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vendor not found.',
+            ], 404);
+        }
+        return $this->fetchVendorCommissions($request, $vendor->id);
+    }
 
+    public function getVendorCommission_Admin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'vendor_id' => 'required|exists:vendors,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $validated = $validator->validated();
+
+        return $this->fetchVendorCommissions($request, $validated['vendor_id']);
+    }
 }
