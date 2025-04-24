@@ -3,6 +3,8 @@
   use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\CityController;
   use App\Http\Controllers\API\EMailController;
+use App\Http\Controllers\API\VendorCommissionController;
+use App\Http\Controllers\API\VendorTransactionsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
   
@@ -273,6 +275,10 @@ Route::middleware('auth:sanctum')->group( function () {
    Route::get('user/getUser_minimum_order', [UserDetailsController::class, 'getUser_minimum_order'])->name('userDetails.getUser_minimum_order');
 
    Route::get('getforntpage-Images', [SlideImageController::class, 'getforntpageImages'])->name('slideimages.getforntpageImages');
+
+   Route::post('vendor-transactions', [VendorTransactionsController::class, 'store']);
+
+   Route::get('vendor-commissions/by-vendor-status', [VendorCommissionController::class, 'getUnpaid_VendorCommission_list']);
 });
 
 

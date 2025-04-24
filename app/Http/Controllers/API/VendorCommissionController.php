@@ -41,4 +41,30 @@ class VendorCommissionController extends Controller
         }
 
     }
+
+    public function getUnpaid_VendorCommission_list(Request $request)
+{
+    $request->validate([
+        'vendor_id' => 'required|exists:vendors,id',
+    ]);
+
+    try {
+        $commissions = VendorCommission::where('vendor_id', $request->vendor_id)
+                                        ->where('status', 1)
+                                        ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Vendor commission records fetched successfully.',
+            'data' => $commissions,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to fetch vendor commissions.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
 }
