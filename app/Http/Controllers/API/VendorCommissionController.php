@@ -115,5 +115,25 @@ class VendorCommissionController extends Controller
     }
 
 
+    public function update_status(array $ids, int $status): array
+    {
+        try {
+            $updatedCount = VendorCommission::whereIn('id', $ids)
+                                ->update(['status' => $status]);
+    
+            return [
+                'success' => true,
+                'message' => "$updatedCount commission(s) updated successfully.",
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to update commission statuses.',
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+    
+
 
 }

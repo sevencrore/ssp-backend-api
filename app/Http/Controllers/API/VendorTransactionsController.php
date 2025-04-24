@@ -25,11 +25,19 @@ class VendorTransactionsController extends Controller
             $validated['paid_by_user_id'] = $request->user_id;
     
             $transaction = VendorTransaction::create($validated);
-    
+            
+            // update the vendor comission status 
+            $vendorcommissioncontroller = new VendorCommissionController();
+            $updated_status = $vendorcommissioncontroller->update_status($validated['vendor_commission_id_array'],$validated['status']);
+
+            if (!$updated_status['success']) {
+                throw new \Exception("Status updation failed for  vendor comission" .$updated_status['error'] );
+            }    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Vendor transaction created successfully.',
-                'data' => $transaction,
+                'data' => $transaction, 
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -40,6 +48,6 @@ class VendorTransactionsController extends Controller
         }
     }
 
-    
+
     
 }
