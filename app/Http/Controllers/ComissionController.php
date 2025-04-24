@@ -5,97 +5,191 @@ namespace App\Http\Controllers;
 use App\Models\Comission;
 use App\Models\UserDetails;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ComissionController extends Controller
 {
     // Show all records
     public function index()
     {
-        $comissions = Comission::all();
-        return response()->json($comissions);
+        try {
+            $comissions = Comission::all();
+            return response()->json([
+                'success' => true,
+                'message' => 'Comissions fetched successfully',
+                'data' => $comissions,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching comissions: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch comissions',
+            ], 500);
+        }
     }
 
     // Show a single record
     public function show($id)
     {
-        $comission = Comission::find($id);
-        if ($comission) {
-            return response()->json($comission);
-        } else {
-            return response()->json(['message' => 'Comission not found'], 404);
+        try {
+            $comission = Comission::find($id);
+            if ($comission) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Comission fetched successfully',
+                    'data' => $comission,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Comission not found',
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error fetching comission: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch comission',
+            ], 500);
         }
     }
 
     // Store a new record
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'minimum_order' => 'required|numeric',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'minimum_order' => 'required|numeric',
+            ]);
 
-        $comission = Comission::create($validatedData);
-        return response()->json($comission, 201);
+            $comission = Comission::create($validatedData);
+            return response()->json([
+                'success' => true,
+                'message' => 'Comission created successfully',
+                'data' => $comission,
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $ve) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $ve->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error creating comission: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create comission',
+            ], 500);
+        }
     }
 
     // Update an existing record
     public function update(Request $request, $id)
     {
-        $comission = Comission::find($id);
+        try {
+            $comission = Comission::find($id);
 
-        if ($comission) {
-            $validatedData = $request->validate([
-                'minimum_order' => 'required|numeric',
-            ]);
+            if ($comission) {
+                $validatedData = $request->validate([
+                    'minimum_order' => 'required|numeric',
+                ]);
 
-            $comission->update($validatedData);
-            return response()->json($comission);
-        } else {
-            return response()->json(['message' => 'Comission not found'], 404);
+                $comission->update($validatedData);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Comission updated successfully',
+                    'data' => $comission,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Comission not found',
+                ], 404);
+            }
+        } catch (\Illuminate\Validation\ValidationException $ve) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $ve->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error updating comission: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update comission',
+            ], 500);
         }
     }
 
     // Delete a record
     public function destroy($id)
     {
-        $comission = Comission::find($id);
-        if ($comission) {
-            $comission->delete();
-            return response()->json(['message' => 'Comission deleted successfully']);
-        } else {
-            return response()->json(['message' => 'Comission not found'], 404);
+        try {
+            $comission = Comission::find($id);
+            if ($comission) {
+                $comission->delete();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Comission deleted successfully',
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Comission not found',
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error deleting comission: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete comission',
+            ], 500);
         }
     }
 
+    // Get minimum order by user_id
     public function getMinimumOrder(Request $request)
     {
-        // Validate the input
-        $validated = $request->validate([
-            'user_id' => 'required|integer',
-        ]);
+        try {
+            $validated = $request->validate([
+                'user_id' => 'required|integer',
+            ]);
 
-        // Fetch user details
-        $userDetail = UserDetails::where('user_id', $validated['user_id'])->first();
+            $userDetail = UserDetails::where('user_id', $validated['user_id'])->first();
 
-        if (!$userDetail) {
+            if (!$userDetail) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User details not found.',
+                ], 404);
+            }
+
+            $comission = Comission::find($userDetail->comission_id);
+
+            if (!$comission) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Commission details not found.',
+                ], 404);
+            }
+
             return response()->json([
-                'message' => 'User details not found.',
-            ], 404);
-        }
-
-        // Get commission details
-        $comission = Comission::find($userDetail->comission_id);
-
-        if (!$comission) {
+                'success' => true,
+                'message' => 'Minimum order fetched successfully',
+                'minimum_order' => $comission->minimum_order,
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $ve) {
             return response()->json([
-                'message' => 'Commission details not found.',
-            ], 404);
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $ve->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error fetching minimum order: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch minimum order',
+            ], 500);
         }
-
-        // Return the minimum order
-        return response()->json([
-            'minimum_order' => $comission->minimum_order,
-        ], 200);
     }
-
-
 }
