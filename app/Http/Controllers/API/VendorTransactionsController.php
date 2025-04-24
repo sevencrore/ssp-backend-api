@@ -19,7 +19,7 @@ class VendorTransactionsController extends Controller
                 'tds_charges_amount' => 'required|numeric',
                 'amount_paid' => 'required|integer',
                 'transaction_id' => 'required|string|unique:vendor_transactions,transaction_id',
-                'status' => 'required|integer',
+                'status' => 'required|integer', // 1 for unpaid 2 for paid 3 refunded and 4 for pending
                 'attachment' => 'nullable|string',
             ]);
             $validated['paid_by_user_id'] = $request->user_id;

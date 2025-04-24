@@ -30,7 +30,7 @@ return new class extends Migration {
             $table->integer('amount_paid')->default(1);
 
             $table->string('transaction_id');
-            $table->integer('status');
+            $table->integer('status'); // 1 for unpaid 2 for paid 3 refunded and 4 for pending
             $table->string('attachment')->nullable();
 
             $table->timestamps();

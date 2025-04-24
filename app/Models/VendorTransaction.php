@@ -20,7 +20,7 @@ class VendorTransaction extends Model
         'tds_charges_amount',
         'amount_paid',
         'transaction_id',
-        'status',
+        'status', // 1 for unpaid 2 for paid 3 refunded and 4 for pending
         'attachment',
     ];
 
