@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Support\Facades\Log;
@@ -89,6 +90,7 @@ class OrderItemController extends BaseController
         // Prepare the data with order item details and product data
         return $orderItems->map(function ($item) {
             $product = Product::find($item->product_id);
+            $productvarient = ProductVariant::find($item->product_variant_id);
 
             return [
                 'product_id' => $item->product_id,
@@ -100,6 +102,7 @@ class OrderItemController extends BaseController
                 'price' => $item->price,
                 'discount' => $item->discount,
                 'total_amount' => $item->total_amount,
+                'product_variant_title' =>  $productvarient->title,
             ];
         });
     }

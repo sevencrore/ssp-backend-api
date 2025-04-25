@@ -290,6 +290,7 @@ Route::middleware('auth:sanctum')->group( function () {
 
 // Route to get all records
 Route::get('comissions', [ComissionController::class, 'index'])->name('comissions.index');
+Route::get('comission/getAllPaginated', [ComissionController::class, 'getAllPaginated']);
 
 // Route to get all records
 Route::get('comission-details', [ComissionDetailController::class, 'index'])->name('comission_details.index');

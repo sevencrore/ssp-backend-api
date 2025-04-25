@@ -24,7 +24,7 @@ class ProductController extends BaseController
 
     public function getAllPaginated(Request $request): JsonResponse
     {
-
+        $perPage = $request->get('per_page', 10); // Default to 10
         $query = Product::orderBy('created_at', 'desc');
         
         if ($request->filled('search')) {
@@ -36,7 +36,7 @@ class ProductController extends BaseController
          $queryParameters = Arr::except($request->query(), ['user_id']);
 
          // Paginate the results
-         $query = $query->paginate(30)->appends($queryParameters); // Adjust the number 10 to set items per page
+         $query = $query->paginate( $perPage )->appends($queryParameters); // Adjust the number 10 to set items per page1
  
         $items = $query;
         $data = [

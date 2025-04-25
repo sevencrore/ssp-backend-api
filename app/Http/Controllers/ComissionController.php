@@ -6,6 +6,7 @@ use App\Models\Comission;
 use App\Models\UserDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Arr;
 
 class ComissionController extends Controller
 {
@@ -27,6 +28,43 @@ class ComissionController extends Controller
             ], 500);
         }
     }
+
+   
+
+public function getAllPaginated(Request $request)
+{
+    try {
+        $perPage = $request->get('per_page', 10); // Default 10 per page
+
+        // Optional: search logic (if needed in future)
+        $query = Comission::orderBy('created_at', 'desc');
+
+        $queryParams = Arr::except($request->query(), []);
+
+        $paginated = $query->paginate($perPage)->appends($queryParams);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Commissions fetched successfully',
+            'data' => $paginated->items(),
+            'pagination' => [
+                'current_page' => $paginated->currentPage(),
+                'last_page' => $paginated->lastPage(),
+                'per_page' => $paginated->perPage(),
+                'total' => $paginated->total(),
+                'next_page_url' => $paginated->nextPageUrl(),
+                'prev_page_url' => $paginated->previousPageUrl(),
+            ]
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Error fetching commissions: ' . $e->getMessage());
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to fetch commissions',
+        ], 500);
+    }
+}
 
     // Show a single record
     public function show($id)
