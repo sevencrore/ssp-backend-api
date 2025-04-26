@@ -23,6 +23,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Arr;
 
 /**
  * @OA\Schema(
@@ -741,92 +742,199 @@ class OrderController extends BaseController
         ], 200);
     }
 
-    public function getOrderItemsForSupplier(Request $request)
-    {
-        Log::info("hello this is getordersItems by supplier");
-        $supplierId = null;
-        $user = User::find($request->user_id);
-        if ($user->user_type == 99) {
-            // Admin: Do not filter by a specific supplier
-            Log::info("Admin user: Fetching data for all suppliers.");
-            if ($request->has('vendorUser_id')) {
-                $vendorUser_id = $request->query('vendorUser_id');
-                $supplier = Vendor::where('user_id', $vendorUser_id)->first();
-                $supplierId = $supplier->id;
-            }
-        } else {
-            // For suppliers: Get the authenticated user's ID as the supplier
-            $supplier = Vendor::where('user_id', $request->user_id)->first();
-            if (!$supplier) {
-                return response()->json(['error' => 'Supplier not found.'], 404);
-            }
-            $supplierId = $supplier->id;
-            Log::info("Supplier user: Fetching data for supplier ID $supplierId.");
-        }
+    // public function getOrderItemsForSupplier(Request $request)
+    // {
+    //     Log::info("hello this is getordersItems by supplier");
+    //     $supplierId = null;
+    //     $user = User::find($request->user_id);
+    //     if ($user->user_type == 99) {
+    //         // Admin: Do not filter by a specific supplier
+    //         Log::info("Admin user: Fetching data for all suppliers.");
+    //         if ($request->has('vendorUser_id')) {
+    //             $vendorUser_id = $request->query('vendorUser_id');
+    //             $supplier = Vendor::where('user_id', $vendorUser_id)->first();
+    //             $supplierId = $supplier->id;
+    //         }
+    //     } else {
+    //         // For suppliers: Get the authenticated user's ID as the supplier
+    //         $supplier = Vendor::where('user_id', $request->user_id)->first();
+    //         if (!$supplier) {
+    //             return response()->json(['error' => 'Supplier not found.'], 404);
+    //         }
+    //         $supplierId = $supplier->id;
+    //         Log::info("Supplier user: Fetching data for supplier ID $supplierId.");
+    //     }
 
 
-        // Default order status filter
-        $orderStatusFilter = [0, 1];
+    //     // Default order status filter
+    //     $orderStatusFilter = [0, 1];
 
-        // Override order status filter if provided in the query string
-        if ($request->has('order_status')) {
-            $orderStatusFilter = (array) $request->query('order_status');
-        }
+    //     // Override order status filter if provided in the query string
+    //     if ($request->has('order_status')) {
+    //         $orderStatusFilter = (array) $request->query('order_status');
+    //     }
 
-        // Default category filter (all categories)
-        $categoryFilter = '*';
-        if ($request->has('category_id')) {
-            $categoryFilter = $request->query('category_id');
-        }
+    //     // Default category filter (all categories)
+    //     $categoryFilter = '*';
+    //     if ($request->has('category_id')) {
+    //         $categoryFilter = $request->query('category_id');
+    //     }
 
-        // Build the query
-        $query = OrderItem::query()
-            ->select([
-                'order_items.product_variant_id',
-                DB::raw('SUM(order_items.quantity) AS total_quantity'),
-                'order_items.product_id AS Product_ID',
-                'order_items.unit_quantity AS Unit_Quantity',
-                'order_items.unit_title AS Unit_title',
+    //     // Build the query
+    //     $query = OrderItem::query()
+    //         ->select([
+    //             'order_items.product_variant_id',
+    //             DB::raw('SUM(order_items.quantity) AS total_quantity'),
+    //             'order_items.product_id AS Product_ID',
+    //             'order_items.unit_quantity AS Unit_Quantity',
+    //             'order_items.unit_title AS Unit_title',
 
-            ])
-            ->join('orders', 'orders.id', '=', 'order_items.order_id')
-            ->whereIn('orders.order_status', $orderStatusFilter)
-            ->groupBy(
-                'order_items.product_variant_id',
-                'order_items.product_id',
-                'order_items.unit_quantity',
-                'order_items.unit_title'
-            );
+    //         ])
+    //         ->join('orders', 'orders.id', '=', 'order_items.order_id')
+    //         ->whereIn('orders.order_status', $orderStatusFilter)
+    //         ->groupBy(
+    //             'order_items.product_variant_id',
+    //             'order_items.product_id',
+    //             'order_items.unit_quantity',
+    //             'order_items.unit_title'
+    //         );
 
-        // Apply supplier filter if not admin
-        if ($supplierId) {
-            $query->where('orders.vendor_id', $supplierId);
-        }
+    //     // Apply supplier filter if not admin
+    //     if ($supplierId) {
+    //         $query->where('orders.vendor_id', $supplierId);
+    //     }
 
 
-        // Apply category filter if specified
-        if ($categoryFilter !== '*') {
-            $query->whereHas('product', function ($productQuery) use ($categoryFilter) {
-                $productQuery->where('category_id', $categoryFilter);
-            });
-        }
+    //     // Apply category filter if specified
+    //     if ($categoryFilter !== '*') {
+    //         $query->whereHas('product', function ($productQuery) use ($categoryFilter) {
+    //             $productQuery->where('category_id', $categoryFilter);
+    //         });
+    //     }
 
-        // Execute the query
-        $results = $query->get();
+    //     // Execute the query
+    //     $results = $query->get();
 
-        // Map the product details
-        $results->each(function ($item) {
-            $product = Product::find($item->Product_ID);
-            $productVariant = ProductVariant::find($item->product_variant_id);
-            $item->product_title = $product->title ?? null;
-            $item->product_variant_title = $productVariant->title ?? null;
-            $item->image_url = $product->image_url ?? null;
-            $item->category_id = $product->category_id ?? null;
-        });
+    //     // Map the product details
+    //     $results->each(function ($item) {
+    //         $product = Product::find($item->Product_ID);
+    //         $productVariant = ProductVariant::find($item->product_variant_id);
+    //         $item->product_title = $product->title ?? null;
+    //         $item->product_variant_title = $productVariant->title ?? null;
+    //         $item->image_url = $product->image_url ?? null;
+    //         $item->category_id = $product->category_id ?? null;
+    //     });
 
-        return response()->json($results);
+    //     return response()->json($results);
+    // }
+
+   
+   
+    public function getOrderItemsForSupplier(Request $request): JsonResponse
+{
+    Log::info("hello this is getOrderItems by supplier");
+
+    $supplierId = null;
+    $user = User::find($request->user_id);
+
+    if (!$user) {
+        return response()->json(['success' => false, 'message' => 'User not found.'], 404);
     }
 
+    if ($user->user_type == 99) {
+        // Admin: Do not filter by a specific supplier
+        Log::info("Admin user: Fetching data for all suppliers.");
+        if ($request->has('vendorUser_id')) {
+            $vendorUser_id = $request->query('vendorUser_id');
+            $supplier = Vendor::where('user_id', $vendorUser_id)->first();
+            if ($supplier) {
+                $supplierId = $supplier->id;
+            }
+        }
+    } else {
+        // Supplier user
+        $supplier = Vendor::where('user_id', $request->user_id)->first();
+        if (!$supplier) {
+            return response()->json(['success' => false, 'message' => 'Supplier not found.'], 404);
+        }
+        $supplierId = $supplier->id;
+        Log::info("Supplier user: Fetching data for supplier ID $supplierId.");
+    }
+
+    $orderStatusFilter = [0, 1];
+    if ($request->has('order_status')) {
+        $orderStatusFilter = (array) $request->query('order_status');
+    }
+
+    $categoryFilter = '*';
+    if ($request->has('category_id')) {
+        $categoryFilter = $request->query('category_id');
+    }
+
+    $perPage = $request->get('per_page', 10); // Default to 10
+
+    $query = OrderItem::query()
+        ->select([
+            'order_items.product_variant_id',
+            DB::raw('SUM(order_items.quantity) AS total_quantity'),
+            'order_items.product_id AS Product_ID',
+            'order_items.unit_quantity AS Unit_Quantity',
+            'order_items.unit_title AS Unit_title',
+        ])
+        ->join('orders', 'orders.id', '=', 'order_items.order_id')
+        ->whereIn('orders.order_status', $orderStatusFilter)
+        ->groupBy(
+            'order_items.product_variant_id',
+            'order_items.product_id',
+            'order_items.unit_quantity',
+            'order_items.unit_title'
+        );
+
+    if ($supplierId) {
+        $query->where('orders.vendor_id', $supplierId);
+    }
+
+    if ($categoryFilter !== '*') {
+        $query->whereHas('product', function ($productQuery) use ($categoryFilter) {
+            $productQuery->where('category_id', $categoryFilter);
+        });
+    }
+
+    $queryParameters = Arr::except($request->query(), ['user_id']);
+
+    // Paginate the results
+    $items = $query->paginate($perPage)->appends($queryParameters);
+
+    // Map additional product details
+    $items->getCollection()->transform(function ($item) {
+        $product = Product::find($item->Product_ID);
+        $productVariant = ProductVariant::find($item->product_variant_id);
+        $item->product_title = $product->title ?? null;
+        $item->product_variant_title = $productVariant->title ?? null;
+        $item->image_url = $product->image_url ?? null;
+        $item->category_id = $product->category_id ?? null;
+        return $item;
+    });
+
+    $data = [
+        'data' => $items->items(),
+        'pagination' => [
+            'current_page' => $items->currentPage(),
+            'last_page' => $items->lastPage(),
+            'per_page' => $items->perPage(),
+            'total' => $items->total(),
+            'next_page_url' => $items->nextPageUrl(),
+            'prev_page_url' => $items->previousPageUrl()
+        ]
+    ];
+
+    return response()->json([
+        'success' => true,
+        'data' => $data
+    ], 201);
+}
+
+   
     public function getOrderDetails(Request $request)
     {
         try {
