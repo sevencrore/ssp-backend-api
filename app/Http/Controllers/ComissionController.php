@@ -37,7 +37,7 @@ public function getAllPaginated(Request $request)
         $perPage = $request->get('per_page', 10); // Default 10 per page
 
         // Optional: search logic (if needed in future)
-        $query = Comission::orderBy('created_at', 'desc');
+        $query = Comission::orderBy('created_at');
 
         $queryParams = Arr::except($request->query(), []);
 
