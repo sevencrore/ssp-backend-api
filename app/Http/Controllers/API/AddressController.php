@@ -141,33 +141,34 @@ class AddressController extends BaseController
     {
         try {
             Log::info("User ID: $request->user_id");
-
-            // Attempt to get the first address for the given user
-            $addresses = Address::where('user_id', $request->user_id)->first();
-
-            // If address found
-            if ($addresses) {
+    
+            // Get all addresses for the given user
+            $addresses = Address::where('user_id', $request->user_id)->get();
+    
+            // Check if addresses exist
+            if ($addresses->isNotEmpty()) {
                 Log::info($addresses);
                 return response()->json([
                     'success' => true,
-                    'message' => 'Address found',
+                    'message' => 'Addresses found',
                     'data' => $addresses
                 ], 200); // Status 200 for success
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No address found for this user'
-                ], 500); // Status 500 when no address is found
+                    'message' => 'No addresses found for this user'
+                ], 404); // Status 404 is more appropriate here
             }
         } catch (\Exception $e) {
-            Log::error('Error retrieving address: ' . $e->getMessage());
-
+            Log::error('Error retrieving addresses: ' . $e->getMessage());
+    
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while fetching the address'
+                'message' => 'An error occurred while fetching the addresses'
             ], 500); // Status 500 on exception
         }
     }
+    
 
     public function getUserAddressByUserID($userID)
     {
