@@ -25,7 +25,7 @@ class ProductController extends BaseController
     public function getAllPaginated(Request $request): JsonResponse
     {
         $perPage = $request->get('per_page', 10); // Default to 10
-        $query = Product::orderBy('created_at');
+        $query = Product::orderBy('created_at', 'desc');
         
         if ($request->filled('search')) {
             $search = $request->search;
