@@ -23,7 +23,7 @@ class ProductVariantController extends BaseController
 
     public function getAllPaginated(Request $request): JsonResponse
     {
-        $perPage = $request->input('per_page', 2); // Default to 10 items per page
+        $perPage = $request->input('per_page', 10); // Default to 10 items per page
         $sortField = $request->input('sort', 'title');
         $currentPage = $request->input('current_page', 1);
 
@@ -38,7 +38,7 @@ class ProductVariantController extends BaseController
         $queryParameters = Arr::except($request->query(), ['user_id']);
 
         // Paginate the results
-        $query = $query->paginate(30)->appends($queryParameters); // Adjust the number 10 to set items per page
+        $query = $query->paginate($perPage)->appends($queryParameters); // Adjust the number 10 to set items per page
 
         $items = $query;
         $data = [
@@ -189,15 +189,15 @@ class ProductVariantController extends BaseController
         return response()->json([
             'success' => true,
             'data' => [
-                    'products' => $formattedProducts,
-                    'pagination' => [
-                            'offset' => $offset,
-                            'limit' => $limit,
-                            'has_more' => $hasMore,
-                            'search' => $search,
-                            'category' => $categoryId,
-                        ],
+                'products' => $formattedProducts,
+                'pagination' => [
+                    'offset' => $offset,
+                    'limit' => $limit,
+                    'has_more' => $hasMore,
+                    'search' => $search,
+                    'category' => $categoryId,
                 ],
+            ],
         ]);
     }
 
@@ -268,14 +268,41 @@ class ProductVariantController extends BaseController
     }
 
 
-    function getVariantsByProductId($productId)
+    public function getVariantsByProductId(Request $request)
     {
+
+        $request->validate([
+            'product_id' => 'required|integer',
+            'search' => 'nullable|string',
+            // 'per_page' => 'nullable|integer',
+        ]);
+
+        $perPage = $request->input('per_page', 10);
+
         try {
-            $variants = ProductVariant::where('product_id', $productId)->get();
+            $query = ProductVariant::where('product_id', $request->product_id);
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'LIKE', "%$search%")
+                        ->orWhere('description', 'LIKE', "%$search%");
+                });
+            }
+
+            $variants = $query->paginate($perPage);
 
             return [
                 'success' => true,
-                'data' => $variants
+                'data' => $variants,
+                'pagination' => [
+                    'current_page' => $variants->currentPage(),
+                    'last_page' => $variants->lastPage(),
+                    'per_page' => $variants->perPage(),
+                    'total' => $variants->total(),
+                    'next_page_url' => $variants->nextPageUrl(),
+                    'prev_page_url' => $variants->previousPageUrl(),
+                ],
             ];
         } catch (\Exception $e) {
             return [
@@ -284,4 +311,6 @@ class ProductVariantController extends BaseController
             ];
         }
     }
+
+
 }

@@ -24,6 +24,7 @@ class UsersController extends BaseController
     //get user based on the search 
     public function getUsersBySearch(Request $request)
     {   
+        $perPage = $request->get('per_page', 10); // Default to 10
         $admin = User::find($request->user_id);
         if( $admin->user_type != 99){
             return response()->json([
@@ -68,7 +69,7 @@ class UsersController extends BaseController
         $queryParameters = Arr::except($request->query(), ['user_id']);
 
         // Paginate the results
-        $users = $query->paginate(30)->appends($queryParameters); // Adjust the number 10 to set items per page
+        $users = $query->paginate($perPage)->appends($queryParameters); // Adjust the number 10 to set items per page
 
         return response()->json($users);
     }
