@@ -296,3 +296,5 @@ Route::get('comission/getAllPaginated', [ComissionController::class, 'getAllPagi
 Route::get('comission-details', [ComissionDetailController::class, 'index'])->name('comission_details.index');
 // Route to create a new record
 Route::post('comissions', [ComissionController::class, 'store'])->name('comissions.store');
+
+Route::get('/product/{productId}/variants', [ProductVariantController::class, 'getVariantsByProductId']);
