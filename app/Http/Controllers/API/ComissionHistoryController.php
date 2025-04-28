@@ -25,18 +25,18 @@ class ComissionHistoryController extends Controller
 
 
     public function addCommissionRecord($user_id, $comission_type, $referal_id, $amount, $description)
-    {  
+    {
         $user = User::find($user_id);
         if ($user && !$user->is_active) {
-        
+
             return 'succes the uesr is inactive';
         }
         try {
 
             Log::info("$user_id and the $amount in the add comissionrecord");
 
-            if ($user_id == $referal_id){
-                $comission_type=2;
+            if ($user_id == $referal_id) {
+                $comission_type = 2;
             }
             // Create a new ComissionHistory record
             $comissionHistory = ComissionHistory::create([
@@ -73,42 +73,48 @@ class ComissionHistoryController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function getCommissionHistory(Request $request)
-    {    Log::info(("the user_id in the getcomissionhistory controller "));  
-         $user_id= $request->user_id;
-           
-            try {
-              
-                // Fetch commission history for the given user_id
-                $commissionHistory = ComissionHistory::where('user_id', $user_id)
+    {
+        Log::info("the user_id in the getcomissionhistory controller");
+
+        $user_id = $request->user_id;
+        $perPage = $request->input('per_page', 10); // Default 10 if not provided
+
+        try {
+            // Fetch commission history with pagination
+            $commissionHistory = ComissionHistory::where('user_id', $user_id)
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->paginate($perPage);
 
-                // Check if any records found
-                if ($commissionHistory->isEmpty()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'No commission history found for this user.',
-                    ], 404);
-                }
-
-                // Return success response with the fetched data
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Commission history retrieved successfully.',
-                    'data' => $commissionHistory,
-                ], 200);
-            } catch (\Exception $e) {
-                // Handle exception and return error response
-                Log::error("Error fetching commission history for user ID $user_id: " . $e->getMessage());
-
+            // Check if any records found
+            if ($commissionHistory->isEmpty()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to retrieve commission history.',
-                    'error' => $e->getMessage(),
-                ], 500);
+                    'message' => 'No commission history found for this user.',
+                ], 404);
             }
+
+            // Return success response with pagination info
+            return response()->json([
+                'success' => true,
+                'message' => 'Commission history retrieved successfully.',
+                'data' => $commissionHistory->items(),  // the actual records
+                'total' => $commissionHistory->total(), // total number of records
+                'per_page' => $commissionHistory->perPage(), // number of records per page
+                'current_page' => $commissionHistory->currentPage(), // current page number
+                'last_page' => $commissionHistory->lastPage(), // last page number
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error("Error fetching commission history for user ID $user_id: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve commission history.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-    
+    }
+
+
 
 
     /**
@@ -175,7 +181,8 @@ class ComissionHistoryController extends Controller
         return response()->json(null, 204);
     }
 
-    public function name(Request $request){
+    public function name(Request $request)
+    {
         Log::info(("hello prabhu"));
         return response("hello prabhu");
     }

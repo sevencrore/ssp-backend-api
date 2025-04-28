@@ -105,7 +105,7 @@ class UnitController extends BaseController
     public function getAllPaginated(Request $request): JsonResponse
 {
     $query = Unit::orderBy('created_at', 'desc');
-        
+    $perPage = $request->get('per_page', 10); // Default 10 per page  
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where('title', 'LIKE', "%$search%")
@@ -115,7 +115,7 @@ class UnitController extends BaseController
          $queryParameters = Arr::except($request->query(), ['user_id']);
 
          // Paginate the results
-         $query = $query->paginate(30)->appends($queryParameters); // Adjust the number 10 to set items per page
+         $query = $query->paginate($perPage)->appends($queryParameters); // Adjust the number 10 to set items per page
  
         $items = $query;
 
