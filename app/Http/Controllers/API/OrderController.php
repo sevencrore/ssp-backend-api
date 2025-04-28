@@ -167,6 +167,7 @@ class OrderController extends BaseController
             // Store data into orders table
             $order = Order::create([
                 'user_id' => $validated['user_id'],
+                'address_id' => $validated['address_id'],
                 'order_status' => 0, // Default status
                 'total_amount' => $validated['subtotal'],
                 'discount' => $validated['savings'],
@@ -200,12 +201,12 @@ class OrderController extends BaseController
             ->exists();
 
         if ($hasOrder) {
-            return[
+            return [
                 'success' => true,
                 'message' => 'User has already purchased a product this month.',
             ];
         } else {
-            return[
+            return [
                 'success' => false,
                 'message' => 'No purchases found for this user in the current month.',
             ];
@@ -363,20 +364,21 @@ class OrderController extends BaseController
     public function getAllOrders(Request $request)
     {
         $perPage = $request->input('per_page', 10); // Default to 10 if not specified
-        
+
         $orders = Order::orderBy('created_at', 'desc')->paginate($perPage);
-    
+
         if ($orders->isEmpty()) {
             return response()->json([
                 'message' => 'No orders found.',
             ], 404);
         }
-    
+
         // Transform the orders
         $transformedOrders = $orders->map(function ($order) {
             return [
                 'order_id' => $order->id,
                 'user_id' => $order->user_id,
+                'address_id' => $order->address_id,
                 'order_status' => $order->order_status,
                 'total_amount' => $order->total_amount,
                 'discount' => $order->discount,
@@ -385,7 +387,7 @@ class OrderController extends BaseController
                 'OrderDate' => $order->created_at,
             ];
         });
-    
+
         return response()->json([
             'message' => 'All orders retrieved successfully.',
             'orders' => $transformedOrders,
@@ -446,6 +448,7 @@ class OrderController extends BaseController
             return [
                 'order_id' => $order->id,
                 'user_id' => $order->user_id,
+                'address_id' => $order->address_id,
                 'user_name' => "$userDetail->first_name  $userDetail->last_name",
                 'order_status' => $order->order_status,
                 'total_amount' => $order->total_amount,
@@ -503,6 +506,7 @@ class OrderController extends BaseController
 
             return [
                 'order_id' => $order->id,
+                'address_id' => $order->address_id,
                 'order_status' => $order->order_status,
                 'total_amount' => $order->total_amount,
                 'discount' => $order->discount,
@@ -619,8 +623,8 @@ class OrderController extends BaseController
 
                 // add the vendor comission because he delivered the products 
                 $vendorcomissionController = new VendorCommissionController();
-                $vendorComission = $vendorcomissionController->InsertVendor_Commission_Record($order->vendor_id,$order->id);
-                if(![$vendorComission['success']]){
+                $vendorComission = $vendorcomissionController->InsertVendor_Commission_Record($order->vendor_id, $order->id);
+                if (![$vendorComission['success']]) {
                     throw new \Exception("failed to store the Venodr comission record" . $vendorComission['error']);
                 }
 
@@ -732,7 +736,7 @@ class OrderController extends BaseController
         ]);
     }
 
-    
+
     public function destroy(Order $order)
     {
         $order->delete();
@@ -828,120 +832,119 @@ class OrderController extends BaseController
     //     return response()->json($results);
     // }
 
-   
-   
+
+
     public function getOrderItemsForSupplier(Request $request): JsonResponse
-{
-    Log::info("hello this is getOrderItems by supplier");
+    {
+        Log::info("hello this is getOrderItems by supplier");
 
-    $supplierId = null;
-    $user = User::find($request->user_id);
+        $supplierId = null;
+        $user = User::find($request->user_id);
+        $perPage = $request->get('per_page', 10); // Default to 10
 
-    if (!$user) {
-        return response()->json(['success' => false, 'message' => 'User not found.'], 404);
-    }
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found.'], 404);
+        }
 
-    if ($user->user_type == 99) {
-        // Admin: Do not filter by a specific supplier
-        Log::info("Admin user: Fetching data for all suppliers.");
-        if ($request->has('vendorUser_id')) {
-            $vendorUser_id = $request->query('vendorUser_id');
-            $supplier = Vendor::where('user_id', $vendorUser_id)->first();
-            if ($supplier) {
-                $supplierId = $supplier->id;
+        if ($user->user_type == 99) {
+            // Admin: Do not filter by a specific supplier
+            Log::info("Admin user: Fetching data for all suppliers.");
+            if ($request->has('vendorUser_id')) {
+                $vendorUser_id = $request->query('vendorUser_id');
+                $supplier = Vendor::where('user_id', $vendorUser_id)->first();
+                if ($supplier) {
+                    $supplierId = $supplier->id;
+                }
             }
+        } else {
+            // Supplier user
+            $supplier = Vendor::where('user_id', $request->user_id)->first();
+            if (!$supplier) {
+                return response()->json(['success' => false, 'message' => 'Supplier not found.'], 404);
+            }
+            $supplierId = $supplier->id;
+            Log::info("Supplier user: Fetching data for supplier ID $supplierId.");
         }
-    } else {
-        // Supplier user
-        $supplier = Vendor::where('user_id', $request->user_id)->first();
-        if (!$supplier) {
-            return response()->json(['success' => false, 'message' => 'Supplier not found.'], 404);
+
+        $orderStatusFilter = [0, 1];
+        if ($request->has('order_status')) {
+            $orderStatusFilter = (array) $request->query('order_status');
         }
-        $supplierId = $supplier->id;
-        Log::info("Supplier user: Fetching data for supplier ID $supplierId.");
-    }
 
-    $orderStatusFilter = [0, 1];
-    if ($request->has('order_status')) {
-        $orderStatusFilter = (array) $request->query('order_status');
-    }
+        $categoryFilter = '*';
+        if ($request->has('category_id')) {
+            $categoryFilter = $request->query('category_id');
+        }
 
-    $categoryFilter = '*';
-    if ($request->has('category_id')) {
-        $categoryFilter = $request->query('category_id');
-    }
+        $query = OrderItem::query()
+            ->select([
+                'order_items.product_variant_id',
+                DB::raw('SUM(order_items.quantity) AS total_quantity'),
+                'order_items.product_id AS Product_ID',
+                'order_items.unit_quantity AS Unit_Quantity',
+                'order_items.unit_title AS Unit_title',
+            ])
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->whereIn('orders.order_status', $orderStatusFilter)
+            ->groupBy(
+                'order_items.product_variant_id',
+                'order_items.product_id',
+                'order_items.unit_quantity',
+                'order_items.unit_title'
+            );
 
-    $perPage = $request->get('per_page', 10); // Default to 10
+        if ($supplierId) {
+            $query->where('orders.vendor_id', $supplierId);
+        }
 
-    $query = OrderItem::query()
-        ->select([
-            'order_items.product_variant_id',
-            DB::raw('SUM(order_items.quantity) AS total_quantity'),
-            'order_items.product_id AS Product_ID',
-            'order_items.unit_quantity AS Unit_Quantity',
-            'order_items.unit_title AS Unit_title',
-        ])
-        ->join('orders', 'orders.id', '=', 'order_items.order_id')
-        ->whereIn('orders.order_status', $orderStatusFilter)
-        ->groupBy(
-            'order_items.product_variant_id',
-            'order_items.product_id',
-            'order_items.unit_quantity',
-            'order_items.unit_title'
-        );
+        if ($categoryFilter !== '*') {
+            $query->whereHas('product', function ($productQuery) use ($categoryFilter) {
+                $productQuery->where('category_id', $categoryFilter);
+            });
+        }
 
-    if ($supplierId) {
-        $query->where('orders.vendor_id', $supplierId);
-    }
+        $queryParameters = Arr::except($request->query(), ['user_id']);
 
-    if ($categoryFilter !== '*') {
-        $query->whereHas('product', function ($productQuery) use ($categoryFilter) {
-            $productQuery->where('category_id', $categoryFilter);
+        // Paginate the results
+        $items = $query->paginate($perPage)->appends($queryParameters);
+
+        // Map additional product details
+        $items->getCollection()->transform(function ($item) {
+            $product = Product::find($item->Product_ID);
+            $productVariant = ProductVariant::find($item->product_variant_id);
+            $item->product_title = $product->title ?? null;
+            $item->product_variant_title = $productVariant->title ?? null;
+            $item->image_url = $product->image_url ?? null;
+            $item->category_id = $product->category_id ?? null;
+            return $item;
         });
+
+        $data = [
+            'data' => $items->items(),
+            'pagination' => [
+                'current_page' => $items->currentPage(),
+                'last_page' => $items->lastPage(),
+                'per_page' => $items->perPage(),
+                'total' => $items->total(),
+                'next_page_url' => $items->nextPageUrl(),
+                'prev_page_url' => $items->previousPageUrl()
+            ]
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ], 201);
     }
 
-    $queryParameters = Arr::except($request->query(), ['user_id']);
 
-    // Paginate the results
-    $items = $query->paginate($perPage)->appends($queryParameters);
-
-    // Map additional product details
-    $items->getCollection()->transform(function ($item) {
-        $product = Product::find($item->Product_ID);
-        $productVariant = ProductVariant::find($item->product_variant_id);
-        $item->product_title = $product->title ?? null;
-        $item->product_variant_title = $productVariant->title ?? null;
-        $item->image_url = $product->image_url ?? null;
-        $item->category_id = $product->category_id ?? null;
-        return $item;
-    });
-
-    $data = [
-        'data' => $items->items(),
-        'pagination' => [
-            'current_page' => $items->currentPage(),
-            'last_page' => $items->lastPage(),
-            'per_page' => $items->perPage(),
-            'total' => $items->total(),
-            'next_page_url' => $items->nextPageUrl(),
-            'prev_page_url' => $items->previousPageUrl()
-        ]
-    ];
-
-    return response()->json([
-        'success' => true,
-        'data' => $data
-    ], 201);
-}
-
-   
     public function getOrderDetails(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'order_id' => 'required|exists:orders,id',
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
@@ -949,33 +952,30 @@ class OrderController extends BaseController
                     'errors'  => $validator->errors()
                 ], 422);
             }
-    
+
             $validatedData = $validator->validated();
 
             // get the order record
             $order = Order::find($validatedData['order_id']);
-    
-            // First get the address for that user by user_id
-            $addressController = new AddressController();
-            $address = $addressController->getUserAddressByUserID($order->user_id);
-            if (!$address['success']) {
-                throw new \Exception("Failed to fetch the user address.");
+
+            // get the order shipping address for order
+            $address = Address::findorfail($order->address_id);
+            if(!$address){
+                throw new \Exception("Failed to fetch the Address.");
             }
-    
             // Get the payment details by order_id
             $userPaymentController = new UserPaymentController();
             $payment = $userPaymentController->getPaymentDetailsBY_order_id($validatedData['order_id']);
             if (!$payment['success']) {
                 throw new \Exception("Failed to fetch the payment details.");
             }
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Order Details fetched successfully.',
                 'address' => $address['address'],
                 'payment' => $payment['payment'],
             ], 200);
-    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -991,7 +991,7 @@ class OrderController extends BaseController
             $validator = Validator::make($request->all(), [
                 'order_id' => 'required|exists:orders,id',
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
@@ -999,7 +999,7 @@ class OrderController extends BaseController
                     'errors'  => $validator->errors()
                 ], 422);
             }
-    
+
             $validatedData = $validator->validated();
 
             // get the order record
@@ -1008,24 +1008,23 @@ class OrderController extends BaseController
             //get order items 
             $orderitemcontroller = new OrderItemController();
             $orderItem = $orderitemcontroller->fetchOrderItemsWithProductData($order->id);
-            if(!$orderItem){
-                $orderItem =[];
+            if (!$orderItem) {
+                $orderItem = [];
             }
-            
-            // First get the address for that user by user_id
-            $addressController = new AddressController();
-            $address = $addressController->getUserAddressByUserID($order->user_id);
-            if (!$address['success']) {
-                throw new \Exception("Failed to fetch the user address.");
+
+            // get the order shipping address for order
+            $address = Address::findorfail($order->address_id);
+            if(!$address){
+                throw new \Exception("Failed to fetch the Address.");
             }
-    
+
             // Get the payment details by order_id
             $userPaymentController = new UserPaymentController();
             $payment = $userPaymentController->getPaymentDetailsBY_order_id($validatedData['order_id']);
             if (!$payment['success']) {
                 throw new \Exception("Failed to fetch the payment details.");
             }
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Order Details fetched successfully.',
@@ -1034,7 +1033,6 @@ class OrderController extends BaseController
                 'address' => $address['address'],
                 'payment' => $payment['payment'],
             ], 200);
-    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -1043,5 +1041,4 @@ class OrderController extends BaseController
             ], 500);
         }
     }
-    
 }

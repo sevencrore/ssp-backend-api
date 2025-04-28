@@ -20,6 +20,7 @@ class BuyProductController extends Controller
             'razorpay_order_id' => 'required|string',
             'razorpay_payment_id' => 'required|string',
             'razorpay_signature' => 'required|string',
+            'address_id' => 'required|exists:address,id',
             'subtotal' => 'required|numeric',
             'savings' => 'required|numeric',
             'grand_total' => 'required|numeric',
