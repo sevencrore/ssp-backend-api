@@ -164,6 +164,8 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('product-variant/{product_variant}', [ProductVariantController::class, 'show'])->name('product_variant.show');
   Route::put('product-variant/{id}', [ProductVariantController::class, 'update'])->name('product_variant.update');
   Route::delete('product-variant/{product_variant}', [ProductVariantController::class, 'destroy'])->name('product_variant.destroy');
+  Route::get('/getproductvariants_ByProductId', [ProductVariantController::class, 'getVariantsByProductId']);
+
 
   Route::post('user-referrals', [UserReferralController::class, 'store'])->name('user-referrals.store');
   Route::get('user-referrals', [UserReferralController::class, 'index'])->name('user-referrals.index');
@@ -297,4 +299,3 @@ Route::get('comission-details', [ComissionDetailController::class, 'index'])->na
 // Route to create a new record
 Route::post('comissions', [ComissionController::class, 'store'])->name('comissions.store');
 
-Route::get('/product/{productId}/variants', [ProductVariantController::class, 'getVariantsByProductId']);
