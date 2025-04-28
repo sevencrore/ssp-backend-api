@@ -104,7 +104,9 @@ class CategoryController extends BaseController
      * )
      */
     public function getAllPaginated(Request $request): JsonResponse
-    { $query = Category::orderBy('created_at', 'desc');
+    { 
+        $perPage = $request->get('per_page', 10); // Default to 10
+        $query = Category::orderBy('created_at', 'desc');
         
         if ($request->filled('search')) {
             $search = $request->search;
@@ -115,7 +117,7 @@ class CategoryController extends BaseController
          $queryParameters = Arr::except($request->query(), ['user_id']);
 
          // Paginate the results
-         $query = $query->paginate(30)->appends($queryParameters); // Adjust the number 10 to set items per page
+         $query = $query->paginate($perPage)->appends($queryParameters); // Adjust the number 10 to set items per page
  
         $items = $query;
     

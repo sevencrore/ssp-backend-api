@@ -28,18 +28,18 @@ class ProductVariantController extends BaseController
         $currentPage = $request->input('current_page', 1);
 
         $query = ProductVariant::orderBy('created_at', 'desc');
-        
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where('title', 'LIKE', "%$search%")
-                  ->orWhere('description', 'LIKE', "%$search%");
-            }
-         // Remove a specific query parameter, e.g., 'user_id'
-         $queryParameters = Arr::except($request->query(), ['user_id']);
+                ->orWhere('description', 'LIKE', "%$search%");
+        }
+        // Remove a specific query parameter, e.g., 'user_id'
+        $queryParameters = Arr::except($request->query(), ['user_id']);
 
-         // Paginate the results
-         $query = $query->paginate(30)->appends($queryParameters); // Adjust the number 10 to set items per page
- 
+        // Paginate the results
+        $query = $query->paginate(30)->appends($queryParameters); // Adjust the number 10 to set items per page
+
         $items = $query;
         $data = [
             'data' => ProductVariantResource::collection($items->items()),
@@ -52,16 +52,16 @@ class ProductVariantController extends BaseController
                 'prev_page_url' => $items->previousPageUrl(),
             ],
         ];
-        
+
         return $this->sendResponse($data, 'Paginated product variants retrieved successfully.');
     }
 
 
- public function store(Request $request): JsonResponse
- {
-    try {
+    public function store(Request $request): JsonResponse
+    {
+        try {
             $validatedData = $request->validate([
-                'product_id' => 'required|string', 
+                'product_id' => 'required|string',
                 //  'category_id' => 'required|string',
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
@@ -72,39 +72,39 @@ class ProductVariantController extends BaseController
                 'unit_quantity' => 'required|numeric',
                 'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
-        
+
             if ($request->hasFile('image')) {
                 $path = $request->file('image')->store('images', 'public');
                 $validatedData['image_url'] = $path;
             }
-        
+
             $productVariant = ProductVariant::create($validatedData);
-        
+
             return $this->sendResponse(new ProductVariantResource($productVariant), 'Product variant created successfully.', 201);
-     }catch (\Exception $e) {
-        // Handle the exception
-        return response()->json([
-            'success' => false,
-            'message' => 'Error: ' . $e->getMessage()
-        ], 500);
+        } catch (\Exception $e) {
+            // Handle the exception
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+
     }
 
-}
 
 
-    
     public function show($id): JsonResponse
     {
-        $productVariant = ProductVariant::join('products',  'product_variants.product_id', '=', 'products.id')
-        ->where('product_variants.id', $id)
-        ->get(['product_variants.*',  'products.title as product_title', ]);
-        
+        $productVariant = ProductVariant::join('products', 'product_variants.product_id', '=', 'products.id')
+            ->where('product_variants.id', $id)
+            ->get(['product_variants.*', 'products.title as product_title',]);
+
         // $productVariant = ProductVariant::join('products',  'product_variants.product_id', '=', 'products.id')
         // ->join('category', 'product_variants.category_id', '=', 'category.id')
         // ->where('product_variants.product_id', $id)
         // ->get(['product_variants.*',  'products.title as product_title',  'category.title as category_title']);
-        
-        
+
+
 
         return response()->json([
             'success' => true,
@@ -112,30 +112,30 @@ class ProductVariantController extends BaseController
         ], 201);
     }
 
-    
-public function update(Request $request, $id): JsonResponse
-{
-    $productVariant = ProductVariant::findOrFail($id);
 
-    $validatedData = $request->validate([
-        'product_id' => 'sometimes|required|numeric',
-        'category_id' => 'sometimes|required|numeric',
-        'title' => 'sometimes|required|string|max:255',
-        'description' => 'sometimes|required|string',
-        'image_url' => 'sometimes|required|string',
-        'price' => 'sometimes|required|numeric',
-        'discount' => 'nullable|numeric',
-        'unit_id' => 'sometimes|required|integer', 
-        'unit_quantity' => 'sometimes|required|numeric', 
-    ]);
+    public function update(Request $request, $id): JsonResponse
+    {
+        $productVariant = ProductVariant::findOrFail($id);
 
-    $productVariant->update($validatedData);
-    return response()->json([
-        'success' => true,
-        'data' => $productVariant
-    ], 201);
+        $validatedData = $request->validate([
+            'product_id' => 'sometimes|required|numeric',
+            'category_id' => 'sometimes|required|numeric',
+            'title' => 'sometimes|required|string|max:255',
+            'description' => 'sometimes|required|string',
+            'image_url' => 'sometimes|required|string',
+            'price' => 'sometimes|required|numeric',
+            'discount' => 'nullable|numeric',
+            'unit_id' => 'sometimes|required|integer',
+            'unit_quantity' => 'sometimes|required|numeric',
+        ]);
 
-}
+        $productVariant->update($validatedData);
+        return response()->json([
+            'success' => true,
+            'data' => $productVariant
+        ], 201);
+
+    }
     public function getProductsWithVariants(Request $request): JsonResponse
     {
         // Retrieve query parameters
@@ -149,13 +149,12 @@ public function update(Request $request, $id): JsonResponse
 
         if ($search) {
             $query->where('title', 'LIKE', "%$search%")
-            ->orWhere('description', 'LIKE', "%$search%");
-        }
-        else { if($categoryId)
-                { 
-                    $query->where('category_id', $categoryId);
-                }
+                ->orWhere('description', 'LIKE', "%$search%");
+        } else {
+            if ($categoryId) {
+                $query->where('category_id', $categoryId);
             }
+        }
 
         // Apply limit and offset for "load more" functionality
         $products = $query->skip($offset)->take($limit)->get();
@@ -190,15 +189,15 @@ public function update(Request $request, $id): JsonResponse
         return response()->json([
             'success' => true,
             'data' => [
-                'products' => $formattedProducts,
-                'pagination' => [
-                    'offset' => $offset,
-                    'limit' => $limit,
-                    'has_more' => $hasMore,
-                    'search'=> $search,
-                    'category' =>  $categoryId,
+                    'products' => $formattedProducts,
+                    'pagination' => [
+                            'offset' => $offset,
+                            'limit' => $limit,
+                            'has_more' => $hasMore,
+                            'search' => $search,
+                            'category' => $categoryId,
+                        ],
                 ],
-            ],
         ]);
     }
 
@@ -266,5 +265,23 @@ public function update(Request $request, $id): JsonResponse
         $trashedProductVariants = ProductVariant::onlyTrashed()->whereIn('id', $ids)->get(); // Retrieves only specified soft-deleted records
 
         return $this->sendResponse(ProductVariantResource::collection($trashedProductVariants), 'Trashed product variants retrieved successfully.');
+    }
+
+
+    function getVariantsByProductId($productId)
+    {
+        try {
+            $variants = ProductVariant::where('product_id', $productId)->get();
+
+            return [
+                'success' => true,
+                'data' => $variants
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
     }
 }
