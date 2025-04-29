@@ -116,10 +116,10 @@ class VendorController extends Controller
             $count = Vendor::count();
             Log::info('Fetched total vendor count successfully.', ['count' => $count]);
 
-            return response()->json([
+            return[
                 'success' => true,
                 'count' => $count,
-            ]);
+            ];
         } catch (\Exception $e) {
             return[
                 'success' => false,

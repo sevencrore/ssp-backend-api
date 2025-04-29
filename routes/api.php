@@ -253,7 +253,7 @@ Route::middleware('auth:sanctum')->group(function () {
   // to get the suplier wise orders
   Route::get('orders/supplier', [OrderController::class, 'getAllsupplierOrders'])->name('orders.getAllsupplierOrders');
   Route::Post('orders/supplier/delivery-otp/{order}', [OrderController::class, 'DeliveryOTP'])->name('orders.DeliveryOTP');
-  
+
 
   //  Admin Routes 
   Route::get('orders/admin', [OrderController::class, 'getAllOrders'])->name('orders.getAllOrders');
@@ -265,6 +265,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/admin/getOrderDetails', [OrderController::class, 'getOrderDetails']);
   Route::get('/admin/getSpecificOrderDetails', [OrderController::class, 'getSpecificOrderDetails']);
   Route::get('/admin/getspecific/VendorComission', [VendorCommissionController::class, 'getVendorCommission_Admin']);
+  Route::get('admin/dashboard-count', [AdminController::class, 'getDashboard_count']);
 
   Route::get('/config-settings', [ConfigSettingController::class, 'index']);
   Route::get('/config-settings/{id}', [ConfigSettingController::class, 'show']);
