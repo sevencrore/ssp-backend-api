@@ -295,6 +295,10 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('vendor-commissions/status-update', [VendorCommissionController::class, 'update_status']);
 
 
+  Route::get('get-vendor-transactions', [VendorTransactionsController::class, 'getVendorTransactions_WithPagination']);
+  Route::post('vendor-commissions/status-update', [VendorCommissionController::class, 'update_status']);
+
+
 });
 
 
