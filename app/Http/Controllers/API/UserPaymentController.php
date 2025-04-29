@@ -6,17 +6,19 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UserPayment;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 use Exception;
 
 class UserPaymentController extends Controller
 {
-    public function saveUserPayment(array $paymentArray){
+    public function saveUserPayment(array $paymentArray)
+    {
         // Store the payment data in the database
-         $savepayment = UserPayment::create($paymentArray);
-         if(!$savepayment){
+        $savepayment = UserPayment::create($paymentArray);
+        if (!$savepayment) {
             return false;
-         }
-         return $savepayment;
+        }
+        return $savepayment;
     }
 
     public function getAdminproduct_transactions(Request $request)
@@ -51,7 +53,7 @@ class UserPaymentController extends Controller
             }
 
             // Retrieve payouts with pagination
-            $transactions = $query->paginate($perPage)->appends([    
+            $transactions = $query->paginate($perPage)->appends([
                 'per_page' => $perPage
             ]);
 
@@ -94,20 +96,38 @@ class UserPaymentController extends Controller
     {
         try {
             $payment = UserPayment::where('order_id', $order_id)
-                                  ->where('status', 1) // 1 means ordered created  2 means refunded
-                                  ->first(); // Assuming you want a single result
-    
+                ->where('status', 1) // 1 means ordered created  2 means refunded
+                ->first(); // Assuming you want a single result
+
             return [
                 'success' => true,
                 'payment' => $payment,
             ];
-        } catch (\Exception $e) { 
+        } catch (\Exception $e) {
             return [
                 'success' => false,
                 'message' => 'Failed to fetch payment details.',
             ];
         }
     }
-    
 
+    function TodayUserPayments()
+    {
+        try {
+            $totalAmount = UserPayment::whereDate('created_at', Carbon::today())
+                ->where('status', 1)
+                ->sum('amount');
+
+            return [
+                'success' => true,
+                'total_amount' => $totalAmount
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Something went wrong. Please try again later.',
+                'error' => $e->getMessage() // You can hide this in production
+            ];
+        }
+    }
 }
