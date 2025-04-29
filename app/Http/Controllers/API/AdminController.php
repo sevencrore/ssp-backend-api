@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\VendorController;
+use App\Models\Order;
 use App\Models\User;
+use App\Models\Vendor;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\UserDetails;
@@ -143,4 +147,58 @@ class AdminController extends BaseController
             ],
         ]);
     }
+
+    public function getDashboard_count()
+{
+    try {
+        // get newly joined users count 
+        $userDetailsController = new UserDetailsController();
+        $new_users = $userDetailsController->today_new_users_count();
+        if(!$new_users['success']){
+            throw new \Exception("failed to fetch the new users" . $new_users['error']);
+        }
+        // get total users count 
+       $total_user_count = $userDetailsController ->total_users_count();
+       if(!$total_user_count['success']){
+            throw new \Exception("failed to fetch the total users count" . $total_user_count['error']);
+       }
+        // get total vendotrs count 
+       $vendorcontroller = new VendorController();
+       $total_vendor_count = $vendorcontroller->total_vendors_count();
+       if(!$total_vendor_count['success']){
+            throw new \Exception("failed to fetch total vendor count" . $total_vendor_count['error']);
+       }
+
+        // get today orders count 
+        $ordercontroller = new OrderController();
+        $today_order_count = $ordercontroller->today_orders_count();
+        if(!$today_order_count['success']){
+            throw new \Exception("Failed to fetch Today's Orders". $today_order_count['success']);      
+        }
+
+        // get today total amount
+        $userpaymentcontroller = new UserPaymentController();
+        $today_user_payment = $userpaymentcontroller->TodayUserPayments();
+        if(!$today_user_payment['success']){
+            throw new \Exception("Failed to fetch UserPayment". $today_user_payment['error']);
+            
+        }
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'new_users_count' => $new_users['count'],
+                'total_users_count'   => $total_user_count['count'],
+                'total_vendors_count' => $total_vendor_count['count'],
+                'today_orders_count'  => $today_order_count['count'],
+                'today_user_payment'  => $today_user_payment['total_amount'], 
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to fetch dashboard counts.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
 }

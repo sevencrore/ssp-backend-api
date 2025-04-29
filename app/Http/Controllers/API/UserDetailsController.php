@@ -245,10 +245,10 @@ class UserDetailsController extends Controller
         try {
             $count = UserDetails::count();
             
-            return response()->json([
+            return [
                 'success' => true,
                 'count' => $count,
-            ]);
+            ];
         } catch (\Exception $e) {
             return[
                 'success' => false,
