@@ -278,7 +278,7 @@ class OrderController extends BaseController
                     'unit_title' => $cartItem['unit_title'],
                     'price' => $cartItem['price'],
                     'discount' => $cartItem['discount'],
-                    'total_amount'  => $cartItem['quantity'] * $cartItem['price'],
+                    'total_amount' => $cartItem['quantity'] * $cartItem['price'],
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -457,8 +457,8 @@ class OrderController extends BaseController
                 'tracking_number' => $order->tracking_number,
                 'OrderDate' => $order->created_at,
                 'phone_1' => $userDetail->phone_1,
-                'phone_2' =>  $address ? $address->phone_number : null,
-                'address' =>  $address ? $address->address : null,
+                'phone_2' => $address ? $address->phone_number : null,
+                'address' => $address ? $address->address : null,
             ];
         });
 
@@ -680,7 +680,7 @@ class OrderController extends BaseController
                 'message' => 'Already Delivered!!!',
             ], 401);
         }
-        if ($order->delivery_otp !=  $validated['delivery_otp']) {
+        if ($order->delivery_otp != $validated['delivery_otp']) {
             // $otp = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
             // $order->delivery_otp = $otp;
             // $order->save();
@@ -949,7 +949,7 @@ class OrderController extends BaseController
                 return response()->json([
                     'success' => false,
                     'message' => 'Validation failed',
-                    'errors'  => $validator->errors()
+                    'errors' => $validator->errors()
                 ], 422);
             }
 
@@ -960,7 +960,7 @@ class OrderController extends BaseController
 
             // get the order shipping address for order
             $address = Address::findorfail($order->address_id);
-            if(!$address){
+            if (!$address) {
                 throw new \Exception("Failed to fetch the Address.");
             }
             // Get the payment details by order_id
@@ -973,7 +973,7 @@ class OrderController extends BaseController
             return response()->json([
                 'success' => true,
                 'message' => 'Order Details fetched successfully.',
-                'address' => $address['address'],
+                'address' => $address,
                 'payment' => $payment['payment'],
             ], 200);
         } catch (\Exception $e) {
@@ -996,7 +996,7 @@ class OrderController extends BaseController
                 return response()->json([
                     'success' => false,
                     'message' => 'Validation failed',
-                    'errors'  => $validator->errors()
+                    'errors' => $validator->errors()
                 ], 422);
             }
 
@@ -1014,7 +1014,7 @@ class OrderController extends BaseController
 
             // get the order shipping address for order
             $address = Address::findorfail($order->address_id);
-            if(!$address){
+            if (!$address) {
                 throw new \Exception("Failed to fetch the Address.");
             }
 
@@ -1030,7 +1030,7 @@ class OrderController extends BaseController
                 'message' => 'Order Details fetched successfully.',
                 'order' => $order,
                 'order_items' => $orderItem,
-                'address' => $address['address'],
+                'address' => $address,
                 'payment' => $payment['payment'],
             ], 200);
         } catch (\Exception $e) {
@@ -1041,4 +1041,23 @@ class OrderController extends BaseController
             ], 500);
         }
     }
+
+
+    public function today_orders_count()
+    {
+        $count = Order::whereDate('created_at', Carbon::today())->count();
+    
+        if ($count !== null) {
+            return [
+                'success' => true,
+                'count' => $count,
+            ];
+        } else {
+            return[
+                'success' => false,
+                'message' => 'Failed to fetch today\'s orders.',
+            ];
+        }
+    }
+    
 }

@@ -1,13 +1,13 @@
 <?php
-  
-  use App\Http\Controllers\API\BrandController;
+
+use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\CityController;
-  use App\Http\Controllers\API\EMailController;
+use App\Http\Controllers\API\EMailController;
 use App\Http\Controllers\API\VendorCommissionController;
 use App\Http\Controllers\API\VendorTransactionsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-  
+
 use App\Http\Controllers\API\RegisterController;
 use App\Http\Controllers\API\BusinessController;
 use App\Http\Controllers\API\ProductController;
@@ -38,7 +38,7 @@ use App\Http\Controllers\API\RazorpayPaymentController;
 use App\Http\Controllers\API\ResetPasswordEmailController;
 use App\Http\Controllers\API\UserPaymentController;
 
-Route::controller(RegisterController::class)->group(function() {
+Route::controller(RegisterController::class)->group(function () {
   Route::post('register', 'register');
   Route::post('register-referral', 'registerWthReferral'); // Correct the method name here
   Route::post('register-vendor', 'registerVendor'); // Correct the method name here
@@ -60,23 +60,23 @@ Route::get('images', [ImageController::class, 'index'])->name('image.index');
 
 
 
-         
-Route::middleware('auth:sanctum')->group( function () {
+
+Route::middleware('auth:sanctum')->group(function () {
   Route::post('logout', [RegisterController::class, 'logout']);
 
 
   Route::middleware(['role:admin'])->group(function () {
-  Route::get('business', [BusinessController::class, 'index'])->name('business.index');
-  Route::get('business/create', [BusinessController::class, 'create'])->name('business.create');
-  Route::post('business', [BusinessController::class, 'store'])->name('business.store');
-  Route::get('business/{business}', [BusinessController::class, 'show'])->name('business.show');
-  // Route::get('business/{business}/edit', [BusinessController::class, 'edit'])->name('business.edit');
-  // Route::post('business/{business}/edit', [BusinessController::class, 'edit'])->name('business.edit');
-  Route::put('business/{business}', [BusinessController::class, 'update'])->name('business.update');
-  Route::post('business/delete-multiple', [BusinessController::class, 'deleteMultiple']);
-  Route::post('business/restore-multiple', [BusinessController::class, 'restoreMultiple']);
-  Route::post('business/force-delete-multiple', [BusinessController::class, 'forceDeleteMultiple']);
-  Route::post('business/trashed-multiple', [BusinessController::class, 'trashedMultiple']);
+    Route::get('business', [BusinessController::class, 'index'])->name('business.index');
+    Route::get('business/create', [BusinessController::class, 'create'])->name('business.create');
+    Route::post('business', [BusinessController::class, 'store'])->name('business.store');
+    Route::get('business/{business}', [BusinessController::class, 'show'])->name('business.show');
+    // Route::get('business/{business}/edit', [BusinessController::class, 'edit'])->name('business.edit');
+    // Route::post('business/{business}/edit', [BusinessController::class, 'edit'])->name('business.edit');
+    Route::put('business/{business}', [BusinessController::class, 'update'])->name('business.update');
+    Route::post('business/delete-multiple', [BusinessController::class, 'deleteMultiple']);
+    Route::post('business/restore-multiple', [BusinessController::class, 'restoreMultiple']);
+    Route::post('business/force-delete-multiple', [BusinessController::class, 'forceDeleteMultiple']);
+    Route::post('business/trashed-multiple', [BusinessController::class, 'trashedMultiple']);
   });
 
 
@@ -105,7 +105,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('unit/{unit}', [UnitController::class, 'show'])->name('unit.show');
   Route::put('unit/{id}', [UnitController::class, 'update'])->name('unit.update');
   Route::delete('unit/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy');
-// });
+  // });
 
   Route::get('city', [CityController::class, 'index'])->name('city.index');
   Route::post('city', [CityController::class, 'store'])->name('city.store');
@@ -113,7 +113,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('city/{city}', [CityController::class, 'show'])->name('city.show');
   Route::put('city/{id}', action: [CityController::class, 'update'])->name('city.update');
   Route::delete('city/{city}', [CityController::class, 'destroy'])->name('city.destroy');
-  
+
   Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
   Route::post('orders/create', [OrderController::class, 'storeOrder'])->name('orders.storeOrder');
   Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
@@ -150,12 +150,14 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::post('cart/user/update-cartdata', [CartController::class, 'updateCartItems'])->name('cart.updateCartItems');
   Route::delete('cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
   Route::get('cart/user/{userId}', [CartController::class, 'getCartByUserId'])->name('cart.getCartByUserId');
-  
+
   Route::get('user-details', [UserDetailsController::class, 'index'])->name('user-details.index');
   Route::post('user-details', [UserDetailsController::class, 'store'])->name('user-details.store');
   Route::get('user-details/{userDetail}', [UserDetailsController::class, 'show'])->name('user-details.show');
   Route::put('user-details/{userDetail}', [UserDetailsController::class, 'update'])->name('user-details.update');
   Route::delete('user-details/{userDetail}', [UserDetailsController::class, 'destroy'])->name('user-details.destroy');
+  
+
 
   Route::get('product-variant', [ProductVariantController::class, 'index'])->name('product_variant.index');
   Route::post('product-variant', [ProductVariantController::class, 'store'])->name('product_variant.store');
@@ -206,7 +208,7 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::post('comission-details', [ComissionDetailController::class, 'store'])->name('comission_details.store');
   Route::put('comission-details/{id}', [ComissionDetailController::class, 'update'])->name('comission_details.update');
   Route::delete('comission-details/{id}', [ComissionDetailController::class, 'destroy'])->name('comission_details.destroy');
-  
+
   Route::get('comission-history/{comissionHistory}', [ComissionHistoryController::class, 'show'])->name('comission_history.show');
   Route::get('comission-history', [ComissionHistoryController::class, 'index'])->name('comission_history.index');
   Route::get('comission-history/user/{user_id}', [ComissionHistoryController::class, 'getCommissionHistory'])->name('comission_history.getCommissionHistory');
@@ -223,31 +225,35 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::delete('customer-vendors/{id}', [CustomerVendorController::class, 'destroy']);
 
   // Route::get('/users', [UsersController::class, 'index'])->name('users.index');
-   Route::get('/get-users', [UsersController::class, 'getUsersBySearch'])->name('users.getUsersBySearch');
-   Route::get('/users/details', [UsersController::class, 'show'])->name('users.show');
+  Route::get('/get-users', [UsersController::class, 'getUsersBySearch'])->name('users.getUsersBySearch');
+  Route::get('/users/details', [UsersController::class, 'show'])->name('users.show');
   // Route::post('/users', [UsersController::class, 'store'])->name('users.store');
-   Route::put('/users/edit', [UsersController::class, 'update'])->name('users.update');
-   Route::put('/users/change-password', [UsersController::class, 'updatePasswordWithOldPassword'])->name('users.updatePasswordWithOldPassword');
+  Route::put('/users/edit', [UsersController::class, 'update'])->name('users.update');
+  Route::put('/users/change-password', [UsersController::class, 'updatePasswordWithOldPassword'])->name('users.updatePasswordWithOldPassword');
 
   // Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
 
   // Change user state
   //Route::put('/users/change-state/{user_id}/{state}', [UsersController::class, 'changeUserState'])->name('users.changeState');
 
-    // Get users with cold_state = 1 and filters
-    Route::get('users/cold-state', [UsersController::class, 'getAllColdStateUsers'])->name('users.getAllColdStateUsers');
-    // Route::get('/users/cold-state', [UsersController::class, 'getAllColdStateUsers']);
-    Route::get('vendors', [VendorController::class, 'index']); // Get all vendors
-    Route::get('admin/vendors', [VendorController::class, 'getAllPaginated']); // Get all vendors
-    Route::post('vendors', [VendorController::class, 'store']); // Create a new vendor
-    Route::get('vendors/{id}', [VendorController::class, 'show']); // Get a specific vendor by ID
-    Route::put('vendors/{id}', [VendorController::class, 'update']); // Update a specific vendor by ID
-    Route::delete('vendors/{id}', [VendorController::class, 'destroy']); // Delete a specific vendor by ID
+  // Get users with cold_state = 1 and filters
+  Route::get('users/cold-state', [UsersController::class, 'getAllColdStateUsers'])->name('users.getAllColdStateUsers');
+  // Route::get('/users/cold-state', [UsersController::class, 'getAllColdStateUsers']);
+  Route::get('vendors', [VendorController::class, 'index']); // Get all vendors
+  Route::get('admin/vendors', [VendorController::class, 'getAllPaginated']); // Get all vendors
+  Route::post('vendors', [VendorController::class, 'store']); // Create a new vendor
+  Route::get('vendors/{id}', [VendorController::class, 'show']); // Get a specific vendor by ID
+  Route::put('vendors/{id}', [VendorController::class, 'update']); // Update a specific vendor by ID
+  Route::delete('vendors/{id}', [VendorController::class, 'destroy']); // Delete a specific vendor by ID
 
-// supplier routes 
+
+
+
+  // supplier routes 
   // to get the suplier wise orders
   Route::get('orders/supplier', [OrderController::class, 'getAllsupplierOrders'])->name('orders.getAllsupplierOrders');
   Route::Post('orders/supplier/delivery-otp/{order}', [OrderController::class, 'DeliveryOTP'])->name('orders.DeliveryOTP');
+  
 
   //  Admin Routes 
   Route::get('orders/admin', [OrderController::class, 'getAllOrders'])->name('orders.getAllOrders');
@@ -260,9 +266,9 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::get('/admin/getSpecificOrderDetails', [OrderController::class, 'getSpecificOrderDetails']);
   Route::get('/admin/getspecific/VendorComission', [VendorCommissionController::class, 'getVendorCommission_Admin']);
 
-  Route::get('/config-settings', [ConfigSettingController::class, 'index']); 
-  Route::get('/config-settings/{id}', [ConfigSettingController::class, 'show']); 
-  Route::post('/config-settings', [ConfigSettingController::class, 'store']); 
+  Route::get('/config-settings', [ConfigSettingController::class, 'index']);
+  Route::get('/config-settings/{id}', [ConfigSettingController::class, 'show']);
+  Route::post('/config-settings', [ConfigSettingController::class, 'store']);
   Route::put('/config-settings/{id}', [ConfigSettingController::class, 'update']);
 
   Route::get('slideimages', [SlideImageController::class, 'index'])->name('slideimages.index');
@@ -272,22 +278,22 @@ Route::middleware('auth:sanctum')->group( function () {
   Route::post('slideimages/{slideImage}', [SlideImageController::class, 'update'])->name('slideimages.update');
   Route::delete('slideimages/{slideImage}', [SlideImageController::class, 'destroy'])->name('slideimages.destroy');
 
-   // razorpay routes
-   Route::post('payment/create-order', [RazorpayPaymentController::class, 'createOrder'])->name('razorpay.createOrder');
-   Route::post('user/BuyProduct', [BuyProductController::class, 'BuyProduct'])->name('buyproduct.BuyProduct');
-   Route::get('user/get-directReferals', [UserDetailsController::class, 'getDirectReferralsDetails'])->name('userDetails.getDirectReferralsDetails');
-   Route::get('user/getUser_minimum_order', [UserDetailsController::class, 'getUser_minimum_order'])->name('userDetails.getUser_minimum_order');
+  // razorpay routes
+  Route::post('payment/create-order', [RazorpayPaymentController::class, 'createOrder'])->name('razorpay.createOrder');
+  Route::post('user/BuyProduct', [BuyProductController::class, 'BuyProduct'])->name('buyproduct.BuyProduct');
+  Route::get('user/get-directReferals', [UserDetailsController::class, 'getDirectReferralsDetails'])->name('userDetails.getDirectReferralsDetails');
+  Route::get('user/getUser_minimum_order', [UserDetailsController::class, 'getUser_minimum_order'])->name('userDetails.getUser_minimum_order');
 
-   Route::get('getforntpage-Images', [SlideImageController::class, 'getforntpageImages'])->name('slideimages.getforntpageImages');
+  Route::get('getforntpage-Images', [SlideImageController::class, 'getforntpageImages'])->name('slideimages.getforntpageImages');
 
-   Route::post('vendor-transactions', [VendorTransactionsController::class, 'store']);
+  Route::post('vendor-transactions', [VendorTransactionsController::class, 'store']);
 
-   Route::get('vendor-unpaid-commissions', [VendorCommissionController::class, 'getUnpaid_VendorCommission_list']);
-   Route::get('vendor-commissions/user', [VendorCommissionController::class, 'getVendorCommission_WithPagination']);
-   Route::post('vendor-commissions/status-update', [VendorCommissionController::class, 'update_status']);
+  Route::get('vendor-unpaid-commissions', [VendorCommissionController::class, 'getUnpaid_VendorCommission_list']);
+  Route::get('vendor-commissions/user', [VendorCommissionController::class, 'getVendorCommission_WithPagination']);
+  Route::post('vendor-commissions/status-update', [VendorCommissionController::class, 'update_status']);
 
 
-  });
+});
 
 
 // Route to get all records

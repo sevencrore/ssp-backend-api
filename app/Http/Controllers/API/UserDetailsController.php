@@ -9,6 +9,7 @@ use App\Models\Comission;
 use App\Models\ConfigSetting;
 use App\Models\UserDetails;
 use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
 
 
 class UserDetailsController extends Controller
@@ -219,4 +220,42 @@ class UserDetailsController extends Controller
             ],
         ]);
     }
+
+
+    public function today_new_users_count()
+    {
+        try {
+            $count = UserDetails::whereDate('created_at', Carbon::today())->count();
+
+            return [
+                'success' => true,
+                'count' => $count,
+            ];
+        } catch (\Exception $e) {
+            return[
+                'success' => false,
+                'message' => 'Failed to fetch today\'s users.',
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    public function total_users_count()
+    {
+        try {
+            $count = UserDetails::count();
+            
+            return response()->json([
+                'success' => true,
+                'count' => $count,
+            ]);
+        } catch (\Exception $e) {
+            return[
+                'success' => false,
+                'message' => 'Failed to fetch total users count.',
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
 }

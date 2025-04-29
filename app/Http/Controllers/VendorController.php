@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+// use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 
 class VendorController extends Controller
@@ -107,4 +109,24 @@ class VendorController extends Controller
             ], 500);
         }
     }
+
+    public function total_vendors_count()
+    {
+        try {
+            $count = Vendor::count();
+            Log::info('Fetched total vendor count successfully.', ['count' => $count]);
+
+            return response()->json([
+                'success' => true,
+                'count' => $count,
+            ]);
+        } catch (\Exception $e) {
+            return[
+                'success' => false,
+                'message' => 'Failed to fetch total vendors.',
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
 }
