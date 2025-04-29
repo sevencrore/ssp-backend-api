@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 // use App\Http\Controllers\Controller;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\Address;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserDetails;
@@ -78,6 +79,40 @@ class UsersController extends BaseController
 
         return response()->json($users);
     }
+
+    // get single user details by user-id
+    public function getUserDetailsByUserId(Request $request)
+    {
+        try {
+            $admin = User::find($request->user_id);
+            if (!$admin || $admin->user_type != 99) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized access',
+                ], 403);
+            }
+    
+            $request->validate([
+                'userId' => 'required|integer'
+            ]);
+    
+            $userDetails = UserDetails::where('user_id', $request->userId)->first();
+            $address = Address::where('user_id', $request->userId)->first();
+    
+            return response()->json([
+                'success' => true,
+                'userdetails' => $userDetails,
+                'address' => $address,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    
 
 
     public function show(Request $request)

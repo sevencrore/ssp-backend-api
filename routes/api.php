@@ -226,6 +226,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
   // Route::get('/users', [UsersController::class, 'index'])->name('users.index');
   Route::get('/get-users', [UsersController::class, 'getUsersBySearch'])->name('users.getUsersBySearch');
+  Route::get('/get-user/userId', [UsersController::class, 'getUserDetailsByUserId'])->name('users.getUserDetailsByUserId');
   Route::get('/users/details', [UsersController::class, 'show'])->name('users.show');
   // Route::post('/users', [UsersController::class, 'store'])->name('users.store');
   Route::put('/users/edit', [UsersController::class, 'update'])->name('users.update');
