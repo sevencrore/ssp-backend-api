@@ -57,7 +57,12 @@ class UsersController extends BaseController
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where('user_details.pincode', 'LIKE', "%$search%")
-                  ->orWhere('address.address', 'LIKE', "%$search%");
+                  ->orWhere('address.address', 'LIKE', "%$search%")
+                  ->orWhere('address.district_name', 'LIKE', "%$search%")
+                  ->orWhere('address.city_name', 'LIKE', "%$search%")
+                  ->orWhere('user_details.first_name', 'LIKE', "%$search%")
+                  ->orWhere('user_details.last_name', 'LIKE', "%$search%")
+                  ->orWhere('user_details.pincode', 'LIKE', "%$search%");
         }
 
         if ($request->filled('refernull')) {
