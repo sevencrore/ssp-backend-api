@@ -87,7 +87,7 @@ class ConfigSettingController extends BaseController
             'minimum_basepay_amount' => 'nullable|numeric',
             'admin_comission_percentage' => 'nullable|numeric',
             'tds_charges_percentage' => 'nullable|numeric',
-            'slideImage_displayCount' => 'required|integer|min:5',
+            'slideImage_displayCount' => 'required|integer|min:1',
         ]);
 
         $setting->update($request->all());
