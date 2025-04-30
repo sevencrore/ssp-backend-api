@@ -10,6 +10,7 @@ use App\Models\Vendor;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\ConfigSetting;
 use App\Models\UserDetails;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -101,10 +102,10 @@ class AdminController extends BaseController
 
         // Step 1: Count how many users each user has referred
         $topReferrers = UserDetails::whereNotNull('referred_by')
-        ->groupBy('referred_by')
-        ->selectRaw('referred_by, COUNT(*) as referral_count')
-        ->orderByDesc('referral_count');
-        
+            ->groupBy('referred_by')
+            ->selectRaw('referred_by, COUNT(*) as referral_count')
+            ->orderByDesc('referral_count');
+
 
         // Step 2: Paginate the top referrers
         $paginated = $topReferrers->paginate($perPage);
@@ -148,57 +149,94 @@ class AdminController extends BaseController
         ]);
     }
 
-    public function getDashboard_count()
-{
-    try {
-        // get newly joined users count 
-        $userDetailsController = new UserDetailsController();
-        $new_users = $userDetailsController->today_new_users_count();
-        if(!$new_users['success']){
-            throw new \Exception("failed to fetch the new users" . $new_users['error']);
-        }
-        // get total users count 
-       $total_user_count = $userDetailsController ->total_users_count();
-       if(!$total_user_count['success']){
-            throw new \Exception("failed to fetch the total users count" . $total_user_count['error']);
-       }
-        // get total vendotrs count 
-       $vendorcontroller = new VendorController();
-       $total_vendor_count = $vendorcontroller->total_vendors_count();
-       if(!$total_vendor_count['success']){
-            throw new \Exception("failed to fetch total vendor count" . $total_vendor_count['error']);
-       }
+    function getChargesDeduction(float $amount): array
+    {
+        try {
+            $config = ConfigSetting::first();
 
-        // get today orders count 
-        $ordercontroller = new OrderController();
-        $today_order_count = $ordercontroller->today_orders_count();
-        if(!$today_order_count['success']){
-            throw new \Exception("Failed to fetch Today's Orders". $today_order_count['success']);      
-        }
+            if (!$config) {
+                return [
+                    'success' => false,
+                    'message' => 'ConfigSetting not found',
+                ];
+            }
 
-        // get today total amount
-        $userpaymentcontroller = new UserPaymentController();
-        $today_user_payment = $userpaymentcontroller->TodayUserPayments();
-        if(!$today_user_payment['success']){
-            throw new \Exception("Failed to fetch UserPayment". $today_user_payment['error']);
-            
+            $adminPercentage = $config->admin_comission_percentage ?? 0;
+            $tdsPercentage = $config->tds_charges_percentage ?? 0;
+
+            // Calculate admin charges
+            $adminChargesAmount = round(($adminPercentage / 100) * $amount, 2);
+            $afterAdminDeduction = round($amount - $adminChargesAmount, 2);
+
+            // Calculate TDS on the remaining amount
+            $tdsChargesAmount = round(($tdsPercentage / 100) * $afterAdminDeduction, 2);
+            $finalAmount = round($afterAdminDeduction - $tdsChargesAmount, 2);
+
+            return [
+                'success' => true,
+                'final_deducted_amount' => $finalAmount,
+                'admin_charges_amount' => $adminChargesAmount,
+                'tds_charges_amount' => $tdsChargesAmount,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
         }
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'new_users_count' => $new_users['count'],
-                'total_users_count'   => $total_user_count['count'],
-                'total_vendors_count' => $total_vendor_count['count'],
-                'today_orders_count'  => $today_order_count['count'],
-                'today_user_payment'  => $today_user_payment['total_amount'], 
-            ]
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to fetch dashboard counts.',
-            'error' => $e->getMessage(),
-        ], 500);
     }
-}
+
+
+    public function getDashboard_count()
+    {
+        try {
+            // get newly joined users count 
+            $userDetailsController = new UserDetailsController();
+            $new_users = $userDetailsController->today_new_users_count();
+            if (!$new_users['success']) {
+                throw new \Exception("failed to fetch the new users" . $new_users['error']);
+            }
+            // get total users count 
+            $total_user_count = $userDetailsController->total_users_count();
+            if (!$total_user_count['success']) {
+                throw new \Exception("failed to fetch the total users count" . $total_user_count['error']);
+            }
+            // get total vendotrs count 
+            $vendorcontroller = new VendorController();
+            $total_vendor_count = $vendorcontroller->total_vendors_count();
+            if (!$total_vendor_count['success']) {
+                throw new \Exception("failed to fetch total vendor count" . $total_vendor_count['error']);
+            }
+
+            // get today orders count 
+            $ordercontroller = new OrderController();
+            $today_order_count = $ordercontroller->today_orders_count();
+            if (!$today_order_count['success']) {
+                throw new \Exception("Failed to fetch Today's Orders" . $today_order_count['success']);
+            }
+
+            // get today total amount
+            $userpaymentcontroller = new UserPaymentController();
+            $today_user_payment = $userpaymentcontroller->TodayUserPayments();
+            if (!$today_user_payment['success']) {
+                throw new \Exception("Failed to fetch UserPayment" . $today_user_payment['error']);
+            }
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'new_users_count' => $new_users['count'],
+                    'total_users_count'   => $total_user_count['count'],
+                    'total_vendors_count' => $total_vendor_count['count'],
+                    'today_orders_count'  => $today_order_count['count'],
+                    'today_user_payment'  => $today_user_payment['total_amount'],
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch dashboard counts.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

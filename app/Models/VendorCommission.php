@@ -14,6 +14,9 @@ class VendorCommission extends Model
         'vendor_id',
         'order_id',
         'amount',
+        'admin_charges_amount',
+        'tds_charges_amount',
+        'expected_commission',
         'status', //1 for unpaid 2 for paid 3 refunded and 4 for pending
     ];
 

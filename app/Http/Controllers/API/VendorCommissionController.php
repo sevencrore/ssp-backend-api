@@ -20,11 +20,19 @@ class VendorCommissionController extends Controller
             $order = Order::findOrFail($order_id);
             $amount = $order->grand_total;
 
+            $adminController = new AdminController();
+            $charges = $adminController->getChargesDeduction($amount);
+            if(!$charges['success']){
+                throw new \Exception($charges['message']);
+            }
             // Prepare the data for insertion
             $vendorCommissionData = [
                 'vendor_id' => $vendor_id,
                 'order_id' => $order_id,
                 'amount' => $amount,
+                'admin_charges_amount' => $charges['admin_charges_amount'],
+                'tds_charges_amount' => $charges['tds_charges_amount'],
+                'expected_commission' => $charges['final_deducted_amount'],
                 'status' => 1, // 1 for unpaid 2 for paid 3 refunded and 4 for pending
             ];
 

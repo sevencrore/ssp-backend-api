@@ -92,4 +92,5 @@ class ConfigSettingController extends BaseController
         $setting->update($request->all());
         return response()->json($setting);
     }
+    
 }
