@@ -53,7 +53,6 @@ class ConfigSettingController extends BaseController
             'referal_incentive' => 'required|integer|min:0',
             'max_level' => 'required|integer|min:0',
             'default_vendor_id' => 'nullable|integer',
-            'vendor_comission' => 'required|numeric',
             'minimum_basepay_amount' => 'required|numeric',
             'admin_comission_percentage' => 'required|numeric',
             'tds_charges_percentage' => 'required|numeric',

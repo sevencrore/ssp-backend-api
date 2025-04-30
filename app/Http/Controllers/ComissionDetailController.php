@@ -29,14 +29,14 @@ class ComissionDetailController extends Controller
 
     // Store a new commission detail
     public function store(Request $request)
-    {  
+    {
         $validatedData = $request->validate([
             'comission_id' => 'required|exists:comission,id',
             'level' => 'required|integer',
             'commission' => 'required|numeric',
         ]);
         $admin = User::find($request->user_id);
-        if( $admin->user_type != 99){
+        if ($admin->user_type != 99) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access',
@@ -49,9 +49,9 @@ class ComissionDetailController extends Controller
 
     // Update an existing commission detail
     public function update(Request $request, $id)
-    {  
-          $admin = User::find($request->user_id);
-        if( $admin->user_type != 99){
+    {
+        $admin = User::find($request->user_id);
+        if ($admin->user_type != 99) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access',
@@ -75,9 +75,10 @@ class ComissionDetailController extends Controller
     }
 
     // Delete a commission detail
-    public function destroy(Request $request,$id)
-    {    $admin = User::find($request->user_id);
-        if( $admin->user_type != 99){
+    public function destroy(Request $request, $id)
+    {
+        $admin = User::find($request->user_id);
+        if ($admin->user_type != 99) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access',
@@ -92,5 +93,14 @@ class ComissionDetailController extends Controller
         } else {
             return response()->json(['message' => 'Comission detail not found'], 404);
         }
+    }
+
+    public function getAllPaginated(Request $request)
+    {
+        $perPage = $request->input('per_page', 10); // Default to 10 items per page if not provided
+    
+        $details = ComissionDetail::paginate($perPage);
+    
+        return response()->json($details);
     }
 }

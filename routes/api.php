@@ -205,6 +205,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::delete('comissions/{id}', [ComissionController::class, 'destroy'])->name('comissions.destroy');
 
   Route::get('comission-details/{id}', [ComissionDetailController::class, 'show'])->name('comission_details.show');
+  Route::get('comission-details-getAllPaginated', [ComissionDetailController::class, 'getAllPaginated'])->name('comission_details.getAllPaginated');
   Route::post('comission-details', [ComissionDetailController::class, 'store'])->name('comission_details.store');
   Route::put('comission-details/{id}', [ComissionDetailController::class, 'update'])->name('comission_details.update');
   Route::delete('comission-details/{id}', [ComissionDetailController::class, 'destroy'])->name('comission_details.destroy');
