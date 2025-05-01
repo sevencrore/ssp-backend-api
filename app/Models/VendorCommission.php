@@ -32,4 +32,6 @@ class VendorCommission extends Model
     {
         return $this->belongsTo(Order::class, 'order_id');
     }
+
+    
 }

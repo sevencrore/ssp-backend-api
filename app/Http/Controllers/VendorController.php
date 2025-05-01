@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\API\VendorCommissionController;
 use App\Models\Vendor;
+use App\Models\VendorCommission;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 // use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -68,14 +71,22 @@ class VendorController extends Controller
     public function getAllPaginated(Request $request): JsonResponse
     {
         try {
-            // Get search query and pagination size
             $search = $request->query('search');
-            $perPage = $request->query('per_page', 10); // default 10 per page
-
-            // Query builder
+            $perPage = $request->query('per_page', 10); // default 10
+    
+            $now = Carbon::now()->toDateString();
+    
             $query = Vendor::query();
-
-            // Apply search filters
+    
+            // Apply conditional commission count using withCount
+            $query->withCount([
+                'vendorCommissions as commission_count' => function ($q) use ($now) {
+                    $q->where('status', 1)
+                      ->whereDate('created_at', '<=', $now);
+                }
+            ]);
+    
+            // Apply search filter
             if (!empty($search)) {
                 $query->where(function ($q) use ($search) {
                     $q->where('first_name', 'LIKE', "%$search%")
@@ -84,16 +95,29 @@ class VendorController extends Controller
                         ->orWhere('business_name', 'LIKE', "%$search%");
                 });
             }
-
-            // Paginate and append search query
+    
+            // Order by the computed commission count
+            $query->orderByDesc('commission_count');
+    
+            // Paginate
             $vendors = $query->paginate($perPage)->appends([
                 'search' => $search,
                 'per_page' => $perPage
             ]);
 
+            // get today stats of comission paid
+            $vendorcomissioncontroller = new VendorCommissionController();
+            $stats = $vendorcomissioncontroller->getTodayCommissionStats();
+            if(!$stats['success']){
+                throw new \Exception($stats['message']);
+            }
+    
             return response()->json([
                 'success' => true,
-                'vendors' => $vendors->items(), // return just the items
+                'vendors' => $vendors->items(),
+                'total_commission_count' =>$stats['total_commission_count'],
+                'pending_commission_count' =>$stats['pending_commission_count'],
+                'pending_percentage' =>$stats['pending_percentage'],
                 'total' => $vendors->total(),
                 'current_page' => $vendors->currentPage(),
                 'per_page' => $vendors->perPage(),
@@ -109,7 +133,6 @@ class VendorController extends Controller
             ], 500);
         }
     }
-
     public function total_vendors_count()
     {
         try {
