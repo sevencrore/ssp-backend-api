@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\UserDetails;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
@@ -141,34 +142,37 @@ class AddressController extends BaseController
     {
         try {
             Log::info("User ID: $request->user_id");
-    
-            // Get all addresses for the given user
-            $addresses = Address::where('user_id', $request->user_id)->get();
-    
-            // Check if addresses exist
-            if ($addresses->isNotEmpty()) {
-                Log::info($addresses);
+
+            // Get the first address for the given user
+            $address = Address::where('user_id', $request->user_id)->first();
+
+            // Check if address exists
+            if ($address) {
+                Log::info($address);
                 return response()->json([
                     'success' => true,
-                    'message' => 'Addresses found',
-                    'data' => $addresses
+                    'message' => 'Address found',
+                    'data' => $address
                 ], 200); // Status 200 for success
             } else {
+                $userDetails =UserDetails::where('user_id', $request->user_id)->first();
                 return response()->json([
                     'success' => false,
-                    'message' => 'No addresses found for this user'
+                    'message' => 'No address found for this user',
+                    'pincode' => $userDetails->pincode ?? null,
                 ], 404); // Status 404 is more appropriate here
             }
         } catch (\Exception $e) {
-            Log::error('Error retrieving addresses: ' . $e->getMessage());
-    
+            Log::error('Error retrieving address: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while fetching the addresses'
+                'message' => 'An error occurred while fetching the address'
             ], 500); // Status 500 on exception
         }
     }
-    
+
+
 
     public function getUserAddressByUserID($userID)
     {

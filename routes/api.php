@@ -152,6 +152,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('cart/user/{userId}', [CartController::class, 'getCartByUserId'])->name('cart.getCartByUserId');
 
   Route::get('user-details', [UserDetailsController::class, 'index'])->name('user-details.index');
+  Route::get('get-user-details', [UserDetailsController::class, 'GetUserDetails'])->name('user-details.GetUserDetails');
   Route::post('user-details', [UserDetailsController::class, 'store'])->name('user-details.store');
   Route::get('user-details/{userDetail}', [UserDetailsController::class, 'show'])->name('user-details.show');
   Route::put('user-details/{userDetail}', [UserDetailsController::class, 'update'])->name('user-details.update');

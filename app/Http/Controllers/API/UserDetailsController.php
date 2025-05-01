@@ -10,7 +10,7 @@ use App\Models\ConfigSetting;
 use App\Models\UserDetails;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Log;
 
 class UserDetailsController extends Controller
 {
@@ -119,7 +119,7 @@ class UserDetailsController extends Controller
 
             $userDetail = UserDetails::where('user_id', $UserId)->first();
             $comission = Comission::find($userDetail->comission_id);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => "The minimum order amount is ₹$comission->minimum_order.",
@@ -232,7 +232,7 @@ class UserDetailsController extends Controller
                 'count' => $count,
             ];
         } catch (\Exception $e) {
-            return[
+            return [
                 'success' => false,
                 'message' => 'Failed to fetch today\'s users.',
                 'error' => $e->getMessage(),
@@ -244,18 +244,48 @@ class UserDetailsController extends Controller
     {
         try {
             $count = UserDetails::count();
-            
+
             return [
                 'success' => true,
                 'count' => $count,
             ];
         } catch (\Exception $e) {
-            return[
+            return [
                 'success' => false,
                 'message' => 'Failed to fetch total users count.',
                 'error' => $e->getMessage(),
             ];
         }
     }
+    public function GetUserDetails(Request $request)
+    {
+        try {
+            Log::info("User ID: $request->user_id");
 
+            // Get the user details for the given user
+            $userDetails = UserDetails::where('user_id', $request->user_id)->first();
+
+            // Check if user details exist
+            if ($userDetails) {
+                Log::info($userDetails);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'User details found',
+                    'data' => $userDetails
+                ], 200); // Status 200 for success
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No user details found for this user'
+                ], 404); // Status 404 if not found
+            }
+        } catch (\Exception $e) {
+            Log::error('Error retrieving user details: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while fetching the user details'
+            ], 500); // Status 500 on exception
+        }
+    }
 }
