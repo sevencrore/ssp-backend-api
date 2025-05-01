@@ -25,4 +25,9 @@ class Vendor extends Model
         'latitude',
         'longitude',
     ];
+    // Vendor.php
+    public function vendorCommissions()
+    {
+        return $this->hasMany(VendorCommission::class, 'vendor_id');
+    }
 }

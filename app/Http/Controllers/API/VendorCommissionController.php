@@ -9,6 +9,7 @@ use App\Models\Vendor;
 use App\Models\VendorCommission;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class VendorCommissionController extends Controller
 {
@@ -22,7 +23,7 @@ class VendorCommissionController extends Controller
 
             $adminController = new AdminController();
             $charges = $adminController->getChargesDeduction($amount);
-            if(!$charges['success']){
+            if (!$charges['success']) {
                 throw new \Exception($charges['message']);
             }
             // Prepare the data for insertion
@@ -62,8 +63,8 @@ class VendorCommissionController extends Controller
             $commissions = VendorCommission::where('vendor_id', $request->vendor_id)
                 ->where('status', 1)
                 ->get();
-            
-                $configsettings = ConfigSetting::first();
+
+            $configsettings = ConfigSetting::first();
 
             return response()->json([
                 'success' => true,
@@ -131,8 +132,8 @@ class VendorCommissionController extends Controller
     {
         try {
             $updatedCount = VendorCommission::whereIn('id', $ids)
-                    ->update(['status' => $status]);
-    
+                ->update(['status' => $status]);
+
             return [
                 'success' => true,
                 'message' => "$updatedCount commission(s) updated successfully.",
@@ -145,7 +146,7 @@ class VendorCommissionController extends Controller
             ];
         }
     }
-    
+
 
     public function getVendorCommission_WithPagination(Request $request)
     {
@@ -177,5 +178,38 @@ class VendorCommissionController extends Controller
         $validated = $validator->validated();
 
         return $this->fetchVendorCommissions($request, $validated['vendor_id']);
+    }
+
+    public function getTodayCommissionStats()
+    {
+        try {
+            $today = Carbon::today()->toDateString();
+
+            // Total commissions up to today
+            $totalCommissionCount = VendorCommission::whereDate('created_at', '=', $today)->count();
+
+            // Pending commissions (status = 1) up to today
+            $pendingCommissionCount = VendorCommission::where('status', 1)
+                ->whereDate('created_at', '<=', $today)
+                ->count();
+
+            // Calculate percentage
+            $pendingPercentage = $totalCommissionCount > 0
+                ? round(($pendingCommissionCount / $totalCommissionCount) * 100, 2)
+                : 0;
+
+            return[
+                'success' => true,
+                'total_commission_count' => $totalCommissionCount,
+                'pending_commission_count' => $pendingCommissionCount,
+                'pending_percentage' => $pendingPercentage // in %
+            ];
+        } catch (\Exception $e) {
+            return[
+                'success' => false,
+                'message' => 'Failed to fetch commission stats',
+                'error' => $e->getMessage()
+            ];
+        }
     }
 }
