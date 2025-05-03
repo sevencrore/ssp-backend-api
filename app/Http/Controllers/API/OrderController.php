@@ -434,6 +434,7 @@ class OrderController extends BaseController
 
         if ($orders->isEmpty()) {
             return response()->json([
+                'success' => false,
                 'message' => 'No orders found.',
             ], 404);
         }
@@ -464,6 +465,7 @@ class OrderController extends BaseController
 
         // Return the paginated orders as a response
         return response()->json([
+            'success' => true,
             'message' => 'All orders retrieved successfully.',
             'orders' => $response,
             'pagination' => [
