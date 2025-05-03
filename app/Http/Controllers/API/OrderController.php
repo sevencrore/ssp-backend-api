@@ -706,7 +706,7 @@ class OrderController extends BaseController
         }
         $updateOrderStatus = $this->updateOrderStatus($request, $order);
         return response()->json([
-            'message' => 'Order status updated successfully.',
+            'message' => 'Order Delivered successfully.',
             'order' => [
                 'order_id' => $order->id,
                 'order_status' => $order->order_status,
