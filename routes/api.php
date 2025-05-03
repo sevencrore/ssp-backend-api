@@ -268,6 +268,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/admin/getOrderDetails', [OrderController::class, 'getOrderDetails']);
   Route::get('/admin/getSpecificOrderDetails', [OrderController::class, 'getSpecificOrderDetails']);
   Route::get('/admin/getspecific/VendorComission', [VendorCommissionController::class, 'getVendorCommission_Admin']);
+  Route::get('/admin/getAll/VendorComission', [VendorCommissionController::class, 'fetchAdminVendorCommissions']);
   Route::get('admin/dashboard-count', [AdminController::class, 'getDashboard_count']);
 
   Route::get('/config-settings', [ConfigSettingController::class, 'index']);

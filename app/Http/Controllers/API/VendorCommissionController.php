@@ -111,7 +111,7 @@ class VendorCommissionController extends Controller
                 $query->whereDate('created_at', '<=', $endDate);
             }
 
-            $commissions = $query->paginate($perPage);
+            $commissions = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
             return response()->json([
                 'success' => true,
@@ -161,6 +161,57 @@ class VendorCommissionController extends Controller
         return $this->fetchVendorCommissions($request, $vendor->id);
     }
 
+    public function fetchAdminVendorCommissions(Request $request)
+    {
+        $status = $request->has('status') ? (array) $request->status : [1, 2, 3];
+        $perPage = $request->get('per_page', 10);
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $vendorID = $request->vendor_id;
+
+        try {
+            $query = VendorCommission::query()->whereIn('status', $status);
+
+            // Apply vendor filter if provided
+            if ($vendorID) {
+                $vendor = Vendor::find($vendorID);
+
+                if (!$vendor) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Vendor not found.',
+                    ], 404);
+                }
+
+                $query->where('vendor_id', $vendor->id);
+            }
+
+            // Apply date filters
+            if ($startDate && $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            } elseif ($startDate) {
+                $query->whereDate('created_at', '>=', $startDate);
+            } elseif ($endDate) {
+                $query->whereDate('created_at', '<=', $endDate);
+            }
+
+            $commissions = $query->orderBy('created_at', 'desc')->paginate($perPage);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Vendor commissions fetched successfully.',
+                'data' => $commissions,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch vendor commissions.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
     public function getVendorCommission_Admin(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -198,14 +249,14 @@ class VendorCommissionController extends Controller
                 ? round(($pendingCommissionCount / $totalCommissionCount) * 100, 2)
                 : 0;
 
-            return[
+            return [
                 'success' => true,
                 'total_commission_count' => $totalCommissionCount,
                 'pending_commission_count' => $pendingCommissionCount,
                 'pending_percentage' => $pendingPercentage // in %
             ];
         } catch (\Exception $e) {
-            return[
+            return [
                 'success' => false,
                 'message' => 'Failed to fetch commission stats',
                 'error' => $e->getMessage()
