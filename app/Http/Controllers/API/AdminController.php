@@ -66,6 +66,59 @@ class AdminController extends BaseController
         ], 200);
     }
 
+    public function getAdminUsersList(Request $request)
+    {
+        // Get 'type' from request, or default to [2,3,99]
+        $user_type = [3,99];
+
+        if ($request->has('user_type')) {
+            $user_type = (array) $request->query('user_type');
+        }
+
+        // Fetch users where user_type is in the given array
+        $users = User::whereIn('user_type', $user_type)
+                ->select('id', 'user_name', 'email' ,'user_type')
+                ->get()
+                ->toArray();
+
+
+        return response()->json(['data' => $users], 200);
+    }
+
+    // admin side users password update
+    public function updatePasswordByAdmin(Request $request)
+    {
+        // Validate request data
+        $validator = Validator::make($request->all(), [
+            'userId'          => 'required|exists:users,id',
+            'password'         => 'required|string|min:6',
+            'confirm_password' => 'required|same:password'
+        ]);
+
+        // If validation fails, return the first error message
+        if ($validator->fails()) {
+            return [
+                'success'  => false,
+                'message' => $validator->errors()->first()
+            ];
+        }
+
+        $validatedData = $validator->validated();
+        // Find the user by ID
+        $user = User::find($validatedData['userId']);
+
+        if (!$user) {
+            return ['success' => false, 'message' => 'User not found'];
+        }
+
+        // Update the password
+        $user->password = bcrypt($validatedData['password']);
+        $user->save();
+
+        return ['success' => true, 'message' => "Password updated successfully for user $user->user_name"];
+    }
+
+
     // to make the active or deactive the user
     public function setStatus(Request $request, $id)
     {
