@@ -142,6 +142,8 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::get('/admin/getTopReferrers', [AdminController::class, 'getTopReferrers']);
       Route::get('admin/dashboard-count', [AdminController::class, 'getDashboard_count']);
 
+      Route::get('vendors', [VendorController::class, 'index']); // Get all vendors
+
     });
 
     Route::middleware(['role:admin'])->group(function () {
@@ -209,7 +211,6 @@ Route::middleware('auth:sanctum')->group(function () {
     
       // Get users with cold_state = 1 and filters
       Route::get('users/cold-state', [UsersController::class, 'getAllColdStateUsers'])->name('users.getAllColdStateUsers');
-      Route::get('vendors', [VendorController::class, 'index']); // Get all vendors
       Route::get('admin/vendors', [VendorController::class, 'getAllPaginated']); // Get all vendors
       Route::get('vendors/{id}', [VendorController::class, 'show']); // Get a specific vendor by ID
       Route::put('vendors/{id}', [VendorController::class, 'update']); // Update a specific vendor by ID
@@ -245,7 +246,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
    
     // admin vendor supplier routes
-    Route::middleware(['role:admin'])->group(function () {
+    Route::middleware(['role:admin|vendor|operator'])->group(function () {
       Route::get('orders/get-supplier-orders', [OrderController::class, 'getOrderItemsForSupplier'])->name('orders.getOrderItemsForSupplier');
     });
 
