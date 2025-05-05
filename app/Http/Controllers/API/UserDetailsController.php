@@ -11,6 +11,7 @@ use App\Models\UserDetails;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class UserDetailsController extends Controller
 {
@@ -80,6 +81,48 @@ class UserDetailsController extends Controller
 
         return response()->json(['success' => true, 'data' => $userDetail]);
     }
+
+    public function getUserDetailsByEmail(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+    
+            $userDetails = UserDetails::where('email', $request->email)->first();
+    
+            if (!$userDetails) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User details not found for the provided email',
+                ], 404);
+            }
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'User details retrieved successfully',
+                'data' => $userDetails,
+            ], 200);
+    
+        } catch (\Exception $e) {
+            Log::error("Error retrieving user details by email: " . $e->getMessage());
+    
+            return response()->json([
+                'success' => false,
+                'message' => 'An internal error occurred while retrieving user details',
+            ], 500);
+        }
+    }
+    
+
 
 
     // Delete a specific user detail

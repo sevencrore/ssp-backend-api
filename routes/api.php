@@ -264,6 +264,8 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::put('/admin/update-user-password', [AdminController::class, 'updatePassword']);
   Route::put('/admin/update-user-state/{id}', [AdminController::class, 'setStatus']);
   Route::get('admin/Ordertransactions', [UserPaymentController::class, 'getAdminproduct_transactions'])->name('userPayment.getAdminproduct_transactions');
+  Route::get('admin/getUserDetailsByEmail', [UserDetailsController::class, 'getUserDetailsByEmail']);
+  Route::post('/admin/updateVendor', [CustomerVendorController::class, 'updateVendor']); //update the customer vendor mapping
   Route::get('/admin/getTopReferrers', [AdminController::class, 'getTopReferrers']);
   Route::get('/admin/getOrderDetails', [OrderController::class, 'getOrderDetails']);
   Route::get('/admin/getSpecificOrderDetails', [OrderController::class, 'getSpecificOrderDetails']);
