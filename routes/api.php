@@ -262,6 +262,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('orders/admin', [OrderController::class, 'getAllOrders'])->name('orders.getAllOrders');
   Route::get('order-items/admin/{orderItem}', [OrderItemController::class, 'getOrderItemsByOrderId'])->name('order-items.getOrderItemsByOrderId');
   Route::put('/admin/update-user-password', [AdminController::class, 'updatePassword']);
+  Route::put('/admin/update-user-address', [AdminController::class, 'updateUserAddressByAdmin']);
   Route::put('/admin/update-user-state/{id}', [AdminController::class, 'setStatus']);
   Route::get('admin/Ordertransactions', [UserPaymentController::class, 'getAdminproduct_transactions'])->name('userPayment.getAdminproduct_transactions');
   Route::get('admin/getUserDetailsByEmail', [UserDetailsController::class, 'getUserDetailsByEmail']);
