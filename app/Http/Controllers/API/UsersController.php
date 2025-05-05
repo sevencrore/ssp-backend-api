@@ -22,6 +22,16 @@ class UsersController extends BaseController
         // Logic to list all users
     }
 
+    public function CreateUser(array $userdata)
+    {   
+        // Store the payment data in the database
+        $user = User::create($userdata);
+        if (!$user) {
+            return false;
+        }
+        return $user;
+    }
+
     //get user based on the search 
     public function getUsersBySearch(Request $request)
     {   

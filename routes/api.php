@@ -259,6 +259,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
   //  Admin Routes 
+  Route::post('admin/createUsers', [RegisterController::class, 'CreateUserByAdmin'])->name('register.CreateUserByAdmin');
   Route::get('orders/admin', [OrderController::class, 'getAllOrders'])->name('orders.getAllOrders');
   Route::get('order-items/admin/{orderItem}', [OrderItemController::class, 'getOrderItemsByOrderId'])->name('order-items.getOrderItemsByOrderId');
   Route::put('/admin/update-user-password', [AdminController::class, 'updatePassword']);

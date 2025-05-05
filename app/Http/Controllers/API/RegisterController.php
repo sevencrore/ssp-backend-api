@@ -379,6 +379,69 @@ class RegisterController extends BaseController
         }
     }
 
+    public function CreateUserByAdmin(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'user_name' => 'required',
+            'password' => 'required',
+            'c_password' => 'required|same:password',
+            'role_id' => 'required|exists:roles,id', // Ensure role exists
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+                'message' => 'Validation failed.',
+            ], 422);
+        }
+        DB::beginTransaction(); // Start transaction
+        try {
+            $validatedData = $validator->validated();
+            $userController = new UsersController();
+            // Create user
+            $userData = [
+                'name' => $validatedData['user_name'],
+                'email' => $validatedData['email'],
+                'user_name' => $validatedData['user_name'],
+                'password' => bcrypt($validatedData['password']),
+            ];
+
+            $user = $userController->CreateUser($userData);
+            if (!$user) {
+                throw new \Exception('User creation failed');
+            }
+        
+            // Find the role by ID
+            $role = Role::findOrFail($validatedData['role_id']);
+            // assign the default role as the user
+            $user->assignRole($role);
+
+            // get the user_type by the role name
+            $user_type = $userController->getUserTypeByRole($role->name);
+            if(!$user_type){
+                throw new \Exception('User_type assignment failed failed');  
+            }
+            $user->user_type = $user_type;
+            $user->save();
+
+            DB::commit(); // Commit transaction
+            return response()->json([
+                'success' => true,
+                'data' => ['id' => $user->id, 'name' => $user->user_name,'email' => $user->email],
+                'message' => 'User registered successfully.',
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction on validation error
+            return response()->json([
+                'success' => false,
+                'errors' => $e->getMessage(),
+                'message' => 'An error occurred during registration.',
+            ], 500);
+        }
+    }
+
 
     /**
      * @OA\Post(
