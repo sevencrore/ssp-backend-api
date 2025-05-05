@@ -7,6 +7,7 @@ use App\Http\Controllers\VendorController;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\Vendor;
+use App\Models\Address;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\BaseController as BaseController;
@@ -238,5 +239,78 @@ class AdminController extends BaseController
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function updateUserAddressByAdmin(Request $request): JsonResponse
+    {
+        // Validate request
+        $validator = Validator::make($request->all(), [
+            'email'          => 'required|email',     
+            'first_name'     => 'nullable|string|max:255',
+            'last_name'      => 'nullable|string|max:255',
+            'district_name'  => 'required|string|max:255',
+            'city_name'      => 'required|string|max:255',
+            'city_id'        => 'nullable|integer',
+            'address'        => 'required|string',
+            'pin_code'       => 'required|string|max:10',
+            'phone_number'   => 'required|string|max:15',
+            'latitude'       => 'nullable|numeric',
+            'longitude'      => 'nullable|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        // Check if requester is admin
+        $admin = User::find($request->user_id);
+        if (!$admin || $admin->user_type != 99) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access: Not an admin',
+            ], 403);
+        }
+
+        // Find the target user by email
+        $targetUser = User::where('email', $request->email)->first();
+        if (!$targetUser) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Target user not found',
+            ], 404);
+        }
+
+        // Find the address linked to target user
+        $address = Address::where('user_id', $targetUser->id)->first();
+        if (!$address) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Address not found for this user',
+            ], 404);
+        }
+
+        // Update address
+        $address->update($request->only([
+            'first_name',
+            'last_name',
+            'district_name',
+            'city_name',
+            'city_id',
+            'address',
+            'pin_code',
+            'phone_number',
+            'latitude',
+            'longitude'
+        ]));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User address updated successfully',
+            'data' => $address
+        ], 200);
     }
 }
