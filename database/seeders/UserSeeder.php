@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ConfigSetting;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -47,7 +48,11 @@ class UserSeeder extends Seeder
             'aadhar_number' => 111122224444,
         ];
 
-        Vendor::create($vendordata);
+       $vendor= Vendor::create($vendordata);
 
+        // now update the configsetting by default vendorId
+        $configsetting = ConfigSetting::first();
+        $configsetting->default_vendor_id = $vendor->id;
+        $configsetting->save();
     }
 }

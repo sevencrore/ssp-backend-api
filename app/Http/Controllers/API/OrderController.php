@@ -848,7 +848,7 @@ class OrderController extends BaseController
             return response()->json(['success' => false, 'message' => 'User not found.'], 404);
         }
 
-        if ($user->user_type == 99) {
+        if ($user->user_type == 99 || $user->user_type == 3) {
             // Admin: Do not filter by a specific supplier
             Log::info("Admin user: Fetching data for all suppliers.");
             if ($request->has('vendorUser_id')) {
