@@ -6,8 +6,10 @@ use App\Models\Address;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\UserDetails;
+Use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class AddressController extends BaseController
 {
@@ -155,7 +157,7 @@ class AddressController extends BaseController
                     'data' => $address
                 ], 200); // Status 200 for success
             } else {
-                $userDetails =UserDetails::where('user_id', $request->user_id)->first();
+                $userDetails = UserDetails::where('user_id', $request->user_id)->first();
                 return response()->json([
                     'success' => false,
                     'message' => 'No address found for this user',
@@ -189,6 +191,55 @@ class AddressController extends BaseController
                 'message' => 'Failed to fetch address.',
                 'error' => $e->getMessage(),
             ];
+        }
+    }
+    public function getUserAddressByEmail(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            // First, find the user by email
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not found for the provided email',
+                ], 404);
+            }
+
+            // Get the address linked to the user
+            $address = Address::where('user_id', $user->id)->first();
+
+            if (!$address) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Address not found for this user',
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Address retrieved successfully',
+                'data' => $address,
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error("Error retrieving user address by email: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An internal error occurred while retrieving the address',
+            ], 500);
         }
     }
 }
