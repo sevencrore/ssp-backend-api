@@ -62,6 +62,7 @@ class UsersController extends BaseController
                 'address.address as user_address',
                 'users.is_active as is_active',
             )
+            ->distinct()
             ->orderBy('user_details.created_at', 'desc'); // Order by created_at in descending order
 
         // Apply search filter if 'search' parameter is present
@@ -72,8 +73,7 @@ class UsersController extends BaseController
                   ->orWhere('address.district_name', 'LIKE', "%$search%")
                   ->orWhere('address.city_name', 'LIKE', "%$search%")
                   ->orWhere('user_details.first_name', 'LIKE', "%$search%")
-                  ->orWhere('user_details.last_name', 'LIKE', "%$search%")
-                  ->orWhere('user_details.pincode', 'LIKE', "%$search%");
+                  ->orWhere('user_details.last_name', 'LIKE', "%$search%");
         }
 
         if ($request->filled('refernull')) {

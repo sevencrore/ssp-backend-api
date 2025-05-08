@@ -96,7 +96,7 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::post('cart', [CartController::class, 'store'])->name('cart.store');
       Route::get('get-user-details', [UserDetailsController::class, 'GetUserDetails'])->name('user-details.GetUserDetails');
       Route::get('address/userAddress', [AddressController::class, 'GetUserAddresses'])->name('address.GetUserAddresses');
-      
+
        // razorpay routes
       Route::post('payment/create-order', [RazorpayPaymentController::class, 'createOrder'])->name('razorpay.createOrder');
       Route::post('user/BuyProduct', [BuyProductController::class, 'BuyProduct'])->name('buyproduct.BuyProduct');
