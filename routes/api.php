@@ -34,10 +34,12 @@ use App\Http\Controllers\API\SlideImageController;
 
 use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\BuyProductController;
+use App\Http\Controllers\API\ExcelExportController;
 use App\Http\Controllers\API\RazorpayPaymentController;
 use App\Http\Controllers\API\ResetPasswordEmailController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\UserPaymentController;
+use OpenApi\Examples\PetstoreSwaggerIo\Controllers\UserController;
 
 Route::controller(RegisterController::class)->group(function () {
   Route::post('register', 'register');
@@ -55,6 +57,8 @@ Route::post('upload', [ImageController::class, 'upload'])->name('image.upload');
 
 // Route to view all images
 Route::get('images', [ImageController::class, 'index'])->name('image.index');
+
+Route::get('userExcel', [UsersController::class, 'exportCustomExcel'])->name('user.exportCustomExcel');
 
 
 
@@ -233,6 +237,7 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::put('/admin/update-user-address', [AdminController::class, 'updateUserAddressByAdmin']);
       Route::put('/admin/update-user-state/{id}', [AdminController::class, 'setStatus']);
       Route::get('admin/Ordertransactions', [UserPaymentController::class, 'getAdminproduct_transactions'])->name('userPayment.getAdminproduct_transactions');
+      Route::get('admin/excel/Ordertransactions', [ExcelExportController::class, 'exportAdminProductTransactions'])->name('excel.exportAdminProductTransactions');
       Route::get('admin/getUserDetailsByEmail', [UserDetailsController::class, 'getUserDetailsByEmail']);
       Route::get('admin/getUserAddressByEmail', [AddressController::class, 'getUserAddressByEmail']);
       Route::post('/admin/updateVendor', [CustomerVendorController::class, 'updateVendor']); //update the customer vendor mapping
@@ -254,6 +259,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // admin vendor supplier routes
     Route::middleware(['role:admin|vendor|operator'])->group(function () {
       Route::get('orders/get-supplier-orders', [OrderController::class, 'getOrderItemsForSupplier'])->name('orders.getOrderItemsForSupplier');
+      Route::get('excel/get-supplier-orders', [ExcelExportController::class, 'exportSkosListing'])->name('orders.exportSkosListing');
     });
 
     Route::middleware(['role:admin|vendor'])->group(function () {

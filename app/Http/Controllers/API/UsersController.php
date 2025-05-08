@@ -14,16 +14,29 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
+use App\Exports\DynamicExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UsersController extends BaseController
 {
+
+    public function exportCustomExcel()
+    {
+        $headings = ['first name','last name','phone', 'Email', 'pincode','created_at'];
+
+        // Get data as a collection (select only required fields)
+        $collection = UserDetails::select('first_name', 'last_name', 'phone_1','email','pincode','created_at')->get();
+    
+        return Excel::download(new DynamicExport($headings, $collection, 'Users Report'), 'users.xlsx');
+    }
+
     public function index()
     {
         // Logic to list all users
     }
 
     public function CreateUser(array $userdata)
-    {   
+    {
         // Store the payment data in the database
         $user = User::create($userdata);
         if (!$user) {
@@ -34,10 +47,10 @@ class UsersController extends BaseController
 
     //get user based on the search 
     public function getUsersBySearch(Request $request)
-    {   
+    {
         $perPage = $request->get('per_page', 10); // Default to 10
         $admin = User::find($request->user_id);
-        if( $admin->user_type != 99){
+        if ($admin->user_type != 99) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access',
@@ -69,18 +82,18 @@ class UsersController extends BaseController
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where('user_details.pincode', 'LIKE', "%$search%")
-                  ->orWhere('address.address', 'LIKE', "%$search%")
-                  ->orWhere('address.district_name', 'LIKE', "%$search%")
-                  ->orWhere('address.city_name', 'LIKE', "%$search%")
-                  ->orWhere('user_details.first_name', 'LIKE', "%$search%")
-                  ->orWhere('user_details.last_name', 'LIKE', "%$search%");
+                ->orWhere('address.address', 'LIKE', "%$search%")
+                ->orWhere('address.district_name', 'LIKE', "%$search%")
+                ->orWhere('address.city_name', 'LIKE', "%$search%")
+                ->orWhere('user_details.first_name', 'LIKE', "%$search%")
+                ->orWhere('user_details.last_name', 'LIKE', "%$search%");
         }
 
         if ($request->filled('refernull')) {
             $refernull = $request->refernull;
             $query->where('user_details.referred_by', null);
-            }
-        
+        }
+
         // Remove a specific query parameter, e.g., 'user_id'
         $queryParameters = Arr::except($request->query(), ['user_id']);
 
@@ -101,14 +114,14 @@ class UsersController extends BaseController
                     'message' => 'Unauthorized access',
                 ], 403);
             }
-    
+
             $request->validate([
                 'userId' => 'required|integer'
             ]);
-    
+
             $userDetails = UserDetails::where('user_id', $request->userId)->first();
             $address = Address::where('user_id', $request->userId)->first();
-    
+
             return response()->json([
                 'success' => true,
                 'userdetails' => $userDetails,
@@ -122,7 +135,7 @@ class UsersController extends BaseController
             ], 500);
         }
     }
-    
+
 
 
     public function show(Request $request)
@@ -182,7 +195,7 @@ class UsersController extends BaseController
             'aadhar_number' => 'nullable',
             'pincode' => 'required',
         ]);
-       
+
         // If validation fails, return error response
         if ($validator->fails()) {
             return response()->json([
@@ -262,27 +275,27 @@ class UsersController extends BaseController
         // Logic to delete a user
     }
 
-    public function changeUserState($user_id ,$state)
+    public function changeUserState($user_id, $state)
     {
-            // Find the user by ID
-            $user = User::find($user_id);
-    
-            if (!$user) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User not found'
-                ], 404);
-            }
-    
-            // Update the cold_state
-            $user->cold_state = $state;
-            $user->save();
-    
+        // Find the user by ID
+        $user = User::find($user_id);
+
+        if (!$user) {
             return response()->json([
-                'success' => true,
-                'message' => 'User state updated successfully',
-                'data' => $user
-            ]);
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        // Update the cold_state
+        $user->cold_state = $state;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User state updated successfully',
+            'data' => $user
+        ]);
     }
 
     public function updatePasswordWithOldPassword(Request $request): JsonResponse
@@ -334,30 +347,30 @@ class UsersController extends BaseController
     }
 
 
-   // api for getting the users whose cold_state = 1 and with some filters
+    // api for getting the users whose cold_state = 1 and with some filters
     public function getAllColdStateUsers(Request $request)
-    {   
+    {
         Log::info("hello");
         // Get filter inputs from the request
         $name = $request->input('name');
         $pincode = $request->input('pincode');
-        
+
         // Query the database
         $query = User::join('user_details', 'users.id', '=', 'user_details.user_id')
             ->where('users.cold_state', 1);
-        
+
         // Apply filters if they are provided
         if (!empty($name)) {
             $query->where('user_details.first_name', 'like', "%$name%");
         }
-    
+
         if (!empty($pincode)) {
             $query->where('user_details.pincode', $pincode);
         }
-    
+
         // Paginate the results
         $results = $query->paginate(10); // Adjust the pagination limit as needed
-    
+
         // Return the results with a custom message
         return response()->json([
             'message' => 'Users successfully retrieved',
@@ -366,18 +379,18 @@ class UsersController extends BaseController
     }
 
 
-    
 
-    public function getUserTypeByRole($roleName) {
+
+    public function getUserTypeByRole($roleName)
+    {
         if ($roleName == 'admin') {
             return 99;
         } elseif ($roleName == 'vendor') {
             return 2;
         } elseif ($roleName == 'operator') {
             return 3;
-        } 
-            
+        }
+
         return false; // Explicitly return false if no match is found
     }
-    
 }
