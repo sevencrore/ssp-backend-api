@@ -67,11 +67,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/users/change-password', [UsersController::class, 'updatePasswordWithOldPassword'])->name('users.updatePasswordWithOldPassword');
   });
 
+  
+  Route::middleware(['role:admin|vendor|user|operator'])->group(function () {
+    Route::get('category', [CategoryController::class, 'index'])->name('category.index');
+  });
+  
     Route::middleware(['role:admin|user|operator'])->group(function () {
       Route::get('products-get-all-paginated', [ProductController::class, 'getAllPaginated']);
       Route::get('products-Custom-Product-Get-All-Paginated', [ProductController::class, 'CustomProductGetAllPaginated']);
       Route::get('products-with-variants', [ProductController::class, 'getProductsWithVariants']);
-      Route::get('category', [CategoryController::class, 'index'])->name('category.index');
       Route::get('orders/user-orders', [OrderController::class, 'getOrdersByUserId'])->name('orders.getOrdersByUserId');
       Route::get('orders/get-paid-wallet', [OrderController::class, 'getPaidWallet'])->name('orders.getPaidWallet');
       Route::post('address', [AddressController::class, 'store'])->name('address.store');
