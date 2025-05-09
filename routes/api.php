@@ -244,7 +244,8 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::get('/admin/getOrderDetails', [OrderController::class, 'getOrderDetails']);
       Route::get('/admin/getSpecificOrderDetails', [OrderController::class, 'getSpecificOrderDetails']);
       Route::get('/admin/getspecific/VendorComission', [VendorCommissionController::class, 'getVendorCommission_Admin']);
-      Route::get('/admin/getAll/VendorComission', [VendorCommissionController::class, 'fetchAdminVendorCommissions']);
+      Route::get(uri: '/admin/getAll/VendorComission', action: [VendorCommissionController::class, 'fetchAdminVendorCommissions']);
+      Route::get(uri: '/admin/excel/getAllVendorComission', action: [ExcelExportController::class, 'exportAdminVendorCommissions']);
       
       Route::get('/config-settings', [ConfigSettingController::class, 'index']);
       Route::get('/config-settings/{id}', [ConfigSettingController::class, 'show']);
