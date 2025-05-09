@@ -9,6 +9,7 @@ use App\Exports\AdminProductTransactionsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use App\Exports\AdminVendorCommissionExport;
+use App\Exports\AdminVendorCommissionSummaryExport;
 
 class ExcelExportController extends Controller
 {
@@ -53,5 +54,10 @@ class ExcelExportController extends Controller
             ], 422);
         }
         return Excel::download(new AdminVendorCommissionExport($request), 'admin_vendor_commissions.xlsx');
+    }
+
+    public function exportVendorsToExcel(Request $request)
+    {
+        return Excel::download(new AdminVendorCommissionSummaryExport($request), 'vendors_list.xlsx');
     }
 }

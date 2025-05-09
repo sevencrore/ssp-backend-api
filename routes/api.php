@@ -278,4 +278,4 @@ Route::middleware('auth:sanctum')->group(function () {
   // admin vendor operator routes
   //Route::get('orders/get-supplier-orders', [OrderController::class, 'getOrderItemsForSupplier'])->name('orders.getOrderItemsForSupplier');
  
-  
+  Route::get('admin/vendors/excel', [ExcelExportController::class, 'exportVendorsToExcel']);
