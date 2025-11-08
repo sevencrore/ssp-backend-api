@@ -23,9 +23,9 @@ class UserSeeder extends Seeder
 
  
          // Create an admin user
-         $admin = User::create([
+         $admin = User::firstOrCreate([
              'user_name' => 'adminuser',
-             'name' => 'Admin User',
+             'name' => 'Admin User',    
              'email' => 'admin@ssp.com',
              'password' => bcrypt('password123'),
              'user_type' =>99,
@@ -48,7 +48,7 @@ class UserSeeder extends Seeder
             'aadhar_number' => 111122224444,
         ];
 
-       $vendor= Vendor::create($vendordata);
+       $vendor= Vendor::firstOrCreate($vendordata);
 
         // now update the configsetting by default vendorId
         $configsetting = ConfigSetting::first();
