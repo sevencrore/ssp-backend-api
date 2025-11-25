@@ -14,7 +14,7 @@ class RazorpayPaymentController extends BaseController
     public function createOrder(Request $request)
     {
         try {
-            $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+            $api = new Api(config('razorpay.key'), config('razorpay.secret'));
 
             $CartController = new CartController();
             $FinalCartPrice = $CartController->calculateFinalCartPrice($request->user_id);
@@ -70,7 +70,7 @@ class RazorpayPaymentController extends BaseController
             return response()->json([
                 'success' => true,
                 'order_id' => $order['id'],
-                'razorpay_key' => env('RAZORPAY_KEY'),
+                'razorpay_key' => config('razorpay.key'),
                 'amount' => $FinalCartPrice['grand_total'],
                 'user' => [
                     'name' => $user->user_name,
@@ -95,7 +95,7 @@ class RazorpayPaymentController extends BaseController
             }
 
             // Initialize Razorpay API
-            $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+            $api = new Api(config('razorpay.key'), config('razorpay.secret'));
 
             // Fetch payment from Razorpay
             $razorpayPayment = $api->payment->fetch($paymentID);

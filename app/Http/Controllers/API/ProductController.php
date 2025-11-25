@@ -26,18 +26,18 @@ class ProductController extends BaseController
     {
         $perPage = $request->get('per_page', 10); // Default to 10
         $query = Product::orderBy('created_at', 'desc');
-        
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where('title', 'LIKE', "%$search%")
-                  ->orWhere('description', 'LIKE', "%$search%");
-            }
-         // Remove a specific query parameter, e.g., 'user_id'
-         $queryParameters = Arr::except($request->query(), ['user_id']);
+                ->orWhere('description', 'LIKE', "%$search%");
+        }
+        // Remove a specific query parameter, e.g., 'user_id'
+        $queryParameters = Arr::except($request->query(), ['user_id']);
 
-         // Paginate the results
-         $query = $query->paginate( $perPage )->appends($queryParameters); // Adjust the number 10 to set items per page1
- 
+        // Paginate the results
+        $query = $query->paginate($perPage)->appends($queryParameters); // Adjust the number 10 to set items per page1
+
         $items = $query;
         $data = [
             'data' => ProductResource::collection($items->items()),
@@ -57,94 +57,118 @@ class ProductController extends BaseController
         ], 201);
     }
 
-    
+
     public function CustomProductGetAllPaginated(Request $request): JsonResponse
-{
-    $perPage = $request->input('per_page', 10); 
-    $sortField = $request->input('sort', 'title');
-    $currentPage = $request->input('current_page', 1);
+    {
+        $perPage = $request->input('per_page', 10);
+        $sortField = $request->input('sort', 'title');
+        $currentPage = $request->input('current_page', 1);
 
-    $query = Product::join('product_variants', 'product_variants.product_id', '=', 'products.id')
-        ->select(
-            'products.id', 
-            'products.title', 
-            'products.description', 
-            'products.image_url', 
-            // 'products.price', 
-            'products.priority', 
-            'products.category_id', 
-            'product_variants.title as product_variants_title'
-        );
+        $query = Product::join('product_variants', 'product_variants.product_id', '=', 'products.id')
+            ->select(
+                'products.id',
+                'products.title',
+                'products.description',
+                'products.image_url',
+                // 'products.price', 
+                'products.priority',
+                'products.category_id',
+                'product_variants.title as product_variants_title'
+            );
 
-    // Optionally add sorting
-    $query->orderBy($sortField);
+        // Optionally add sorting
+        $query->orderBy($sortField);
 
-    $items = $query->paginate($perPage, ['*'], 'page', $currentPage)
-        ->appends(['sort' => $sortField, 'current_page' => $currentPage]);
+        $items = $query->paginate($perPage, ['*'], 'page', $currentPage)
+            ->appends(['sort' => $sortField, 'current_page' => $currentPage]);
 
-    $data = [
-        'data' => $items->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'title' => $item->title,
-                'product_variants_title' => $item->product_variants_title, // Moved here
-                'description' => $item->description,
-                'image_url' => $item->image_url,
-                // 'price' => $item->price,
-                'priority' => $item->priority,
-                'category_id' => $item->category_id,
-            ];
-        }),
-        'pagination' => [
-            'current_page' => $items->currentPage(),
-            'last_page' => $items->lastPage(),
-            'per_page' => $items->perPage(),
-            'total' => $items->total(),
-            'next_page_url' => $items->nextPageUrl(),
-            'prev_page_url' => $items->previousPageUrl()
-        ]
-    ];
+        $data = [
+            'data' => $items->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'product_variants_title' => $item->product_variants_title, // Moved here
+                    'description' => $item->description,
+                    'image_url' => $item->image_url,
+                    // 'price' => $item->price,
+                    'priority' => $item->priority,
+                    'category_id' => $item->category_id,
+                ];
+            }),
+            'pagination' => [
+                'current_page' => $items->currentPage(),
+                'last_page' => $items->lastPage(),
+                'per_page' => $items->perPage(),
+                'total' => $items->total(),
+                'next_page_url' => $items->nextPageUrl(),
+                'prev_page_url' => $items->previousPageUrl()
+            ]
+        ];
 
-    return response()->json([
-        'success' => true,
-        'data' => $data
-    ], 200);
-}
-
-
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ], 200);
+    }
 
 
-    
+
+
+
 
 
     // Create a new product
     public function store(Request $request): JsonResponse
     {
-        // Validate the incoming request
+        // Log the raw incoming request
+        Log::info('Product Store Request Received:', [
+            'payload' => $request->all(),
+            'has_image' => $request->hasFile('image_url')
+        ]);
+
+        // Validate request
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'image_url' => 'nullable|file|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate as a file and an image
+            'image_url' => 'nullable|file|image|mimes:jpeg,png,jpg,gif|max:2048',
             'priority' => 'nullable|integer',
             'category_id' => 'required|integer|exists:category,id',
         ]);
-    
+
+        // Log validated data
+        Log::info('Validated Product Data:', $validatedData);
+
         try {
-            // Check if an image file is provided and store it
+            // Check & upload image
             if ($request->hasFile('image_url')) {
                 $path = $request->file('image_url')->store('images', 'public');
-                $validatedData['image_url'] = $path; // Save the file path as a string
+                $validatedData['image_url'] = $path;
+
+                Log::info('Product Image Uploaded Successfully:', [
+                    'image_path' => $path
+                ]);
             }
-    
-            // Create the product
+
+            // Create product
             $product = Product::create($validatedData);
-    
+
+            Log::info('Product Created Successfully:', [
+                'product' => $product->toArray()
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Product created successfully.',
                 'data' => $product,
             ], 201);
+
         } catch (\Exception $e) {
+
+            Log::error('Product Creation Failed:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create product. Please try again.',
@@ -152,7 +176,6 @@ class ProductController extends BaseController
             ], 500);
         }
     }
-    
     // Get a single product by id
     public function show($id)
     {
@@ -183,15 +206,15 @@ class ProductController extends BaseController
             if ($product->image_url && Storage::disk('public')->exists($product->image_url)) {
                 Storage::disk('public')->delete($product->image_url);
             }
-    
+
             // Store the new image
             $path = $request->file('image_url')->store('images', 'public');
             $validatedData['image_url'] = $path; // Update the image URL field
         }
-    
+
         // Update the product with the validated data
         $product->update($validatedData);
-    
+
         // Return a success response with the updated product data
         return response()->json([
             'success' => true,
@@ -199,8 +222,8 @@ class ProductController extends BaseController
             'data' => $product,
         ], 200); // Use HTTP 200 for successful updates
     }
-    
-    
+
+
     // delete multiple product
     public function deleteMultiple(Request $request)
     {
@@ -208,9 +231,9 @@ class ProductController extends BaseController
 
         if (empty($ids) || !is_array($ids)) {
             return $this->sendError('Invalid IDs provided.');
-            
+
         }
-    
+
         $count = Product::whereIn('id', $ids)->delete(); // Soft deletes the records
 
         return $this->sendResponse(null, "{$count} Products deleted successfully.");

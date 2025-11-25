@@ -80,9 +80,16 @@ class SlideImageController extends BaseController
     }
 
     // Store a new image
+
     public function store(Request $request)
     {
         try {
+            // Log the raw incoming request
+            Log::info('Slide Image Store Request:', [
+                'payload' => $request->all(),
+                'has_image' => $request->hasFile('image')
+            ]);
+
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'navigate_url' => 'required|string|max:255',
@@ -91,8 +98,14 @@ class SlideImageController extends BaseController
                 'order_number' => 'nullable|integer',
             ]);
 
+            // Log validated data
+            Log::info('Validated Slide Image Data:', $validated);
+
             if ($request->hasFile('image')) {
                 $imagePath = $request->file('image')->store('slideimages', 'public');
+
+                // Log image path
+                Log::info('Image Uploaded Successfully:', ['image_path' => $imagePath]);
 
                 $slideImage = SlideImage::create([
                     'title' => $validated['title'],
@@ -102,18 +115,38 @@ class SlideImageController extends BaseController
                     'order_number' => $validated['order_number'] ?? null,
                 ]);
 
+                // Log DB insert success
+                Log::info('Slide Image Created:', $slideImage->toArray());
+
                 return response()->json(['success' => true, 'data' => $slideImage], 201);
             }
 
+            Log::warning('Image upload failed – no image found in request.');
+
             return response()->json(['success' => false, 'message' => 'Image upload failed.'], 400);
+
         } catch (ValidationException $e) {
+            Log::error('Validation Error in Slide Image Store:', $e->errors());
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed.',
                 'errors' => $e->errors()
             ], 422);
+
+        } catch (\Exception $e) {
+            Log::error('Unexpected Error in Slide Image Store:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong. Please try again.'
+            ], 500);
         }
     }
+
 
     // Show a specific image
     public function show(SlideImage $slideImage)
@@ -125,6 +158,13 @@ class SlideImageController extends BaseController
     public function update(Request $request, SlideImage $slideImage)
     {
         try {
+            // Log the incoming update request
+            Log::info('Slide Image Update Request:', [
+                'id' => $slideImage->id,
+                'payload' => $request->all(),
+                'has_image' => $request->hasFile('image')
+            ]);
+
             $validated = $request->validate([
                 'title' => 'nullable|string|max:255',
                 'navigate_url' => 'nullable|string|max:255',
@@ -133,24 +173,38 @@ class SlideImageController extends BaseController
                 'order_number' => 'nullable|integer',
             ]);
 
+            // Log validated data
+            Log::info('Validated Slide Image Update Data:', $validated);
+
             // Handle new image upload if present
             if ($request->hasFile('image')) {
                 $newImage = $request->file('image');
 
                 if (!$newImage) {
+                    Log::warning('Update failed: image key present but no file uploaded');
                     return response()->json(['success' => false, 'message' => 'No image uploaded.'], 400);
                 }
 
                 $imagePath = $newImage->store('slideimages', 'public');
 
                 if (!Storage::disk('public')->exists($imagePath)) {
+                    Log::error('Image save failed, path missing after upload', ['image_path' => $imagePath]);
                     return response()->json(['success' => false, 'message' => 'Image not saved.'], 500);
                 }
+
+                // Log successful image upload
+                Log::info('New Image Uploaded Successfully:', ['image_path' => $imagePath]);
 
                 $slideImage->image_path = $imagePath;
             }
 
-            // Update other fields if present
+            // Log before updating fields
+            Log::info('Updating Slide Image Record:', [
+                'id' => $slideImage->id,
+                'before_update' => $slideImage->toArray()
+            ]);
+
+            // Update fields if present
             $slideImage->title = $validated['title'] ?? $slideImage->title;
             $slideImage->navigate_url = $validated['navigate_url'] ?? $slideImage->navigate_url;
             $slideImage->image_text = $validated['image_text'] ?? $slideImage->image_text;
@@ -158,13 +212,35 @@ class SlideImageController extends BaseController
 
             $slideImage->save();
 
+            // Log after update
+            Log::info('Slide Image Updated Successfully:', [
+                'id' => $slideImage->id,
+                'after_update' => $slideImage->toArray()
+            ]);
+
             return response()->json(['success' => true, 'data' => $slideImage]);
+
         } catch (ValidationException $e) {
+
+            Log::error('Validation Error in Slide Image Update:', $e->errors());
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed.',
                 'errors' => $e->errors()
             ], 422);
+
+        } catch (\Exception $e) {
+
+            Log::error('Unexpected Error in Slide Image Update:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong. Please try again.'
+            ], 500);
         }
     }
 

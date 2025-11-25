@@ -38,7 +38,7 @@ class BuyProductController extends Controller
         $validatedData = $validator->validated();
         $validatedData['user_id'] = $request->user_id;
 
-        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        $api = new Api(config('razorpay.key'), config('razorpay.secret'));
         $orderId = $validatedData['razorpay_order_id'];
         $paymentId = $validatedData['razorpay_payment_id'];
         $signature = $validatedData['razorpay_signature'];
@@ -46,7 +46,7 @@ class BuyProductController extends Controller
         // $attributes  = array('razorpay_signature'  => $signature,  'razorpay_payment_id'  => $paymentId, 'razorpay_order_id' => $orderId);
         // $signatureVerified  = $api->utility->verifyPaymentSignature($attributes);
 
-        $generatedSignature = hash_hmac('sha256', $orderId . "|" . $paymentId, env('RAZORPAY_SECRET'));
+        $generatedSignature = hash_hmac('sha256', $orderId . "|" . $paymentId, config('razorpay.secret'));
         // Handle validation failure
         if (!$generatedSignature === $signature) {
             return response()->json([
