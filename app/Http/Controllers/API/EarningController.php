@@ -152,8 +152,8 @@ class EarningController extends BaseController
 
         $self_estimated_comission = round($selfOrder * ($level_one_percentage / 100),2);
         $firstReferal_estimated_comission = round($first_referal_Total * ($level_one_percentage / 100),2);
-        $secondReferal_estimated_comission = round($second_referal_Total * ($level_one_percentage / 100),2);
-        $estimated_comission =  $self_estimated_comission + $firstReferal_estimated_comission + $secondReferal_estimated_comission;
+      $secondReferal_estimated_comission = round($second_referal_Total * ($level_two_percentage / 100),2);
+        $estimated_comission = round($self_estimated_comission + $firstReferal_estimated_comission + $secondReferal_estimated_comission, 2);
         // Return the calculated sales value (grand_total)
         return response()->json([
             'first_referal_Total' => $first_referal_Total,
