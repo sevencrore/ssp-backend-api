@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
          $admin = User::firstOrCreate([
              'user_name' => 'adminuser',
              'name' => 'Admin User',    
-             'email' => 'admin@ssp.com',
+             'email' => 'sspepvtltd10@gmail.com',
              'password' => bcrypt('password123'),
              'user_type' =>99,
          ]);
