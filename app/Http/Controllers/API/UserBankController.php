@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
+use Illuminate\Support\Facades\Validator;
+
 
 class UserBankController extends BaseController
 {
@@ -70,22 +72,34 @@ class UserBankController extends BaseController
      *     )
      * )
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'bank_name' => 'required|string',
+
+        $validator = Validator::make($request->all(), [
+            'a_c_holder_name' => 'required|string',
             'account_number' => 'required|string',
-            'ifsc_code' => 'required|string',
+            'bank_name' => 'required|string',
             'branch_name' => 'required|string',
+            'ifsc_code' => 'required|string',
+            'phone_number' => 'required|string',
+            'pancard' => 'required|string',
+            'aadharcard' => 'required|string',
         ]);
 
-        $userBank = UserBank::create($validatedData);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User bank created successfully.',
-            'data' => $userBank,
-        ], 201);
+        $data = $validator->validated();
+
+        $data['user_id'] = $request->user_id;
+
+        $bank = UserBank::create($data);
+
+        return response()->json(['message' => 'Bank details saved successfully!', 'data' => $bank], 201);
     }
 
     /**
@@ -179,6 +193,10 @@ class UserBankController extends BaseController
             'account_number' => 'sometimes|required|string|unique:user_bank,account_number,' . $userBank->id,
             'ifsc_code' => 'sometimes|required|string',
             'branch_name' => 'sometimes|required|string',
+            'a_c_holder_name' => 'sometimes|string',
+            'phone_number' => 'sometimes|string',
+            'pancard' => 'sometimes|string',
+            'aadharcard' => 'sometimes|string',
         ]);
 
         $userBank->update($validatedData);

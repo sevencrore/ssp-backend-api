@@ -27,6 +27,7 @@ class ComissionHistory extends Model
         'referal_id',
         'amount',
         'description',
+        'is_paid',
     ];
 
     /**

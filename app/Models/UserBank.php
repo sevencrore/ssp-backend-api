@@ -18,5 +18,10 @@ class UserBank extends Model
         'account_number',
         'ifsc_code',
         'branch_name',
+        'a_c_holder_name',
+        'phone_number',
+        'pancard',
+        'aadharcard',
+        'user_id',
     ];
 }

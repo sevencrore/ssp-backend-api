@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\CityController;
 use App\Http\Controllers\API\EMailController;
+use App\Http\Controllers\Api\UserBankTransactionController;
 use App\Http\Controllers\API\VendorCommissionController;
 use App\Http\Controllers\API\VendorTransactionsController;
 use Illuminate\Http\Request;
@@ -272,10 +273,25 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('get-vendor-commissions', [VendorCommissionController::class, 'getVendorCommission_WithPagination']);
   });
 
+  Route::post('user-bank-transactions/store', [UserBankTransactionController::class, 'store']);
+  Route::get('user-bank-transactions/list', [UserBankTransactionController::class, 'getAllPaginated']);
+  Route::get('user-bank-transactions/{id}', [UserBankTransactionController::class, 'show']);
+  Route::put('user-bank-transactions/{id}', [UserBankTransactionController::class, 'update']);
+  Route::delete('user-bank-transactions/{id}', [UserBankTransactionController::class, 'destroy']);
+
+  Route::get('user-bank/', [UserBankController::class, 'index']);
+  Route::post('user-bank/', [UserBankController::class, 'store']);
+  Route::get('user-bank/{id}', [UserBankController::class, 'show']);
+  Route::put('user-bank/{id}', [UserBankController::class, 'update']);
+  Route::delete('user-bank/{id}', [UserBankController::class, 'destroy']);
+
+  Route::get('commission-history-pagination', [ComissionHistoryController::class, 'getAllPaginated']);
+
+  Route::get('usercomission/pending-bank-excel', [ComissionHistoryController::class, 'generatecomissionReport']);
 });
 
 // Route to get all records
-Route::get('comissions', [ComissionController::class, 'index'])->name('comissions.index');
+Route::get('comissions', [ComissionController::class, 'getAllPaginated']);
 
 // admin vendor operator routes
 //Route::get('orders/get-supplier-orders', [OrderController::class, 'getOrderItemsForSupplier'])->name('orders.getOrderItemsForSupplier');
